@@ -1,0 +1,79 @@
+{
+  "levelId": 2,
+  "forecastMonths": 3,
+  "client": {
+    "name": "Sam",
+    "description": "Sam is a high schooler with a new part-time job. They want to buy a gaming PC but keep spending their cash on hand.",
+    "prompt": "I keep my paycheck and allowance in a shoebox, and I end up spending it. I need to save $1,200 for a new PC. How should I set this up?",
+    "portraitId": "sam_01"
+  },
+  "startingState": {
+    "accounts": [
+      {
+        "id": "acc_01",
+        "name": "Shoebox (Cash)",
+        "type": "cash",
+        "balance": 150.00,
+        "apy": 0.0
+      }
+    ],
+    "income": [
+      {
+        "id": "inc_01",
+        "name": "Part-time Job",
+        "amount": 500.00,
+        "frequency": "monthly",
+        "routings": [
+          {
+            "destinationId": "acc_01",
+            "amount": 100,
+            "type": "percentage"
+          }
+        ]
+      },
+      {
+        "id": "inc_02",
+        "name": "Allowance",
+        "amount": 100.00,
+        "frequency": "monthly",
+        "routings": [
+          {
+            "destinationId": "acc_01",
+            "amount": 100,
+            "type": "percentage"
+          }
+        ]
+      }
+    ],
+    "expenses": [
+      {
+        "id": "exp_01",
+        "name": "Snacks & Hobbies",
+        "amount": 250.00,
+        "isFixed": false,
+        "minValue": 100.00
+      }
+    ],
+    "goals": [
+      {
+        "id": "goal_01",
+        "name": "Gaming PC",
+        "targetAmount": 1200.00
+      }
+    ]
+  },
+  "allowedActions": {
+    "canCreateAccounts": true,
+    "canDeleteAccounts": true,
+    "allowedAccountTypes": ["bank"],
+    "maxNewAccounts": 1
+  },
+  "winConditions": {
+    "requiredAccounts": ["bank"],
+    "maxCashBalance": 0,
+    "goalsFundedWithinMonths": {
+      "goalId": "goal_01",
+      "months": 3
+    }
+  }
+}

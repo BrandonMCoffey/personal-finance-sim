@@ -1,0 +1,64 @@
+{
+  "levelId": 1,
+  "forecastMonths": 1,
+  "client": {
+    "name": "Alex",
+    "description": "Alex just got their first apartment and wants to make sure they aren't spending more than they make.",
+    "prompt": "I need to make sure my monthly income covers my expenses. Can you help me adjust my spending so I have a positive cash flow?",
+    "portraitId": "alex_01"
+  },
+  "startingState": {
+    "accounts": [
+      {
+        "id": "acc_01",
+        "name": "Checking Account",
+        "type": "checking",
+        "balance": 500.00,
+        "apy": 0.0
+      }
+    ],
+    "income": [
+      {
+        "id": "inc_01",
+        "name": "Part-time Job",
+        "amount": 1200.00,
+        "frequency": "monthly",
+        "routings": [
+          { "destinationId": "acc_01", "amount": 100, "type": "percentage" }
+        ]
+      }
+    ],
+    "expenses": [
+      {
+        "id": "exp_01",
+        "name": "Rent",
+        "amount": 600.00,
+        "isFixed": true
+      },
+      {
+        "id": "exp_02",
+        "name": "Groceries",
+        "amount": 300.00,
+        "isFixed": false,
+        "minValue": 200.00
+      },
+      {
+        "id": "exp_03",
+        "name": "Entertainment",
+        "amount": 400.00,
+        "isFixed": false,
+        "minValue": 50.00
+      }
+    ],
+    "goals": []
+  },
+  "allowedActions": {
+    "canCreateAccounts": false,
+    "canDeleteAccounts": false,
+    "allowedAccountTypes": []
+  },
+  "winConditions": {
+    "requiredAccounts": [],
+    "maxCashBalance": 0
+  }
+}

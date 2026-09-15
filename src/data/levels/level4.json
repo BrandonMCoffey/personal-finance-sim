@@ -1,0 +1,79 @@
+{
+  "levelId": 4,
+  "forecastMonths": 12,
+  "client": {
+    "name": "David",
+    "description": "David received an inheritance and wants to build a safety net, but he is missing out on passive interest by leaving it all in cash.",
+    "prompt": "I just inherited $15,000. I want to build a $20,000 Emergency Fund over the next year, but I also need to make sure my monthly bills are paid. Can you set up a system that takes advantage of interest rates?",
+    "portraitId": "david_01"
+  },
+  "startingState": {
+    "accounts": [
+      {
+        "id": "acc_01",
+        "name": "Shoebox (Cash)",
+        "type": "cash",
+        "balance": 15000.00,
+        "apy": 0.0
+      },
+      {
+        "id": "acc_02",
+        "name": "Checking",
+        "type": "checking",
+        "balance": 1000.00,
+        "apy": 0.0
+      }
+    ],
+    "income": [
+      {
+        "id": "inc_01",
+        "name": "Salary",
+        "amount": 3500.00,
+        "frequency": "monthly",
+        "routings": [
+          {
+            "destinationId": "acc_02",
+            "amount": 100,
+            "type": "percentage"
+          }
+        ]
+      }
+    ],
+    "expenses": [
+      {
+        "id": "exp_01",
+        "name": "Mortgage",
+        "amount": 2000.00,
+        "isFixed": true
+      },
+      {
+        "id": "exp_02",
+        "name": "Food & Gas",
+        "amount": 1000.00,
+        "isFixed": false,
+        "minValue": 1000.00
+      }
+    ],
+    "goals": [
+      {
+        "id": "goal_01",
+        "name": "Emergency Fund",
+        "targetAmount": 20000.00
+      }
+    ]
+  },
+  "allowedActions": {
+    "canCreateAccounts": true,
+    "canDeleteAccounts": true,
+    "allowedAccountTypes": ["savings", "checking"],
+    "maxNewAccounts": 1
+  },
+  "winConditions": {
+    "requiredAccounts": ["savings"],
+    "maxCashBalance": 0,
+    "goalsFundedWithinMonths": {
+      "goalId": "goal_01",
+      "months": 12
+    }
+  }
+}

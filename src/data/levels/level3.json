@@ -1,0 +1,76 @@
+{
+  "levelId": 3,
+  "forecastMonths": 6,
+  "client": {
+    "name": "Maria",
+    "description": "Maria makes a good salary, but she keeps everything in one checking account and struggles to save for specific targets.",
+    "prompt": "I have $1,500 left over each month after my fixed bills. I want to take a $1,500 vacation in 3 months, and save $6,000 for a car down payment in 6 months. How do I split this up?",
+    "portraitId": "maria_01"
+  },
+  "startingState": {
+    "accounts": [
+      {
+        "id": "acc_01",
+        "name": "Main Checking",
+        "type": "checking",
+        "balance": 2000.00,
+        "apy": 0.0
+      }
+    ],
+    "income": [
+      {
+        "id": "inc_01",
+        "name": "Tech Salary",
+        "amount": 4000.00,
+        "frequency": "monthly",
+        "routings": [
+          {
+            "destinationId": "acc_01",
+            "amount": 100,
+            "type": "percentage"
+          }
+        ]
+      }
+    ],
+    "expenses": [
+      {
+        "id": "exp_01",
+        "name": "Rent & Utilities",
+        "amount": 1500.00,
+        "isFixed": true
+      },
+      {
+        "id": "exp_02",
+        "name": "Living Expenses",
+        "amount": 1000.00,
+        "isFixed": false,
+        "minValue": 800.00
+      }
+    ],
+    "goals": [
+      {
+        "id": "goal_01",
+        "name": "Vacation Fund",
+        "targetAmount": 1500.00
+      },
+      {
+        "id": "goal_02",
+        "name": "Car Down Payment",
+        "targetAmount": 6000.00
+      }
+    ]
+  },
+  "allowedActions": {
+    "canCreateAccounts": true,
+    "canDeleteAccounts": false,
+    "allowedAccountTypes": ["savings"],
+    "maxNewAccounts": 2
+  },
+  "winConditions": {
+    "requiredAccounts": ["savings"],
+    "goalsFundedWithinMonths": {
+      "goalId": "goal_02",
+      "months": 6
+    }
+  }
+}
