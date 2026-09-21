@@ -56,7 +56,7 @@ export function ExpenseNode({ data }: ExpenseNodeProps) {
             else updateTransferRule(incomingRule.id, Number(e.target.value), 'fixed');
           }}
           style={{ background: `linear-gradient(to right, #ef4444 ${fillPercentage}%, #fee2e2 ${fillPercentage}%)` }}
-          className="expense-slider w-full h-2 mt-2 rounded-full cursor-pointer transition-all appearance-none outline-none"
+          className="nodrag expense-slider w-full h-2 mt-2 rounded-full cursor-pointer transition-all appearance-none outline-none"
         />
       ) : (
         <div className="w-full bg-red-100 rounded-full h-2 mt-2">

@@ -65,7 +65,8 @@
       {
         "id": "goal_01",
         "name": "Gaming PC",
-        "targetAmount": 1200.00
+        "targetAmount": 1200.00,
+        "targetMonths": 3
       }
     ]
   },

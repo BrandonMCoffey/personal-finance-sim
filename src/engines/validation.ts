@@ -36,25 +36,23 @@ export function evaluatePlan(
     });
   }
 
-  // 2. Check Goals Funded
-  if (winConditions.goalsFundedWithinMonths) {
-    const targetGoal = goals.find(g => g.id === winConditions.goalsFundedWithinMonths?.goalId);
-    if (targetGoal) {
-      const targetMonths = winConditions.goalsFundedWithinMonths.months;
-      const forecast = generateForecast(accounts, incomes, transferRules, goals, expenses, cards, targetMonths);
+  // 2. Check Goals
+  goals.forEach(goal => {
+    if (goal.targetMonths) {
+      const forecast = generateForecast(accounts, incomes, transferRules, goals, expenses, cards, goal.targetMonths);
       const finalSnapshot = forecast[forecast.length - 1];
-      const finalAmount = finalSnapshot.goalProgress[targetGoal.id] || 0;
+      const finalAmount = finalSnapshot?.goalProgress[goal.id] || 0;
       
-      if (finalAmount >= targetGoal.targetAmount) {
-        feedback.push(`Success: ${targetGoal.name} is fully funded within ${targetMonths} months!`);
+      if (finalAmount >= goal.targetAmount) {
+        feedback.push(`Success: You reached the $${goal.targetAmount} goal for "${goal.name}" within ${goal.targetMonths} months!`);
       } else {
         score -= 30;
-        feedback.push(`Missed Goal: ${targetGoal.name} only reached $${finalAmount.toFixed(2)} out of $${targetGoal.targetAmount} after ${targetMonths} months.`);
+        feedback.push(`Missed Timeline: "${goal.name}" only reached $${finalAmount.toFixed(2)} out of $${goal.targetAmount} after ${goal.targetMonths} months.`);
       }
     }
-  }
+  });
 
-  // 2. Check card expenses
+  // 3. Check card expenses
   expenses.forEach(exp => {
     if (exp.requiresCard) {
       const fundingRule = transferRules.find(r => r.destinationId === exp.id);

@@ -3,7 +3,7 @@ import { useFinanceStore } from '../../store/financeStore';
 import type { AccountType } from '../../store/financeStore';
 
 export function CanvasControls() {
-  const { addAccount, addCard, allowedActions, accounts, cards, initialAccountCount } = useFinanceStore();
+  const { addAccount, addCard, allowedActions, accounts, initialAccountCount } = useFinanceStore();
 
   if (!allowedActions) return null;
 

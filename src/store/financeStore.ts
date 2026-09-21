@@ -47,6 +47,7 @@ export interface Goal {
   id: string;
   name: string;
   targetAmount: number;
+  targetMonths?: number;
 }
 
 export interface TransferRule {
@@ -276,28 +277,10 @@ export const useFinanceStore = create<FinanceState>()((set) => ({
   removeIncomeRoute: (incomeId, destinationId) => set((state) => ({
     incomes: state.incomes.map(income => {
       if (income.id !== incomeId) return income;
-      
-      let newRoutings = (income.routings || []).filter(r => r.destinationId !== destinationId);
-      
-      if (newRoutings.length > 0) {
-        const percentRoutes = newRoutings.filter(r => r.type === 'percentage');
-        
-        if (percentRoutes.length > 0) {
-          const currentPercentSum = percentRoutes.reduce((sum, r) => sum + r.amount, 0);
-          
-          if (currentPercentSum < 100) {
-            const missing = 100 - currentPercentSum;
-            const lastPercentRoute = percentRoutes[percentRoutes.length - 1];
-            newRoutings = newRoutings.map(r => 
-              r.destinationId === lastPercentRoute.destinationId 
-                ? { ...r, amount: r.amount + missing }
-                : r
-            );
-          }
-        }
-      }
-
-      return { ...income, routings: newRoutings };
+      return {
+        ...income,
+        routings: (income.routings || []).filter(r => r.destinationId !== destinationId)
+      };
     })
   })),
 

@@ -2,9 +2,11 @@ import { Handle, Position } from '@xyflow/react';
 
 interface GoalNodeProps {
   data: {
+    id: string;
     name: string;
     targetAmount: number;
     currentAmount: number;
+    targetMonths?: number;
     hitMonth?: number;
     isSnapped: boolean;
   };
@@ -21,10 +23,6 @@ export function GoalNode({ data }: GoalNodeProps) {
   return (
     <div className={`relative px-4 py-3 border-2 w-[160px] ${snappedStyle} ${colorStyle}`}>
       
-      {data.isSnapped && (
-        <div className="absolute -top-3 left-1/2 w-1.5 h-3 bg-gray-300 transform -translate-x-1/2 rounded-full"></div>
-      )}
-
       {!data.isSnapped && <Handle type="target" position={Position.Left} className="w-3 h-3 bg-purple-500" />}
 
       <div className="flex justify-between items-center mb-1">
@@ -40,7 +38,7 @@ export function GoalNode({ data }: GoalNodeProps) {
 
       <div className="flex justify-between mt-1">
         <div className="text-[10px] text-purple-600 font-medium">
-          Target: ${data.targetAmount.toLocaleString()}
+          Target: ${data.targetAmount.toLocaleString()} {data.targetMonths ? `in ${data.targetMonths}mo` : ''}
         </div>
         <div className="text-[10px] text-purple-600 font-bold text-right">
           ${current.toFixed(0)} saved

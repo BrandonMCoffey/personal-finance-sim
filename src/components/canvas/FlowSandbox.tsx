@@ -35,6 +35,7 @@ function FlowSandboxInner() {
   const [nodes, setNodes, onNodesChange] = useNodesState<Node>([]);
   const [edges, setEdges, onEdgesChange] = useEdgesState<Edge>([]);
   const [selectedEdgeId, setSelectedEdgeId] = useState<string | null>(null);
+  const [snapTrigger, setSnapTrigger] = useState(0);
 
   const { 
     accounts, incomes, goals, expenses, transferRules, cards, forecastMonths,
@@ -46,14 +47,12 @@ function FlowSandboxInner() {
     const forecasts = generateForecast(accounts, incomes, transferRules, goals, expenses, cards, forecastMonths);
     const finalSnapshot = forecasts[forecasts.length - 1];
 
-    // 1. Calculate Snapped Nodes (Deep Nesting capabilities)
     const childrenMap: Record<string, string[]> = {};
     accounts.forEach(a => childrenMap[a.id] = []);
     cards.forEach(c => childrenMap[c.id] = []);
     
     const snappedMap: Record<string, { parentId: string, stackIndex: number }> = {};
     
-    // Snap Debit Cards to their linked accounts (Credit Cards float so you can route payments to them)
     cards.forEach(c => {
       if (c.type === 'debit' && c.linkedAccountId && accounts.find(a => a.id === c.linkedAccountId)) {
         snappedMap[c.id] = { parentId: c.linkedAccountId, stackIndex: childrenMap[c.linkedAccountId].length };
@@ -61,7 +60,6 @@ function FlowSandboxInner() {
       }
     });
 
-    // Snap Expenses and Goals to Accounts OR Cards
     [...expenses, ...goals].forEach(item => {
       const rules = transferRules.filter(r => r.destinationId === item.id);
       if (rules.length === 1) {
@@ -73,13 +71,28 @@ function FlowSandboxInner() {
       }
     });
 
-    const accountHeight = forecastMonths > 1 ? 122 : 68; 
-    const childHeight = 74; 
+    const accountHeight = forecastMonths > 1 ? 122 : 70; 
+    const childHeight = 88; 
 
     const newNodes: Node[] = [
       ...incomes.map((inc, i) => {
-        const totalAllocated = (inc.routings || []).reduce((sum, r) => sum + (r.type === 'fixed' ? r.amount : inc.amount * (r.amount / 100)), 0);
-        const isBalanced = Math.abs(totalAllocated - inc.amount) < 0.01;
+        let totalUsed = 0;
+        let overAllocated = false;
+
+        if (inc.routings) {
+          inc.routings.forEach((route, idx) => {
+            if (idx === inc.routings!.length - 1) return; // Ignore the last one, it's just a passive bucket
+            let intended = route.type === 'fixed' ? route.amount : inc.amount * (route.amount / 100);
+            totalUsed += intended;
+          });
+        }
+        
+        if (totalUsed > inc.amount + 0.01) {
+          overAllocated = true;
+        }
+
+        const isBalanced = (inc.routings && inc.routings.length > 0 && !overAllocated);
+        
         return {
           id: inc.id, type: 'income', position: { x: 50, y: 50 + i * 100 }, 
           data: { name: inc.name, amount: inc.amount, isBalanced } 
@@ -110,13 +123,14 @@ function FlowSandboxInner() {
           }
         };
       }),
-      ...goals.map((goal, i) => {
+     ...goals.map((goal, i) => {
         const snap = snappedMap[goal.id];
         return {
           id: goal.id, type: 'goal', parentId: snap?.parentId,
           position: snap ? { x: 0, y: accountHeight + snap.stackIndex * childHeight } : { x: 650, y: 50 + i * 100 },
           data: { 
             id: goal.id, name: goal.name, targetAmount: goal.targetAmount, 
+            targetMonths: goal.targetMonths,
             currentAmount: finalSnapshot ? finalSnapshot.goalProgress[goal.id] : 0,
             hitMonth: finalSnapshot ? finalSnapshot.goalHitMonths[goal.id] : undefined,
             isSnapped: !!snap
@@ -145,7 +159,6 @@ function FlowSandboxInner() {
 
         if (wasChild && !isChild) {
           let dropPos = existing.position; 
-          
           const absPos = (existing as any).computed?.positionAbsolute || (existing as any).positionAbsolute;
           
           if (absPos) {
@@ -157,13 +170,8 @@ function FlowSandboxInner() {
             
             while (current.parentId) {
               const p = currentNodes.find(n => n.id === current.parentId);
-              if (p) {
-                absX += p.position.x;
-                absY += p.position.y;
-                current = p;
-              } else {
-                break;
-              }
+              if (p) { absX += p.position.x; absY += p.position.y; current = p; } 
+              else break;
             }
             dropPos = { x: absX, y: absY };
           }
@@ -180,10 +188,33 @@ function FlowSandboxInner() {
     const newEdges: Edge[] = [];
     incomes.forEach(inc => {
       if (inc.routings) {
-        inc.routings.forEach((route) => {
+        let available = inc.amount;
+        let prevType = 'fixed';
+        
+        inc.routings.forEach((route, idx) => {
+          const isLast = idx === inc.routings!.length - 1;
+          let edgeLabel = '';
+
+          if (isLast) {
+            let remainder = Math.max(0, available);
+            if (inc.routings!.length === 1) {
+              edgeLabel = '100%';
+            } else if (prevType === 'percentage') {
+              let pct = (remainder / inc.amount) * 100;
+              edgeLabel = `${pct.toFixed(0)}%`;
+            } else {
+              edgeLabel = `$${remainder.toFixed(0)}`;
+            }
+          } else {
+            prevType = route.type;
+            let intended = route.type === 'fixed' ? route.amount : inc.amount * (route.amount / 100);
+            edgeLabel = route.type === 'percentage' ? `${route.amount}%` : `$${route.amount}`;
+            available -= intended;
+          }
+
           newEdges.push({
             id: `inc|${inc.id}|${route.destinationId}`, source: inc.id, target: route.destinationId,
-            animated: true, label: route.type === 'percentage' ? `${route.amount}%` : `$${route.amount}`,
+            animated: true, label: edgeLabel,
           });
         });
       }
@@ -192,15 +223,21 @@ function FlowSandboxInner() {
     transferRules.forEach(rule => {
       if (!snappedMap[rule.destinationId]) {
         const isCash = accounts.find(a => a.id === rule.sourceId)?.type === 'cash';
+        const isGoal = goals.some(g => g.id === rule.destinationId);
+
+        let edgeLabel = rule.type === 'percentage' ? `${rule.amount}%` : `$${rule.amount}`;
+        if (isCash) edgeLabel = 'Deposit';
+        if (isGoal) edgeLabel = 'Monitors';
+
         newEdges.push({
           id: `rule|${rule.id}`, source: rule.sourceId, target: rule.destinationId,
-          animated: true, label: isCash ? 'Deposit' : (rule.type === 'percentage' ? `${rule.amount}%` : `$${rule.amount}`),
+          animated: true, label: edgeLabel,
         });
       }
     });
 
     setEdges(newEdges);
-  }, [accounts, incomes, goals, expenses, cards, transferRules, forecastMonths, setNodes, setEdges]);
+  }, [accounts, incomes, goals, expenses, cards, transferRules, forecastMonths, snapTrigger, setNodes, setEdges]); 
 
   const onConnect = useCallback((params: Connection) => {
     const { source, target } = params;
@@ -211,11 +248,11 @@ function FlowSandboxInner() {
 
     const isValidTarget = ['account', 'card', 'goal', 'expense'].includes(targetNode.type || '');
 
-    if (sourceNode.type === 'income' && isValidTarget) {
+    if (sourceNode.type === 'income' && ['account', 'card', 'expense'].includes(targetNode.type || '')) {
       const targetExpense = expenses.find(e => e.id === target);
       if (targetExpense) addIncomeRoute(source, target, targetExpense.amount, 'fixed');
       else addIncomeRoute(source, target);
-    } 
+    }
     else if ((sourceNode.type === 'account' || sourceNode.type === 'card') && isValidTarget) {
       const sourceAcc = accounts.find(a => a.id === source);
       const targetCard = cards.find(c => c.id === target);
@@ -252,17 +289,24 @@ function FlowSandboxInner() {
       if (cardData?.type === 'debit') {
         if (targetParentId && node.parentId !== targetParentId) updateCardLink(node.id, targetParentId);
         else if (!targetParentId && node.parentId) updateCardLink(node.id, ''); 
+        else if (targetParentId && node.parentId === targetParentId) setSnapTrigger(s => s + 1); // NEW: Force snap-back
       }
       return;
     }
 
     if (targetParentId) {
-      if (node.parentId === targetParentId) return; // Already attached here
+      if (node.parentId === targetParentId) {
+        setSnapTrigger(s => s + 1);
+        return; 
+      }
 
       if (node.type === 'expense') {
         const expenseData = expenses.find(e => e.id === node.id);
         const parentType = accounts.find(a => a.id === targetParentId) ? 'account' : 'card';
-        if (expenseData?.requiresCard && parentType === 'account') return; // Silently reject invalid routing
+        if (expenseData?.requiresCard && parentType === 'account') {
+          setSnapTrigger(s => s + 1); // Force snap-back on rejection
+          return;
+        }
       }
 
       const existingRules = transferRules.filter(r => r.destinationId === node.id);
