@@ -1,0 +1,70 @@
+{
+  "levelId": 5,
+  "forecastMonths": 6,
+  "client": {
+    "name": "Sarah",
+    "description": "Sarah loves shopping online, but she's starting to rack up credit card debt because she only pays the minimums.",
+    "prompt": "I have a bunch of subscriptions and groceries that I put on my rewards credit card, but my debt keeps growing because of the 24% APR! How do I pay this off?",
+    "portraitId": "sarah_01"
+  },
+  "startingState": {
+    "accounts": [
+      {
+        "id": "acc_01",
+        "name": "Main Checking",
+        "type": "checking",
+        "balance": 1500.00,
+        "apy": 0.0
+      }
+    ],
+    "cards": [
+      {
+        "id": "card_01",
+        "name": "Rewards Visa",
+        "type": "credit",
+        "linkedAccountId": "",
+        "balance": 1200.00,
+        "limit": 5000.00,
+        "apr": 24.99
+      }
+    ],
+    "income": [
+      {
+        "id": "inc_01",
+        "name": "Salary",
+        "amount": 3000.00,
+        "frequency": "monthly",
+        "routings": [
+          { "destinationId": "acc_01", "amount": 100, "type": "percentage" }
+        ]
+      }
+    ],
+    "expenses": [
+      {
+        "id": "exp_01",
+        "name": "Rent",
+        "amount": 1200.00,
+        "isFixed": true,
+        "requiresCard": false
+      },
+      {
+        "id": "exp_02",
+        "name": "Groceries & Online Shopping",
+        "amount": 800.00,
+        "isFixed": false,
+        "minValue": 400.00,
+        "requiresCard": true
+      }
+    ],
+    "goals": []
+  },
+  "allowedActions": {
+    "canCreateAccounts": false,
+    "canDeleteAccounts": false,
+    "allowedAccountTypes": [],
+    "allowedCardTypes": []
+  },
+  "winConditions": {
+    "requiredAccounts": []
+  }
+}
