@@ -47,6 +47,12 @@ function FlowSandboxInner() {
     const forecasts = generateForecast(accounts, incomes, transferRules, goals, expenses, cards, forecastMonths);
     const finalSnapshot = forecasts[forecasts.length - 1];
 
+    const sortedExpenses = [...expenses].sort((a, b) => {
+      if (a.isFixed && !b.isFixed) return -1;
+      if (!a.isFixed && b.isFixed) return 1;
+      return 0;
+    });
+
     const childrenMap: Record<string, string[]> = {};
     accounts.forEach(a => childrenMap[a.id] = []);
     cards.forEach(c => childrenMap[c.id] = []);
@@ -60,7 +66,7 @@ function FlowSandboxInner() {
       }
     });
 
-    [...expenses, ...goals].forEach(item => {
+    [...sortedExpenses, ...goals].forEach(item => {
       const rules = transferRules.filter(r => r.destinationId === item.id);
       if (rules.length === 1) {
         const pId = rules[0].sourceId;
@@ -137,7 +143,7 @@ function FlowSandboxInner() {
           }
         };
       }),
-      ...expenses.map((exp, i) => {
+      ...sortedExpenses.map((exp, i) => {
         const snap = snappedMap[exp.id];
         return {
           id: exp.id, type: 'expense', parentId: snap?.parentId,
@@ -145,6 +151,8 @@ function FlowSandboxInner() {
           data: {
             id: exp.id, name: exp.name, targetAmount: exp.amount,
             currentAmount: finalSnapshot ? finalSnapshot.expenseProgress[exp.id] : 0,
+            isFixed: exp.isFixed,
+            minValue: exp.minValue,
             isSnapped: !!snap
           }
         };
