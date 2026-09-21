@@ -49,7 +49,7 @@ function FlowSandboxInner() {
     // 1. Calculate Snapped Nodes (Deep Nesting capabilities)
     const childrenMap: Record<string, string[]> = {};
     accounts.forEach(a => childrenMap[a.id] = []);
-    cards.forEach(c => childrenMap[c.id] = []); // Cards can also have children (expenses)
+    cards.forEach(c => childrenMap[c.id] = []);
     
     const snappedMap: Record<string, { parentId: string, stackIndex: number }> = {};
     
@@ -73,21 +73,16 @@ function FlowSandboxInner() {
       }
     });
 
-    const accountHeight = forecastMonths > 1 ? 140 : 90;
-    const childHeight = 85;
+    const accountHeight = forecastMonths > 1 ? 122 : 68; 
+    const childHeight = 74; 
 
-    // 2. Generate Nodes
     const newNodes: Node[] = [
       ...incomes.map((inc, i) => {
-        const totalAllocated = (inc.routings || []).reduce((sum, r) => {
-          return sum + (r.type === 'fixed' ? r.amount : inc.amount * (r.amount / 100));
-        }, 0);
-        
+        const totalAllocated = (inc.routings || []).reduce((sum, r) => sum + (r.type === 'fixed' ? r.amount : inc.amount * (r.amount / 100)), 0);
         const isBalanced = Math.abs(totalAllocated - inc.amount) < 0.01;
-
         return {
           id: inc.id, type: 'income', position: { x: 50, y: 50 + i * 100 }, 
-          data: { name: inc.name, amount: inc.amount, isBalanced } // <-- Passed isBalanced
+          data: { name: inc.name, amount: inc.amount, isBalanced } 
         };
       }),
       ...accounts.map((acc, i) => {
@@ -95,7 +90,6 @@ function FlowSandboxInner() {
           month: snap.month, balance: snap.accountBalances[acc.id],
           in: snap.accountFlows[acc.id].in, out: snap.accountFlows[acc.id].out
         }));
-
         return {
           id: acc.id, type: 'account', position: { x: 350, y: 50 + i * 120 }, 
           data: { 
@@ -149,20 +143,41 @@ function FlowSandboxInner() {
         const wasChild = !!existing.parentId;
         const isChild = !!newNode.parentId;
 
-        if (wasChild && !isChild && (existing as any).positionAbsolute) {
-          return { ...newNode, position: (existing as any).positionAbsolute }; // Detached: stay where dropped
+        if (wasChild && !isChild) {
+          let dropPos = existing.position; 
+          
+          const absPos = (existing as any).computed?.positionAbsolute || (existing as any).positionAbsolute;
+          
+          if (absPos) {
+            dropPos = absPos;
+          } else {
+            let current = existing;
+            let absX = existing.position.x;
+            let absY = existing.position.y;
+            
+            while (current.parentId) {
+              const p = currentNodes.find(n => n.id === current.parentId);
+              if (p) {
+                absX += p.position.x;
+                absY += p.position.y;
+                current = p;
+              } else {
+                break;
+              }
+            }
+            dropPos = { x: absX, y: absY };
+          }
+          return { ...newNode, position: dropPos }; 
         }
         if (isChild) {
-          return { ...newNode }; // Attached: force rigid stack layout
+          return { ...newNode }; 
         }
-        return { ...newNode, position: existing.position }; // Standard: maintain user drag
+        return { ...newNode, position: existing.position }; 
       }
       return newNode;
     }));
 
-    // 3. Generate Edges (Skip snapped destinations to avoid noodle soup)
     const newEdges: Edge[] = [];
-    
     incomes.forEach(inc => {
       if (inc.routings) {
         inc.routings.forEach((route) => {
@@ -207,17 +222,11 @@ function FlowSandboxInner() {
       const targetExpense = expenses.find(e => e.id === target);
       const targetGoal = goals.find(g => g.id === target);
 
-      if (sourceAcc?.type === 'cash') {
-        addTransferRule(source, target, 100, 'percentage');
-      } else if (targetCard && targetCard.type === 'credit') {
-        addTransferRule(source, target, 100, 'fixed'); // Default to $100 payment toward credit card
-      } else if (targetExpense) {
-        addTransferRule(source, target, targetExpense.amount, 'fixed');
-      } else if (targetGoal) {
-        addTransferRule(source, target, Math.min(100, targetGoal.targetAmount), 'fixed');
-      } else {
-        addTransferRule(source, target, 10, 'percentage');
-      }
+      if (sourceAcc?.type === 'cash') addTransferRule(source, target, 100, 'percentage');
+      else if (targetCard && targetCard.type === 'credit') addTransferRule(source, target, 100, 'fixed');
+      else if (targetExpense) addTransferRule(source, target, targetExpense.amount, 'fixed');
+      else if (targetGoal) addTransferRule(source, target, Math.min(100, targetGoal.targetAmount), 'fixed');
+      else addTransferRule(source, target, 10, 'percentage');
     }
   }, [nodes, expenses, goals, accounts, cards, addIncomeRoute, addTransferRule]);
 
@@ -226,53 +235,51 @@ function FlowSandboxInner() {
 
     const intersections = getIntersectingNodes(node);
 
-    // 1. Handling dragging a Debit Card onto an Account
+    let targetParentId: string | null = null;
+    const directParent = intersections.find(n => n.type === 'account' || n.type === 'card');
+    
+    if (directParent) {
+      targetParentId = directParent.id;
+    } else {
+      const siblingNode = intersections.find(n => n.parentId);
+      if (siblingNode && siblingNode.parentId) {
+        targetParentId = siblingNode.parentId;
+      }
+    }
+
     if (node.type === 'card') {
       const cardData = cards.find(c => c.id === node.id);
       if (cardData?.type === 'debit') {
-        const accountNode = intersections.find(n => n.type === 'account');
-        if (accountNode && node.parentId !== accountNode.id) {
-          updateCardLink(node.id, accountNode.id);
-        }
+        if (targetParentId && node.parentId !== targetParentId) updateCardLink(node.id, targetParentId);
+        else if (!targetParentId && node.parentId) updateCardLink(node.id, ''); 
       }
       return;
     }
 
-    // 2. Handling dragging an Expense/Goal onto an Account or Card
-    const parentNode = intersections.find(n => n.type === 'account' || n.type === 'card');
-    if (parentNode) {
-      if (node.parentId === parentNode.id) return;
+    if (targetParentId) {
+      if (node.parentId === targetParentId) return; // Already attached here
 
       if (node.type === 'expense') {
         const expenseData = expenses.find(e => e.id === node.id);
-        if (expenseData?.requiresCard && parentNode.type === 'account') {
-          return;
-        }
+        const parentType = accounts.find(a => a.id === targetParentId) ? 'account' : 'card';
+        if (expenseData?.requiresCard && parentType === 'account') return; // Silently reject invalid routing
       }
 
       const existingRules = transferRules.filter(r => r.destinationId === node.id);
       existingRules.forEach(r => removeTransferRule(r.id));
 
       const targetAmount = node.type === 'expense' ? expenses.find(e=>e.id===node.id)?.amount : goals.find(g=>g.id===node.id)?.targetAmount;
-      addTransferRule(parentNode.id, node.id, targetAmount ? Math.min(10000, targetAmount) : 100, 'fixed');
+      addTransferRule(targetParentId, node.id, targetAmount ? Math.min(10000, targetAmount) : 100, 'fixed');
     } else {
       if (node.parentId) {
         const existingRules = transferRules.filter(r => r.destinationId === node.id);
         existingRules.forEach(r => removeTransferRule(r.id));
       }
     }
-  }, [getIntersectingNodes, transferRules, expenses, goals, cards, removeTransferRule, addTransferRule, updateCardLink]);
-
-  const onNodesDelete = useCallback((deletedNodes: Node[]) => {
-    deletedNodes.forEach(node => {
-      if (node.type === 'account') {
-        removeAccount(node.id);
-      }
-    });
-  }, [removeAccount]);
+  }, [getIntersectingNodes, transferRules, expenses, goals, cards, accounts, removeTransferRule, addTransferRule, updateCardLink]);
 
   const onEdgeClick = useCallback((event: React.MouseEvent, edge: Edge) => { setSelectedEdgeId(edge.id); }, []);
-
+  
   const onEdgesDelete = useCallback((deletedEdges: Edge[]) => {
     deletedEdges.forEach(edge => {
       if (edge.id.startsWith('inc|')) removeIncomeRoute(edge.id.split('|')[1], edge.id.split('|')[2]);
@@ -281,23 +288,26 @@ function FlowSandboxInner() {
     });
   }, [removeIncomeRoute, removeTransferRule, selectedEdgeId]);
 
+  const onNodesDelete = useCallback((deletedNodes: Node[]) => {
+    deletedNodes.forEach(node => {
+      if (node.type === 'account') removeAccount(node.id);
+    });
+  }, [removeAccount]);
+
   return (
-    <>
-      <ReactFlow
-        nodes={nodes} edges={edges}
-        onNodesChange={onNodesChange} onEdgesChange={onEdgesChange}
-        onNodesDelete={onNodesDelete}
-        onConnect={onConnect} onNodeDragStop={onNodeDragStop}
-        onEdgeClick={onEdgeClick} onEdgesDelete={onEdgesDelete}
-        deleteKeyCode={['Backspace', 'Delete']} nodeTypes={nodeTypes} fitView
-      >
-        <Controls />
-        <MiniMap />
-        <Background gap={12} size={1} />
-        <CanvasControls />
-        <OutputEditorPanel selectedEdgeId={selectedEdgeId} onClose={() => setSelectedEdgeId(null)} />
-      </ReactFlow>
-    </>
+    <ReactFlow
+      nodes={nodes} edges={edges}
+      onNodesChange={onNodesChange} onEdgesChange={onEdgesChange} onNodesDelete={onNodesDelete}
+      onConnect={onConnect} onNodeDragStop={onNodeDragStop}
+      onEdgeClick={onEdgeClick} onEdgesDelete={onEdgesDelete}
+      deleteKeyCode={['Backspace', 'Delete']} nodeTypes={nodeTypes} fitView
+    >
+      <Controls />
+      <MiniMap />
+      <Background gap={12} size={1} />
+      <CanvasControls />
+      <OutputEditorPanel selectedEdgeId={selectedEdgeId} onClose={() => setSelectedEdgeId(null)} />
+    </ReactFlow>
   );
 }
 

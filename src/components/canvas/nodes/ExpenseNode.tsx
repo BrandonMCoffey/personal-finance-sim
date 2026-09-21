@@ -27,11 +27,12 @@ export function ExpenseNode({ data }: ExpenseNodeProps) {
     if (r) { incomingRule = r; isIncomeRule = false; sourceId = r.sourceId; }
   }
 
-  const isFunded = data.currentAmount >= data.targetAmount;
-  const snappedStyle = data.isSnapped ? 'rounded-t-none border-t-0 shadow-none z-0' : 'rounded-md shadow-md z-10';
-  const colorStyle = isFunded ? 'bg-red-50 border-red-400' : 'bg-white border-red-200';
   const sliderMax = Math.max(data.targetAmount * 1.5, incomingRule?.amount || 100);
   const fillPercentage = incomingRule ? Math.min((incomingRule.amount / sliderMax) * 100, 100) : 0;
+
+  const isFunded = data.currentAmount >= data.targetAmount;
+  const snappedStyle = data.isSnapped ? 'rounded-t-none shadow-none z-0' : 'rounded-md shadow-md z-10';
+  const colorStyle = isFunded ? 'bg-red-50 border-red-400' : 'bg-white border-red-200';
 
   return (
     <div className={`relative px-4 py-3 border-2 w-[160px] ${snappedStyle} ${colorStyle}`}>

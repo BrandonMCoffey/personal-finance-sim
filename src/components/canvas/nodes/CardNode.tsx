@@ -19,10 +19,10 @@ export function CardNode({ data }: CardNodeProps) {
     ? 'bg-gradient-to-br from-indigo-700 to-indigo-900 border-indigo-500' 
     : 'bg-gradient-to-br from-teal-600 to-teal-800 border-teal-400';
 
-  const snappedStyle = data.isSnapped ? 'rounded-t-none border-t-0 shadow-none z-0' : 'rounded-md shadow-md z-10';
+  const snappedStyle = data.isSnapped ? 'rounded-t-none shadow-none z-0' : 'rounded-xl shadow-lg z-10';
 
   return (
-    <div className={`relative px-4 py-3 shadow-lg rounded-xl border-2 w-[160px] ${snappedStyle} ${bgGradient} text-white`}>
+    <div className={`relative px-4 py-3 border-2 w-[160px] text-white ${snappedStyle} ${bgGradient}`}>
       {isCredit && !data.isSnapped && (
         <Handle type="target" position={Position.Left} className="w-3 h-3 bg-indigo-300" />
       )}
