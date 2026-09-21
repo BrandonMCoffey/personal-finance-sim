@@ -15,8 +15,10 @@ export function GoalNode({ data }: GoalNodeProps) {
   const progress = Math.min((current / data.targetAmount) * 100, 100);
   const isComplete = current >= data.targetAmount;
 
+  const snappedStyle = data.isSnapped ? 'rounded-t-none border-t-0 shadow-none z-0' : 'rounded-md shadow-md z-10';
+
   return (
-    <div className={`relative px-4 py-3 shadow-md rounded-md border-2 min-w-[180px] ${isComplete ? 'bg-purple-50 border-purple-400' : 'bg-white border-purple-200'}`}>
+    <div className={`relative px-4 py-3 shadow-md rounded-md border-2 w-[160px] ${snappedStyle} ${isComplete ? 'bg-purple-50 border-purple-400' : 'bg-white border-purple-200'}`}>
       
       {data.isSnapped && (
         <div className="absolute -top-3 left-1/2 w-1.5 h-3 bg-gray-300 transform -translate-x-1/2 rounded-full"></div>

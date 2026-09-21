@@ -28,16 +28,13 @@ export function ExpenseNode({ data }: ExpenseNodeProps) {
   }
 
   const isFunded = data.currentAmount >= data.targetAmount;
+  const snappedStyle = data.isSnapped ? 'rounded-t-none border-t-0 shadow-none z-0' : 'rounded-md shadow-md z-10';
+  const colorStyle = isFunded ? 'bg-red-50 border-red-400' : 'bg-white border-red-200';
   const sliderMax = Math.max(data.targetAmount * 1.5, incomingRule?.amount || 100);
   const fillPercentage = incomingRule ? Math.min((incomingRule.amount / sliderMax) * 100, 100) : 0;
 
   return (
-    <div className={`relative px-4 py-3 shadow-md rounded-md border-2 min-w-[180px] ${isFunded ? 'bg-red-50 border-red-400' : 'bg-white border-red-200'}`}>
-      
-      {data.isSnapped && (
-        <div className="absolute -top-3 left-1/2 w-1.5 h-3 bg-gray-300 transform -translate-x-1/2 rounded-full"></div>
-      )}
-      
+    <div className={`relative px-4 py-3 border-2 w-[160px] ${snappedStyle} ${colorStyle}`}>
       <style>{`
         .expense-slider::-webkit-slider-thumb { -webkit-appearance: none; appearance: none; width: 0; height: 0; }
         .expense-slider::-moz-range-thumb { width: 0; height: 0; border: 0; }

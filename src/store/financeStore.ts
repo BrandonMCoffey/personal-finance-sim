@@ -111,6 +111,7 @@ interface FinanceState {
   loadLevel: (levelData: any) => void;
 
   addAccount: (name: string, type: AccountType) => void;
+  removeAccount: (accountId: string) => void;
   addCard: (name: string, type: 'debit' | 'credit', linkedAccountId: string) => void;
   removeCard: (cardId: string) => void;
   updateCardLink: (cardId: string, accountId: string) => void;
@@ -196,6 +197,22 @@ export const useFinanceStore = create<FinanceState>()((set) => ({
     }]
   })),
 
+  removeAccount: (accountId) => set((state) => {
+    if (!state.allowedActions?.canDeleteAccounts) {
+      const initialAccountIds = state.accounts.slice(0, state.initialAccountCount).map(a => a.id);
+      if (initialAccountIds.includes(accountId)) return state;
+    }
+
+    return {
+      accounts: state.accounts.filter(a => a.id !== accountId),
+      transferRules: state.transferRules.filter(r => r.sourceId !== accountId && r.destinationId !== accountId),
+      incomes: state.incomes.map(inc => ({
+        ...inc,
+        routings: inc.routings?.filter(r => r.destinationId !== accountId)
+      }))
+    };
+  }),
+
   addCard: (name, type, linkedAccountId) => set((state) => ({
     cards: [
       ...state.cards,
@@ -258,8 +275,29 @@ export const useFinanceStore = create<FinanceState>()((set) => ({
 
   removeIncomeRoute: (incomeId, destinationId) => set((state) => ({
     incomes: state.incomes.map(income => {
-      if (income.id !== incomeId || !income.routings) return income;
-      return { ...income, routings: income.routings.filter(r => r.destinationId !== destinationId) };
+      if (income.id !== incomeId) return income;
+      
+      let newRoutings = (income.routings || []).filter(r => r.destinationId !== destinationId);
+      
+      if (newRoutings.length > 0) {
+        const percentRoutes = newRoutings.filter(r => r.type === 'percentage');
+        
+        if (percentRoutes.length > 0) {
+          const currentPercentSum = percentRoutes.reduce((sum, r) => sum + r.amount, 0);
+          
+          if (currentPercentSum < 100) {
+            const missing = 100 - currentPercentSum;
+            const lastPercentRoute = percentRoutes[percentRoutes.length - 1];
+            newRoutings = newRoutings.map(r => 
+              r.destinationId === lastPercentRoute.destinationId 
+                ? { ...r, amount: r.amount + missing }
+                : r
+            );
+          }
+        }
+      }
+
+      return { ...income, routings: newRoutings };
     })
   })),
 

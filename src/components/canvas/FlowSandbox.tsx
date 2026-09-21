@@ -20,14 +20,14 @@ import { AccountNode } from './nodes/AccountNode';
 import { IncomeNode } from './nodes/IncomeNode';
 import { GoalNode } from './nodes/GoalNode';
 import { ExpenseNode } from './nodes/ExpenseNode';
-import { CardNode } from './nodes/CardNode'; // <-- NEW IMPORT
+import { CardNode } from './nodes/CardNode';
 
 const nodeTypes = {
   account: AccountNode,
   income: IncomeNode,
   goal: GoalNode,
   expense: ExpenseNode,
-  card: CardNode, // <-- REGISTERED
+  card: CardNode,
 };
 
 function FlowSandboxInner() {
@@ -39,7 +39,7 @@ function FlowSandboxInner() {
   const { 
     accounts, incomes, goals, expenses, transferRules, cards, forecastMonths,
     addIncomeRoute, addTransferRule, updateCardLink,
-    removeIncomeRoute, removeTransferRule
+    removeIncomeRoute, removeTransferRule, removeAccount
   } = useFinanceStore();
 
   useEffect(() => {
@@ -73,11 +73,23 @@ function FlowSandboxInner() {
       }
     });
 
+    const accountHeight = forecastMonths > 1 ? 140 : 90;
+    const childHeight = 85;
+
     // 2. Generate Nodes
     const newNodes: Node[] = [
-      ...incomes.map((inc, i) => ({
-        id: inc.id, type: 'income', position: { x: 50, y: 50 + i * 100 }, data: { name: inc.name, amount: inc.amount }
-      })),
+      ...incomes.map((inc, i) => {
+        const totalAllocated = (inc.routings || []).reduce((sum, r) => {
+          return sum + (r.type === 'fixed' ? r.amount : inc.amount * (r.amount / 100));
+        }, 0);
+        
+        const isBalanced = Math.abs(totalAllocated - inc.amount) < 0.01;
+
+        return {
+          id: inc.id, type: 'income', position: { x: 50, y: 50 + i * 100 }, 
+          data: { name: inc.name, amount: inc.amount, isBalanced } // <-- Passed isBalanced
+        };
+      }),
       ...accounts.map((acc, i) => {
         const history = forecasts.map(snap => ({
           month: snap.month, balance: snap.accountBalances[acc.id],
@@ -96,7 +108,7 @@ function FlowSandboxInner() {
         const snap = snappedMap[card.id];
         return {
           id: card.id, type: 'card', parentId: snap?.parentId,
-          position: snap ? { x: 10, y: 130 + snap.stackIndex * 130 } : { x: 350, y: 50 + (accounts.length + i) * 150 },
+          position: snap ? { x: 0, y: accountHeight + snap.stackIndex * childHeight } : { x: 350, y: 50 + (accounts.length + i) * 150 },
           data: {
             id: card.id, name: card.name, type: card.type,
             forecastBalance: finalSnapshot ? finalSnapshot.cardBalances[card.id] : card.balance,
@@ -108,7 +120,7 @@ function FlowSandboxInner() {
         const snap = snappedMap[goal.id];
         return {
           id: goal.id, type: 'goal', parentId: snap?.parentId,
-          position: snap ? { x: 10, y: 130 + snap.stackIndex * 100 } : { x: 650, y: 50 + i * 100 },
+          position: snap ? { x: 0, y: accountHeight + snap.stackIndex * childHeight } : { x: 650, y: 50 + i * 100 },
           data: { 
             id: goal.id, name: goal.name, targetAmount: goal.targetAmount, 
             currentAmount: finalSnapshot ? finalSnapshot.goalProgress[goal.id] : 0,
@@ -121,7 +133,7 @@ function FlowSandboxInner() {
         const snap = snappedMap[exp.id];
         return {
           id: exp.id, type: 'expense', parentId: snap?.parentId,
-          position: snap ? { x: 10, y: 130 + snap.stackIndex * 130 } : { x: 650, y: 50 + (goals.length + i) * 100 },
+          position: snap ? { x: 0, y: accountHeight + snap.stackIndex * childHeight } : { x: 650, y: 50 + (goals.length + i) * 100 },
           data: {
             id: exp.id, name: exp.name, targetAmount: exp.amount,
             currentAmount: finalSnapshot ? finalSnapshot.expenseProgress[exp.id] : 0,
@@ -234,7 +246,6 @@ function FlowSandboxInner() {
       if (node.type === 'expense') {
         const expenseData = expenses.find(e => e.id === node.id);
         if (expenseData?.requiresCard && parentNode.type === 'account') {
-          alert(`Payment Error: "${expenseData.name}" requires a Debit or Credit card on file. You cannot route this directly out of a bank account using ACH.`);
           return;
         }
       }
@@ -252,6 +263,14 @@ function FlowSandboxInner() {
     }
   }, [getIntersectingNodes, transferRules, expenses, goals, cards, removeTransferRule, addTransferRule, updateCardLink]);
 
+  const onNodesDelete = useCallback((deletedNodes: Node[]) => {
+    deletedNodes.forEach(node => {
+      if (node.type === 'account') {
+        removeAccount(node.id);
+      }
+    });
+  }, [removeAccount]);
+
   const onEdgeClick = useCallback((event: React.MouseEvent, edge: Edge) => { setSelectedEdgeId(edge.id); }, []);
 
   const onEdgesDelete = useCallback((deletedEdges: Edge[]) => {
@@ -267,6 +286,7 @@ function FlowSandboxInner() {
       <ReactFlow
         nodes={nodes} edges={edges}
         onNodesChange={onNodesChange} onEdgesChange={onEdgesChange}
+        onNodesDelete={onNodesDelete}
         onConnect={onConnect} onNodeDragStop={onNodeDragStop}
         onEdgeClick={onEdgeClick} onEdgesDelete={onEdgesDelete}
         deleteKeyCode={['Backspace', 'Delete']} nodeTypes={nodeTypes} fitView

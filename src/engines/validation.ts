@@ -91,6 +91,20 @@ export function evaluatePlan(
     }
   }
 
+  const fullForecast = generateForecast(accounts, incomes, transferRules, goals, expenses, cards, 12); 
+  let overdraftFound = false;
+
+  fullForecast.forEach(snap => {
+    Object.entries(snap.accountBalances).forEach(([accId, balance]) => {
+      if (balance < -0.01 && !overdraftFound) {
+        const accName = accounts.find(a => a.id === accId)?.name || 'An account';
+        score -= 40;
+        feedback.push(`Overdraft Error: Your plan causes "${accName}" to drop into the negative. You cannot spend more money than you have in a bank account.`);
+        overdraftFound = true;
+      }
+    });
+  });
+
   const finalScore = Math.max(0, score);
   return {
     passed: finalScore >= 60,
