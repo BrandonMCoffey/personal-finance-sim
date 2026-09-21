@@ -24,6 +24,8 @@ export function generateForecast(
   let currentBalances: Record<string, number> = {};
   let currentCardBalances: Record<string, number> = {}; 
   let goalHitMonths: Record<string, number> = {};
+  let goalProgress: Record<string, number> = {};
+  goals.forEach(g => { goalProgress[g.id] = 0; });
 
   accounts.forEach(acc => { currentBalances[acc.id] = acc.balance; });
   cards.forEach(card => { currentCardBalances[card.id] = card.balance || 0; });
@@ -32,11 +34,9 @@ export function generateForecast(
     const nextBalances = { ...currentBalances };
     const nextCardBalances = { ...currentCardBalances };
     const monthlyExpenseProgress: Record<string, number> = {};
-    const monthlyGoalProgress: Record<string, number> = {}; // <-- Calculated fresh every month now
     const monthlyFlows: Record<string, { in: number; out: number }> = {};
     
     expenses.forEach(e => { monthlyExpenseProgress[e.id] = 0; });
-    goals.forEach(g => { monthlyGoalProgress[g.id] = 0; });
     accounts.forEach(a => { monthlyFlows[a.id] = { in: 0, out: 0 }; });
 
     const applyTransfer = (destId: string, amount: number): number => {
@@ -138,14 +138,15 @@ export function generateForecast(
       
       attachedRules.forEach(rule => {
         const goal = goals.find(g => g.id === rule.destinationId)!;
-        const allocated = Math.min(availableBalance, goal.targetAmount);
-        monthlyGoalProgress[goal.id] += allocated;
+        const remainingGoal = Math.max(0, goal.targetAmount - goalProgress[goal.id]);
+        const allocated = Math.min(availableBalance, remainingGoal);
+        goalProgress[goal.id] += allocated;
         availableBalance -= allocated;
       });
     });
 
     goals.forEach(goal => {
-      if (monthlyGoalProgress[goal.id] >= goal.targetAmount && !goalHitMonths[goal.id]) {
+      if (goalProgress[goal.id] >= goal.targetAmount && !goalHitMonths[goal.id]) {
         goalHitMonths[goal.id] = m;
       }
     });
@@ -155,7 +156,7 @@ export function generateForecast(
       accountBalances: nextBalances,
       accountFlows: monthlyFlows,
       cardBalances: nextCardBalances, 
-      goalProgress: monthlyGoalProgress,
+      goalProgress: { ...goalProgress },
       expenseProgress: { ...monthlyExpenseProgress },
       goalHitMonths: { ...goalHitMonths }
     });

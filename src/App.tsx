@@ -19,6 +19,7 @@ export default function App() {
     incomes, 
     transferRules, 
     expenses,
+    cards,
     winConditions 
   } = useFinanceStore();
   
@@ -29,7 +30,15 @@ export default function App() {
   const primaryGoal = goals.length > 0 ? goals[0].name : 'No active goals';
 
   const handleSubmitPlan = () => {
-    const results = evaluatePlan(accounts, incomes, transferRules, goals, expenses, winConditions);
+    const results = evaluatePlan(
+      accounts,
+      incomes,
+      transferRules,
+      goals,
+      expenses,
+      cards,
+      winConditions
+    );
     setReport(results);
     setIsModalOpen(true);
   };

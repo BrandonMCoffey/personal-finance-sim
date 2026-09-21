@@ -185,7 +185,7 @@ export const useFinanceStore = create<FinanceState>()((set) => ({
       })) : []
     })),
     goals: levelData.startingState?.goals || [],
-    transferRules: [],
+    transferRules: levelData.startingState?.transferRules || [],
     winConditions: levelData.winConditions || null,
     forecastMonths: levelData.forecastMonths || 6,
     allowedActions: levelData.allowedActions || null,

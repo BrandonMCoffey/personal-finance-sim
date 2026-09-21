@@ -38,23 +38,27 @@ export function evaluatePlan(
 
   // 2. Check Goals
   goals.forEach(goal => {
-    if (goal.targetMonths) {
-      const forecast = generateForecast(accounts, incomes, transferRules, goals, expenses, cards, goal.targetMonths);
+    const configuredGoalDeadline =
+      winConditions.goalsFundedWithinMonths?.goalId === goal.id
+        ? winConditions.goalsFundedWithinMonths.months
+        : goal.targetMonths;
+    if (configuredGoalDeadline) {
+      const forecast = generateForecast(accounts, incomes, transferRules, goals, expenses, cards, configuredGoalDeadline);
       const finalSnapshot = forecast[forecast.length - 1];
       const finalAmount = finalSnapshot?.goalProgress[goal.id] || 0;
       
       const hitMonth = finalSnapshot?.goalHitMonths[goal.id];
       
       if (finalAmount >= goal.targetAmount) {
-        if (hitMonth && hitMonth < goal.targetMonths) {
+        if (hitMonth && hitMonth < configuredGoalDeadline) {
           score += 10;
-          feedback.push(`Excellent: You reached the $\({goal.targetAmount} goal for "\){goal.name}" early in Month ${hitMonth}! (+10 pts)`);
+          feedback.push(`Excellent: You reached $${goal.targetAmount} for "${goal.name}" early in Month ${hitMonth}! (+10 pts)`);
         } else {
-          feedback.push(`Success: You reached the $\({goal.targetAmount} goal for "\){goal.name}" within ${goal.targetMonths} months!`);
+          feedback.push(`Success: You reached $${goal.targetAmount} for "${goal.name}" within ${configuredGoalDeadline} months!`);
         }
       } else {
         score -= 30;
-        feedback.push(`Missed Timeline: "\({goal.name}" only reached\)\({finalAmount.toFixed(2)} out of\)\({goal.targetAmount} after\){goal.targetMonths} months.`);
+        feedback.push(`Missed Timeline: "${goal.name}" only reached $${finalAmount.toFixed(2)} out of $${goal.targetAmount} after ${configuredGoalDeadline} months.`);
       }
     }
   });
