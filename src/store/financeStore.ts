@@ -8,6 +8,7 @@ export interface AllowedActions {
   canDeleteAccounts: boolean;
   allowedAccountTypes: AccountType[];
   maxNewAccounts?: number;
+  allowedCardTypes?: ('debit' | 'credit')[];
 }
 
 export interface Account {
@@ -16,6 +17,16 @@ export interface Account {
   type: AccountType;
   balance: number;
   apy: number;
+}
+
+export interface Card {
+  id: string;
+  name: string;
+  type: 'debit' | 'credit';
+  linkedAccountId: string;
+  balance: number;
+  limit?: number;
+  apr?: number;
 }
 
 export interface IncomeRoute {
@@ -59,7 +70,7 @@ export interface Expense {
   amount: number;
   isFixed: boolean;
   minValue?: number;
-  maxValue?: number;
+  requiresCard?: boolean;
 }
 
 export interface WinConditions {
@@ -84,6 +95,7 @@ interface FinanceState {
   client: Client | null;
   expenses: Expense[];
   accounts: Account[];
+  cards: Card[];
   incomes: Income[];
   goals: Goal[];
   transferRules: TransferRule[];
@@ -99,6 +111,9 @@ interface FinanceState {
   loadLevel: (levelData: any) => void;
 
   addAccount: (name: string, type: AccountType) => void;
+  addCard: (name: string, type: 'debit' | 'credit', linkedAccountId: string) => void;
+  removeCard: (cardId: string) => void;
+  updateCardLink: (cardId: string, accountId: string) => void;
   
   addIncomeRoute: (incomeId: string, destinationId: string, defaultAmount?: number, defaultType?: 'fixed' | 'percentage') => void;
   updateIncomeRoute: (incomeId: string, destinationId: string, amount: number, type: 'fixed' | 'percentage') => void;
@@ -121,6 +136,7 @@ export const useFinanceStore = create<FinanceState>()((set) => ({
   client: null,
   expenses: [],
   accounts: [],
+  cards: [],
   incomes: [],
   goals: [],
   transferRules: [],
@@ -152,8 +168,12 @@ export const useFinanceStore = create<FinanceState>()((set) => ({
   loadLevel: (levelData: any) => set({
     levelId: levelData.levelId,
     client: levelData.client || null,
-    expenses: levelData.startingState?.expenses || [],
+    expenses: (levelData.startingState?.expenses || []).map((exp: any) => ({
+      ...exp,
+      requiresCard: exp.requiresCard || false
+    })),
     accounts: levelData.startingState?.accounts || [],
+    cards: levelData.startingState?.cards || [],
     incomes: (levelData.startingState?.income || []).map((inc: any) => ({
       ...inc,
       routings: inc.routings ? inc.routings.map((r: any) => ({
@@ -174,6 +194,30 @@ export const useFinanceStore = create<FinanceState>()((set) => ({
     accounts: [...state.accounts, {
       id: `acc_${Date.now()}`, name, type, balance: 0, apy: type === 'savings' ? 2.5 : 0
     }]
+  })),
+
+  addCard: (name, type, linkedAccountId) => set((state) => ({
+    cards: [
+      ...state.cards,
+      {
+        id: `card_${Date.now()}`,
+        name,
+        type,
+        linkedAccountId,
+        balance: 0,
+        limit: type === 'credit' ? 5000 : undefined,
+        apr: type === 'credit' ? 19.99 : 0
+      }
+    ]
+  })),
+
+  removeCard: (cardId) => set((state) => ({
+    cards: state.cards.filter(c => c.id !== cardId),
+    transferRules: state.transferRules.filter(r => r.destinationId !== cardId && r.sourceId !== cardId)
+  })),
+
+  updateCardLink: (cardId, accountId) => set((state) => ({
+    cards: state.cards.map(c => c.id === cardId ? { ...c, linkedAccountId: accountId } : c)
   })),
 
   // --- INCOME ACTIONS ---

@@ -3,25 +3,26 @@ import { useFinanceStore } from '../../store/financeStore';
 import type { AccountType } from '../../store/financeStore';
 
 export function CanvasControls() {
-  const { addAccount, allowedActions, accounts, initialAccountCount } = useFinanceStore();
+  const { addAccount, addCard, allowedActions, accounts, cards, initialAccountCount } = useFinanceStore();
 
-  // 1. If the level forbids creating accounts, render nothing.
-  if (!allowedActions || !allowedActions.canCreateAccounts) {
-    return null;
-  }
+  if (!allowedActions) return null;
 
-  // 2. If the level has a cap on new accounts and we reached it, render nothing.
   const addedCount = accounts.length - initialAccountCount;
-  if (allowedActions.maxNewAccounts !== undefined && addedCount >= allowedActions.maxNewAccounts) {
-    return null;
-  }
+  const canAddMoreAccounts = allowedActions.maxNewAccounts === undefined || addedCount < allowedActions.maxNewAccounts;
 
   const handleAddAccount = (type: AccountType) => {
     const defaultName = type.charAt(0).toUpperCase() + type.slice(1) + ' Account';
     const accountName = window.prompt(`Enter a name for the ${type} account:`, defaultName);
-    
-    if (accountName && accountName.trim() !== '') {
-      addAccount(accountName.trim(), type);
+    if (accountName && accountName.trim() !== '') addAccount(accountName.trim(), type);
+  };
+
+  const handleAddCard = (type: 'debit' | 'credit') => {
+    const defaultName = type === 'credit' ? 'Rewards Credit Card' : 'Bank Debit Card';
+    const cardName = window.prompt(`Enter a name for the ${type} card:`, defaultName);
+    if (cardName && cardName.trim() !== '') {
+      // Default to the first checking/bank account available for the linkedAccountId
+      const defaultLinkedAcc = accounts.find(a => a.type === 'checking' || a.type === 'bank')?.id || accounts[0]?.id || '';
+      addCard(cardName.trim(), type, defaultLinkedAcc);
     }
   };
 
@@ -31,24 +32,27 @@ export function CanvasControls() {
         <span className="text-sm font-semibold text-gray-600">Actions</span>
       </div>
       
-      {/* Dynamically render only the allowed buttons */}
-      {allowedActions.allowedAccountTypes.includes('checking') && (
-        <button onClick={() => handleAddAccount('checking')} className="px-3 py-1.5 bg-blue-50 text-blue-700 text-sm font-medium rounded border border-blue-200 hover:bg-blue-100">
-          + Add Checking
-        </button>
-      )}
-      
-      {allowedActions.allowedAccountTypes.includes('savings') && (
-        <button onClick={() => handleAddAccount('savings')} className="px-3 py-1.5 bg-green-50 text-green-700 text-sm font-medium rounded border border-green-200 hover:bg-green-100">
-          + Add Savings
-        </button>
+      {/* Account Buttons */}
+      {canAddMoreAccounts && allowedActions.canCreateAccounts && (
+        <>
+          {allowedActions.allowedAccountTypes.includes('checking') && (
+            <button onClick={() => handleAddAccount('checking')} className="px-3 py-1.5 bg-blue-50 text-blue-700 text-sm font-medium rounded border border-blue-200 hover:bg-blue-100">+ Checking</button>
+          )}
+          {allowedActions.allowedAccountTypes.includes('savings') && (
+            <button onClick={() => handleAddAccount('savings')} className="px-3 py-1.5 bg-green-50 text-green-700 text-sm font-medium rounded border border-green-200 hover:bg-green-100">+ Savings</button>
+          )}
+          {allowedActions.allowedAccountTypes.includes('bank') && (
+            <button onClick={() => handleAddAccount('bank')} className="px-3 py-1.5 bg-blue-50 text-blue-700 text-sm font-medium rounded border border-blue-200 hover:bg-blue-100">+ Bank Account</button>
+          )}
+        </>
       )}
 
-      {/* Level 2 Generic Bank Account */}
-      {allowedActions.allowedAccountTypes.includes('bank') && (
-        <button onClick={() => handleAddAccount('bank')} className="px-3 py-1.5 bg-blue-50 text-blue-700 text-sm font-medium rounded border border-blue-200 hover:bg-blue-100">
-          + Add Bank Account
-        </button>
+      {/* Card Buttons */}
+      {allowedActions.allowedCardTypes?.includes('debit') && (
+        <button onClick={() => handleAddCard('debit')} className="px-3 py-1.5 bg-teal-50 text-teal-700 text-sm font-medium rounded border border-teal-200 hover:bg-teal-100">+ Debit Card</button>
+      )}
+      {allowedActions.allowedCardTypes?.includes('credit') && (
+        <button onClick={() => handleAddCard('credit')} className="px-3 py-1.5 bg-indigo-50 text-indigo-700 text-sm font-medium rounded border border-indigo-200 hover:bg-indigo-100">+ Credit Card</button>
       )}
     </Panel>
   );

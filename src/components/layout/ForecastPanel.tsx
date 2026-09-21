@@ -1,13 +1,7 @@
 import { useMemo } from 'react';
 import { 
-  LineChart, 
-  Line, 
-  XAxis, 
-  YAxis, 
-  CartesianGrid, 
-  Tooltip, 
-  Legend, 
-  ResponsiveContainer 
+  LineChart, Line, XAxis, YAxis, CartesianGrid, 
+  Tooltip, Legend, ResponsiveContainer 
 } from 'recharts';
 import { useFinanceStore } from '../../store/financeStore';
 import { generateForecast } from '../../engines/forecast';
@@ -15,10 +9,10 @@ import { generateForecast } from '../../engines/forecast';
 const COLORS = ['#3b82f6', '#10b981', '#8b5cf6', '#f59e0b', '#ef4444'];
 
 export function ForecastPanel() {
-  const { accounts, incomes, transferRules, goals, expenses, forecastMonths } = useFinanceStore();
+  const { accounts, incomes, transferRules, goals, expenses, cards, forecastMonths } = useFinanceStore();
 
   const chartData = useMemo(() => {
-    const snapshots = generateForecast(accounts, incomes, transferRules, goals, expenses, forecastMonths);
+    const snapshots = generateForecast(accounts, incomes, transferRules, goals, expenses, cards, forecastMonths);
     
     return snapshots.map(snap => {
       const dataPoint: any = { month: `M${snap.month}` };
@@ -26,16 +20,21 @@ export function ForecastPanel() {
       accounts.forEach(acc => {
         dataPoint[acc.name] = snap.accountBalances[acc.id] || 0;
       });
+      cards.forEach(card => {
+        if (card.type === 'credit') {
+           dataPoint[card.name] = -(snap.cardBalances[card.id] || 0);
+        }
+      });
       
       return dataPoint;
     });
-  }, [accounts, incomes, transferRules, goals, expenses, forecastMonths]);
+  }, [accounts, incomes, transferRules, goals, expenses, cards, forecastMonths]);
 
   return (
     <div className="flex flex-col h-full">
       <h2 className="font-semibold mb-4 border-b pb-2 text-gray-800">Forecast ({forecastMonths} Months)</h2>
       
-      {accounts.length === 0 ? (
+      {accounts.length === 0 && cards.length === 0 ? (
         <div className="flex-1 flex items-center justify-center text-gray-400 text-sm text-center">
           Add accounts and route income to see your forecast.
         </div>
@@ -59,6 +58,13 @@ export function ForecastPanel() {
                   dot={{ r: 4, strokeWidth: 0 }} activeDot={{ r: 6 }}
                 />
               ))}
+              {cards.filter(c => c.type === 'credit').map((card, index) => (
+                <Line 
+                  key={card.id} type="monotone" dataKey={card.name} 
+                  stroke="#ef4444" strokeWidth={2} strokeDasharray="5 5"
+                  dot={{ r: 4, strokeWidth: 0 }} activeDot={{ r: 6 }}
+                />
+              ))}
             </LineChart>
           </ResponsiveContainer>
         </div>
@@ -70,7 +76,8 @@ export function ForecastPanel() {
           <div>
             <h3 className="text-sm font-semibold text-gray-700 mb-2">Goal Trajectory</h3>
             {goals.map(goal => {
-              const finalSnap = generateForecast(accounts, incomes, transferRules, goals, expenses, 6).pop();
+              // 4. FIX the engine call here too!
+              const finalSnap = generateForecast(accounts, incomes, transferRules, goals, expenses, cards, forecastMonths).pop();
               const finalAmount = finalSnap?.goalProgress[goal.id] || 0;
               const isFunded = finalAmount >= goal.targetAmount;
 
@@ -79,7 +86,7 @@ export function ForecastPanel() {
                   <div className="flex justify-between mb-1">
                     <span className="font-medium text-gray-800">{goal.name}</span>
                     <span className={isFunded ? 'text-green-600 font-bold' : 'text-gray-500'}>
-                      ${finalAmount.toFixed(0)} / ${goal.targetAmount}
+                      ${finalAmount.toFixed(0)} /${goal.targetAmount}
                     </span>
                   </div>
                   <div className="w-full bg-gray-100 rounded-full h-1.5">
@@ -99,7 +106,8 @@ export function ForecastPanel() {
           <div>
             <h3 className="text-sm font-semibold text-gray-700 mb-2">Monthly Expenses</h3>
             {expenses.map(exp => {
-              const finalSnap = generateForecast(accounts, incomes, transferRules, goals, expenses, 6).pop();
+              // 5. FIX the engine call here too!
+              const finalSnap = generateForecast(accounts, incomes, transferRules, goals, expenses, cards, forecastMonths).pop();
               const fundedAmount = finalSnap?.expenseProgress[exp.id] || 0;
               const isFunded = fundedAmount >= exp.amount;
 
@@ -108,7 +116,7 @@ export function ForecastPanel() {
                   <div className="flex justify-between mb-1">
                     <span className="font-medium text-gray-800">{exp.name}</span>
                     <span className={isFunded ? 'text-green-600 font-bold' : 'text-red-500 font-medium'}>
-                      ${fundedAmount.toFixed(0)} / ${exp.amount}
+                      ${fundedAmount.toFixed(0)} /${exp.amount}
                     </span>
                   </div>
                   <div className="w-full bg-gray-100 rounded-full h-1.5">

@@ -1,9 +1,9 @@
-import type { Account, Income, TransferRule, Goal, WinConditions, Expense } from '../store/financeStore';
+import type { Account, Income, TransferRule, Goal, WinConditions, Expense, Card } from '../store/financeStore';
 import { generateForecast } from './forecast';
 
 export interface ValidationReport {
   passed: boolean;
-  score: number; // 0 to 100
+  score: number;
   feedback: string[];
 }
 
@@ -13,6 +13,7 @@ export function evaluatePlan(
   transferRules: TransferRule[],
   goals: Goal[],
   expenses: Expense[],
+  cards: Card[],
   winConditions: WinConditions | null
 ): ValidationReport {
   const feedback: string[] = [];
@@ -40,7 +41,7 @@ export function evaluatePlan(
     const targetGoal = goals.find(g => g.id === winConditions.goalsFundedWithinMonths?.goalId);
     if (targetGoal) {
       const targetMonths = winConditions.goalsFundedWithinMonths.months;
-      const forecast = generateForecast(accounts, incomes, transferRules, goals, expenses, targetMonths);
+      const forecast = generateForecast(accounts, incomes, transferRules, goals, expenses, cards, targetMonths);
       const finalSnapshot = forecast[forecast.length - 1];
       const finalAmount = finalSnapshot.goalProgress[targetGoal.id] || 0;
       
@@ -53,7 +54,21 @@ export function evaluatePlan(
     }
   }
 
-  // 3. Ensure cash balance isn't piling up
+  // 2. Check card expenses
+  expenses.forEach(exp => {
+    if (exp.requiresCard) {
+      const fundingRule = transferRules.find(r => r.destinationId === exp.id);
+      if (fundingRule) {
+        const sourceIsAccount = accounts.some(a => a.id === fundingRule.sourceId);
+        if (sourceIsAccount) {
+          score -= 15;
+          feedback.push(`Payment Error: "${exp.name}" requires a Debit or Credit Card, but you are trying to pay it directly via routing number from a bank account.`);
+        }
+      }
+    }
+  });
+
+  // 4. Ensure cash balance isn't piling up
   if (winConditions.maxCashBalance !== undefined) {
     const cashAccounts = accounts.filter(a => a.type === 'cash');
     
@@ -65,7 +80,7 @@ export function evaluatePlan(
       feedback.push(`Risk Warning: You are routing incoming money into physical cash. In the modern world, incoming funds should be secured directly into a bank account.`);
     }
 
-    const sweepForecast = generateForecast(accounts, incomes, transferRules, goals, expenses, 1);
+    const sweepForecast = generateForecast(accounts, incomes, transferRules, goals, expenses, cards, 1);
     const finalCash = cashAccounts.reduce((sum, acc) => sum + (sweepForecast[0]?.accountBalances[acc.id] || 0), 0);
 
     if (finalCash > winConditions.maxCashBalance) {

@@ -9,7 +9,7 @@ interface OutputEditorPanelProps {
 
 export function OutputEditorPanel({ selectedEdgeId, onClose }: OutputEditorPanelProps) {
   const {
-    accounts, incomes, goals, expenses, transferRules,
+    accounts, incomes, goals, expenses, transferRules, cards,
     updateIncomeRoute, removeIncomeRoute, reorderIncomeRoutes,
     updateTransferRule, removeTransferRule, reorderTransferRules
   } = useFinanceStore();
@@ -29,8 +29,11 @@ export function OutputEditorPanel({ selectedEdgeId, onClose }: OutputEditorPanel
 
   const isIncome = incomes.some(i => i.id === sourceId);
   const sourceAccount = accounts.find(a => a.id === sourceId);
+  const sourceCard = cards.find(c => c.id === sourceId);
   const isCashAccount = sourceAccount?.type === 'cash';
-  const sourceName = isIncome ? incomes.find(i => i.id === sourceId)?.name : sourceAccount?.name;
+  const sourceName = isIncome 
+    ? incomes.find(i => i.id === sourceId)?.name 
+    : (sourceAccount?.name || sourceCard?.name);
 
   let incomingTotal = 0;
   if (!isIncome) {
@@ -93,8 +96,9 @@ export function OutputEditorPanel({ selectedEdgeId, onClose }: OutputEditorPanel
         {itemsList.map((item: any, idx: number) => {
           const ruleId = item.id;
           const destId = item.destinationId;
-          const destName =
+          const destName = 
             accounts.find(a => a.id === destId)?.name ||
+            cards.find(c => c.id === destId)?.name ||
             goals.find(g => g.id === destId)?.name ||
             expenses.find(e => e.id === destId)?.name || 'Unknown';
 

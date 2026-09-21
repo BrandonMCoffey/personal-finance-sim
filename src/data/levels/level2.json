@@ -46,12 +46,19 @@
       }
     ],
     "expenses": [
-      {
-        "id": "exp_01",
-        "name": "Snacks & Hobbies",
-        "amount": 250.00,
+      { 
+        "id": "exp_01", 
+        "name": "Groceries & Snacks", 
+        "amount": 250.00, 
         "isFixed": false,
-        "minValue": 100.00
+        "requiresCard": true 
+      },
+      { 
+        "id": "exp_02", 
+        "name": "Rent", 
+        "amount": 800.00, 
+        "isFixed": true,
+        "requiresCard": false 
       }
     ],
     "goals": [
