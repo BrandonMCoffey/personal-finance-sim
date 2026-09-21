@@ -28,7 +28,9 @@ export function OutputEditorPanel({ selectedEdgeId, onClose }: OutputEditorPanel
   if (!sourceId) return null;
 
   const isIncome = incomes.some(i => i.id === sourceId);
-  const sourceName = isIncome ? incomes.find(i => i.id === sourceId)?.name : accounts.find(a => a.id === sourceId)?.name;
+  const sourceAccount = accounts.find(a => a.id === sourceId);
+  const isCashAccount = sourceAccount?.type === 'cash';
+  const sourceName = isIncome ? incomes.find(i => i.id === sourceId)?.name : sourceAccount?.name;
 
   let incomingTotal = 0;
   if (!isIncome) {
@@ -97,26 +99,27 @@ export function OutputEditorPanel({ selectedEdgeId, onClose }: OutputEditorPanel
             expenses.find(e => e.id === destId)?.name || 'Unknown';
 
           return (
-            <li
+            <li 
               key={ruleId || destId}
-              draggable
+              draggable={isIncome}
               onDragStart={(e) => handleDragStart(e, idx)}
               onDragOver={(e) => e.preventDefault()}
               onDrop={(e) => handleDrop(e, idx)}
-              className={`flex items-center gap-2 p-2 rounded border cursor-move ${draggedIdx === idx ? 'opacity-50' : 'bg-gray-50'}`}
+              className={`flex items-center gap-2 p-2 rounded border ${isIncome ? 'cursor-move' : ''} ${draggedIdx === idx ? 'opacity-50' : 'bg-gray-50'}`}
             >
-              <span className="text-gray-400 cursor-move">☰</span>
+              {isIncome && <span className="text-gray-400 cursor-move">☰</span>}
               <div className="flex-1 truncate text-sm font-semibold text-gray-700">{destName}</div>
+              
               <div className="flex items-center gap-1">
-                <input
+                <input 
                   type="number" min="0" value={item.amount}
-                  onChange={(e) => isIncome
+                  onChange={(e) => isIncome 
                     ? updateIncomeRoute(sourceId, destId, Number(e.target.value), item.type)
                     : updateTransferRule(ruleId, Number(e.target.value), item.type)
                   }
                   className="border rounded px-1 py-1 w-16 text-xs text-right bg-white"
                 />
-                <select
+                <select 
                   value={item.type}
                   onChange={(e) => isIncome
                     ? updateIncomeRoute(sourceId, destId, item.amount, e.target.value as any)
@@ -128,7 +131,8 @@ export function OutputEditorPanel({ selectedEdgeId, onClose }: OutputEditorPanel
                   <option value="fixed">$</option>
                 </select>
               </div>
-              <button
+              
+              <button 
                 onClick={() => isIncome ? removeIncomeRoute(sourceId, destId) : removeTransferRule(ruleId)}
                 className="text-red-400 hover:text-red-600 px-1 ml-1 font-bold"
               >✕</button>

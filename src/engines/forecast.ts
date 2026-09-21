@@ -3,6 +3,7 @@ import type { Account, Income, TransferRule, Goal, Expense } from '../store/fina
 export interface MonthlySnapshot {
   month: number;
   accountBalances: Record<string, number>;
+  accountFlows: Record<string, { in: number; out: number }>;
   goalProgress: Record<string, number>;
   expenseProgress: Record<string, number>;
   goalHitMonths: Record<string, number>;
@@ -28,11 +29,15 @@ export function generateForecast(
   for (let m = 1; m <= monthsToProject; m++) {
     const nextBalances = { ...currentBalances };
     const monthlyExpenseProgress: Record<string, number> = {};
+    const monthlyFlows: Record<string, { in: number; out: number }> = {};
+    
     expenses.forEach(e => { monthlyExpenseProgress[e.id] = 0; });
+    accounts.forEach(a => { monthlyFlows[a.id] = { in: 0, out: 0 }; });
 
     const applyTransfer = (destId: string, amount: number): number => {
       if (nextBalances[destId] !== undefined) {
         nextBalances[destId] += amount;
+        monthlyFlows[destId].in += amount;
         return amount;
       } 
       else if (goalBalances[destId] !== undefined) {
@@ -79,6 +84,7 @@ export function generateForecast(
 
       if (transferAmount > 0) {
         nextBalances[rule.sourceId] -= transferAmount;
+        monthlyFlows[rule.sourceId].out += transferAmount;
         applyTransfer(rule.destinationId, transferAmount);
       }
     });
@@ -86,13 +92,16 @@ export function generateForecast(
     // 3. Process Interest
     accounts.forEach(acc => {
       if (acc.apy > 0 && nextBalances[acc.id] > 0) {
-        nextBalances[acc.id] += nextBalances[acc.id] * ((acc.apy / 100) / 12);
+        const interest = nextBalances[acc.id] * ((acc.apy / 100) / 12);
+        nextBalances[acc.id] += interest;
+        monthlyFlows[acc.id].in += interest;
       }
     });
 
     snapshots.push({
       month: m,
       accountBalances: nextBalances,
+      accountFlows: monthlyFlows,
       goalProgress: { ...goalBalances },
       expenseProgress: { ...monthlyExpenseProgress },
       goalHitMonths: { ...goalHitMonths }
