@@ -1,56 +1,33 @@
 {
   "levelId": 1,
-  "forecastMonths": 1,
+  "forecastMonths": 3,
   "client": {
     "name": "Alex",
     "description": "Alex just got their first apartment and wants to make sure they aren't spending more than they make.",
-    "prompt": "I need to make sure my monthly income covers my expenses. Can you help me adjust my spending so I have a positive cash flow?",
+    "prompt": "I don't know why my checking account is dropping! My rent is fixed, but I might be spending too much on going out.",
     "portraitId": "alex_01"
   },
   "startingState": {
     "accounts": [
-      {
-        "id": "acc_01",
-        "name": "Checking Account",
-        "type": "checking",
-        "balance": 500.00,
-        "apy": 0.0
-      }
+      { "id": "acc_01", "name": "Checking Account", "type": "checking", "balance": 1000.00, "apy": 0.0 }
     ],
     "income": [
-      {
-        "id": "inc_01",
-        "name": "Part-time Job",
-        "amount": 1200.00,
-        "frequency": "monthly",
-        "routings": [
-          { "destinationId": "acc_01", "amount": 100, "type": "percentage" }
-        ]
+      { 
+        "id": "inc_01", "name": "Part-time Job", "amount": 1200.00, "frequency": "monthly",
+        "routings": [{ "destinationId": "acc_01", "amount": 100, "type": "percentage" }] 
       }
     ],
     "expenses": [
-      {
-        "id": "exp_01",
-        "name": "Rent",
-        "amount": 600.00,
-        "isFixed": true
-      },
-      {
-        "id": "exp_02",
-        "name": "Groceries",
-        "amount": 300.00,
-        "isFixed": false,
-        "minValue": 200.00
-      },
-      {
-        "id": "exp_03",
-        "name": "Entertainment",
-        "amount": 400.00,
-        "isFixed": false,
-        "minValue": 50.00
-      }
+      { "id": "exp_01", "name": "Rent", "amount": 750.00, "isFixed": true },
+      { "id": "exp_02", "name": "Food", "amount": 400.00, "isFixed": false, "minValue": 250.00 },
+      { "id": "exp_03", "name": "Entertainment", "amount": 300.00, "isFixed": false, "minValue": 100.00 }
     ],
-    "goals": []
+    "goals": [],
+    "transferRules": [
+      { "id": "rule_01", "sourceId": "acc_01", "destinationId": "exp_01", "amount": 750, "type": "fixed" },
+      { "id": "rule_02", "sourceId": "acc_01", "destinationId": "exp_02", "amount": 400, "type": "fixed" },
+      { "id": "rule_03", "sourceId": "acc_01", "destinationId": "exp_03", "amount": 300, "type": "fixed" }
+    ]
   },
   "allowedActions": {
     "canCreateAccounts": false,
@@ -58,7 +35,6 @@
     "allowedAccountTypes": []
   },
   "winConditions": {
-    "requiredAccounts": [],
-    "maxCashBalance": 0
+    "requiredAccounts": []
   }
 }

@@ -2,75 +2,45 @@
   "levelId": 3,
   "forecastMonths": 6,
   "client": {
-    "name": "Maria",
-    "description": "Maria makes a good salary, but she keeps everything in one checking account and struggles to save for specific targets.",
-    "prompt": "I have $1,500 left over each month after my fixed bills. I want to take a $1,500 vacation in 3 months, and save $6,000 for a car down payment in 6 months. How do I split this up?",
-    "portraitId": "maria_01"
+    "name": "Marcus",
+    "description": "Marcus has a steady income but needs to learn how to split his savings between a safety net and short-term fun.",
+    "prompt": "I want to take a vacation in 5 months, but my parents keep telling me I need an emergency fund first. How can I do both?",
+    "portraitId": "marcus_01"
   },
   "startingState": {
     "accounts": [
-      {
-        "id": "acc_01",
-        "name": "Main Checking",
-        "type": "checking",
-        "balance": 2000.00,
-        "apy": 0.0
-      }
+      { "id": "acc_01", "name": "Main Checking", "type": "checking", "balance": 1200.00, "apy": 0.0 }
     ],
     "income": [
-      {
-        "id": "inc_01",
-        "name": "Tech Salary",
-        "amount": 4000.00,
-        "frequency": "monthly",
-        "routings": [
-          {
-            "destinationId": "acc_01",
-            "amount": 100,
-            "type": "percentage"
-          }
-        ]
+      { 
+        "id": "inc_01", "name": "Salary", "amount": 3500.00, "frequency": "monthly",
+        "routings": [{ "destinationId": "acc_01", "amount": 100, "type": "percentage" }] 
       }
     ],
     "expenses": [
-      {
-        "id": "exp_01",
-        "name": "Rent & Utilities",
-        "amount": 1500.00,
-        "isFixed": true
-      },
-      {
-        "id": "exp_02",
-        "name": "Living Expenses",
-        "amount": 1000.00,
-        "isFixed": false,
-        "minValue": 800.00
-      }
+      { "id": "exp_01", "name": "Rent", "amount": 1500.00, "isFixed": true },
+      { "id": "exp_02", "name": "Utilities", "amount": 200.00, "isFixed": true },
+      { "id": "exp_03", "name": "Car Payment", "amount": 300.00, "isFixed": true },
+      { "id": "exp_04", "name": "Dining & Shopping", "amount": 700.00, "isFixed": false, "minValue": 300.00 }
     ],
     "goals": [
-      {
-        "id": "goal_01",
-        "name": "Vacation Fund",
-        "targetAmount": 1500.00
-      },
-      {
-        "id": "goal_02",
-        "name": "Car Down Payment",
-        "targetAmount": 6000.00
-      }
+      { "id": "goal_01", "name": "Emergency Fund", "targetAmount": 3000.00, "targetMonths": 6 },
+      { "id": "goal_02", "name": "Vacation", "targetAmount": 1000.00, "targetMonths": 5 }
+    ],
+    "transferRules": [
+      { "id": "rule_01", "sourceId": "acc_01", "destinationId": "exp_01", "amount": 1500, "type": "fixed" },
+      { "id": "rule_02", "sourceId": "acc_01", "destinationId": "exp_02", "amount": 200, "type": "fixed" },
+      { "id": "rule_03", "sourceId": "acc_01", "destinationId": "exp_03", "amount": 300, "type": "fixed" },
+      { "id": "rule_04", "sourceId": "acc_01", "destinationId": "exp_04", "amount": 700, "type": "fixed" }
     ]
   },
   "allowedActions": {
     "canCreateAccounts": true,
-    "canDeleteAccounts": false,
-    "allowedAccountTypes": ["savings"],
-    "maxNewAccounts": 2
+    "canDeleteAccounts": true,
+    "maxNewAccounts": 2,
+    "allowedAccountTypes": ["checking", "savings"]
   },
   "winConditions": {
-    "requiredAccounts": ["savings"],
-    "goalsFundedWithinMonths": {
-      "goalId": "goal_02",
-      "months": 6
-    }
+    "requiredAccounts": ["savings"]
   }
 }

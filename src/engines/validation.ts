@@ -43,11 +43,18 @@ export function evaluatePlan(
       const finalSnapshot = forecast[forecast.length - 1];
       const finalAmount = finalSnapshot?.goalProgress[goal.id] || 0;
       
+      const hitMonth = finalSnapshot?.goalHitMonths[goal.id];
+      
       if (finalAmount >= goal.targetAmount) {
-        feedback.push(`Success: You reached the $${goal.targetAmount} goal for "${goal.name}" within ${goal.targetMonths} months!`);
+        if (hitMonth && hitMonth < goal.targetMonths) {
+          score += 10;
+          feedback.push(`Excellent: You reached the $\({goal.targetAmount} goal for "\){goal.name}" early in Month ${hitMonth}! (+10 pts)`);
+        } else {
+          feedback.push(`Success: You reached the $\({goal.targetAmount} goal for "\){goal.name}" within ${goal.targetMonths} months!`);
+        }
       } else {
         score -= 30;
-        feedback.push(`Missed Timeline: "${goal.name}" only reached $${finalAmount.toFixed(2)} out of $${goal.targetAmount} after ${goal.targetMonths} months.`);
+        feedback.push(`Missed Timeline: "\({goal.name}" only reached\)\({finalAmount.toFixed(2)} out of\)\({goal.targetAmount} after\){goal.targetMonths} months.`);
       }
     }
   });

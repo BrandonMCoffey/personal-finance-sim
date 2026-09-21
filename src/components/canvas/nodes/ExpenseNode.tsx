@@ -13,6 +13,13 @@ interface ExpenseNodeProps {
   };
 }
 
+function interpolateColor(color1: number[], color2: number[], factor: number) {
+  const r = Math.round(color1[0] + factor * (color2[0] - color1[0]));
+  const g = Math.round(color1[1] + factor * (color2[1] - color1[1]));
+  const b = Math.round(color1[2] + factor * (color2[2] - color1[2]));
+  return `${r}, ${g}, ${b}`;
+}
+
 export function ExpenseNode({ data }: ExpenseNodeProps) {
   const { incomes, transferRules, updateIncomeRoute, updateTransferRule } = useFinanceStore();
 
@@ -31,42 +38,38 @@ export function ExpenseNode({ data }: ExpenseNodeProps) {
 
   const fundedAmount = incomingRule?.amount || 0;
   const minRequired = data.minValue || data.targetAmount;
-  
-  let colorStyle = '';
-  let sliderFill = '';
-  let sliderTrack = '';
-  let textColor = '';
-
-  if (fundedAmount === 0) {
-    // Not Connected
-    colorStyle = 'bg-white border-red-200';
-    sliderFill = '#ef4444'; sliderTrack = '#fee2e2'; textColor = 'text-red-900';
-  } else if (fundedAmount < minRequired) {
-    // Deficit
-    colorStyle = 'bg-red-50 border-red-400';
-    sliderFill = '#ef4444'; sliderTrack = '#fee2e2'; textColor = 'text-red-900';
-  } else if (fundedAmount >= minRequired && fundedAmount < data.targetAmount) {
-    // Partial / Minimum Met (Warning)
-    colorStyle = 'bg-amber-50 border-amber-400';
-    sliderFill = '#f59e0b'; sliderTrack = '#fef3c7'; textColor = 'text-amber-900';
-  } else if (fundedAmount === data.targetAmount) {
-    // Exact Target
-    colorStyle = 'bg-blue-50 border-blue-400';
-    sliderFill = '#3b82f6'; sliderTrack = '#dbeafe'; textColor = 'text-blue-900';
-  } else {
-    // Surplus
-    colorStyle = 'bg-indigo-50 border-indigo-400';
-    sliderFill = '#6366f1'; sliderTrack = '#e0e7ff'; textColor = 'text-indigo-900';
-  }
-
-  const snappedStyle = data.isSnapped ? 'rounded-t-none shadow-none z-0' : 'rounded-md shadow-md z-10';
-  
-  // Slider Limits
   const sliderMax = data.isFixed ? data.targetAmount : (data.targetAmount * 1.5);
   const fillPercentage = incomingRule ? Math.min((fundedAmount / sliderMax) * 100, 100) : 0;
 
+  const cRedLight = [239, 68, 68]; // Normal
+  const cRed = [255, 0, 0];        // Deficit
+  const cAmber = [245, 158, 11];   // Minimum Met
+  const cBlue = [59, 130, 246];    // Target Met
+  const cIndigo = [5, 50, 255];  // Surplus
+
+  let currentRgb = cRedLight.join(', ');
+
+  if (fundedAmount == data.targetAmount) {
+    currentRgb = cBlue.join(', ');
+  } else if (fundedAmount < minRequired) {
+    currentRgb = cRed.join(', ');
+  } else if (fundedAmount > minRequired && fundedAmount < data.targetAmount) {
+    const range = data.targetAmount - minRequired;
+    const factor = range > 0 ? ((fundedAmount - minRequired) / range) : 1;
+    currentRgb = interpolateColor(cAmber, cBlue, factor);
+  } else if (fundedAmount > data.targetAmount) {
+    const range = sliderMax - data.targetAmount;
+    const factor = range > 0 ? ((fundedAmount - data.targetAmount) / range) : 1;
+    currentRgb = interpolateColor(cBlue, cIndigo, factor);
+  }
+
+  const snappedStyle = data.isSnapped ? 'rounded-t-none shadow-none z-0' : 'rounded-md shadow-md z-10';
+
   return (
-    <div className={`relative px-4 py-3 border-2 w-[160px] transition-colors duration-300 ${snappedStyle} ${colorStyle}`}>
+    <div 
+      className={`relative px-4 py-3 border-2 w-[160px] bg-white transition-colors ${snappedStyle}`}
+      style={{ borderColor: `rgba(${currentRgb}, 0.5)` }}
+    >
       <style>{`
         .expense-slider::-webkit-slider-thumb { -webkit-appearance: none; appearance: none; width: 0; height: 0; }
         .expense-slider::-moz-range-thumb { width: 0; height: 0; border: 0; }
@@ -75,7 +78,12 @@ export function ExpenseNode({ data }: ExpenseNodeProps) {
       {!data.isSnapped && <Handle type="target" position={Position.Left} className="w-3 h-3 bg-red-500" />}
       
       <div className="flex justify-between items-center mb-1">
-        <span className={`text-sm font-bold truncate ${textColor}`}>{data.name}</span>
+        <span 
+          className="text-sm font-bold truncate" 
+          style={{ color: `rgb(${currentRgb})` }}
+        >
+          {data.name}
+        </span>
         {data.isFixed && <span className="text-[9px] uppercase font-black opacity-40 ml-1 shrink-0">Fixed</span>}
       </div>
       
@@ -87,20 +95,25 @@ export function ExpenseNode({ data }: ExpenseNodeProps) {
             if (isIncomeRule) updateIncomeRoute(sourceId, data.id, Number(e.target.value), 'fixed');
             else updateTransferRule(incomingRule.id, Number(e.target.value), 'fixed');
           }}
-          style={{ background: `linear-gradient(to right, ${sliderFill} ${fillPercentage}%, ${sliderTrack} ${fillPercentage}%)` }}
-          className={`nodrag expense-slider w-full h-2 mt-2 rounded-full transition-all appearance-none outline-none ${data.isFixed ? 'cursor-not-allowed opacity-90' : 'cursor-pointer'}`}
+          style={{ 
+            background: `linear-gradient(to right, rgb(${currentRgb}) ${fillPercentage}%, rgba(${currentRgb}, 0.15) ${fillPercentage}%)` 
+          }}
+          className={`nodrag expense-slider w-full h-2 mt-2 rounded-full appearance-none outline-none ${data.isFixed ? 'cursor-not-allowed opacity-90' : 'cursor-pointer'}`}
         />
       ) : (
         <div className="w-full bg-red-100 rounded-full h-2 mt-2">
           <div 
-            className="bg-red-500 h-2 rounded-full transition-all duration-300" 
-            style={{ width: `${Math.min((data.currentAmount / data.targetAmount) * 100, 100)}%` }}
+            className="h-2 rounded-full transition-all duration-300" 
+            style={{ width: `${Math.min((data.currentAmount / data.targetAmount) * 100, 100)}%`, backgroundColor: `rgb(${cRed.join(',')})` }}
           ></div>
         </div>
       )}
       
-      <div className={`text-[10px] text-right mt-1 font-medium ${textColor} opacity-80`}>
-        ${data.currentAmount.toFixed(0)} /${data.targetAmount.toFixed(0)} / mo
+      <div 
+        className="text-[10px] text-right mt-1 font-medium opacity-80"
+        style={{ color: `rgb(${currentRgb})` }}
+      >
+        ${data.currentAmount.toFixed(0)} / ${data.targetAmount.toFixed(0)} / mo
       </div>
     </div>
   );
