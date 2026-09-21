@@ -23,7 +23,7 @@ export function evaluatePlan(
     return { passed: false, score: 0, feedback: ["No win conditions found for this level."] };
   }
 
-  // 1. Check Required Accounts
+  // Check Required Accounts
   if (winConditions.requiredAccounts) {
     const existingTypes = accounts.map(a => a.type);
     winConditions.requiredAccounts.forEach(reqType => {
@@ -36,7 +36,7 @@ export function evaluatePlan(
     });
   }
 
-  // 2. Check Goals
+  // Check Goals
   goals.forEach(goal => {
     const configuredGoalDeadline =
       winConditions.goalsFundedWithinMonths?.goalId === goal.id
@@ -63,7 +63,7 @@ export function evaluatePlan(
     }
   });
 
-  // 3. Check card expenses
+  // Check card expenses
   expenses.forEach(exp => {
     if (exp.requiresCard) {
       const fundingRule = transferRules.find(r => r.destinationId === exp.id);
@@ -77,7 +77,26 @@ export function evaluatePlan(
     }
   });
 
-  // 4. Ensure cash balance isn't piling up
+  // Check minimum funding for variable expenses
+  const VARIABLE_EXPENSE_MIN_PENALTY = 10;
+  const expenseForecast = generateForecast(accounts, incomes, transferRules, goals, expenses, cards, 12);
+  expenses.forEach(expense => {
+    if (expense.isFixed || expense.minValue === undefined) return;
+
+    const violation = expenseForecast.find(snapshot =>
+      (snapshot.expenseProgress[expense.id] ?? 0) < expense.minValue! - 0.01
+    );
+
+    if (violation) {
+      score -= VARIABLE_EXPENSE_MIN_PENALTY;
+      const actual = violation.expenseProgress[expense.id] ?? 0;
+      feedback.push(
+        `Minimum Funding Warning: "${expense.name}" falls below its $${expense.minValue!.toFixed(2)} minimum in Month ${violation.month}, receiving only $${actual.toFixed(2)}. (-${VARIABLE_EXPENSE_MIN_PENALTY} pts)`
+      );
+    }
+  });
+
+  // Ensure cash balance isn't piling up
   if (winConditions.maxCashBalance !== undefined) {
     const cashAccounts = accounts.filter(a => a.type === 'cash');
     

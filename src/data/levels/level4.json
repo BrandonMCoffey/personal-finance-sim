@@ -11,7 +11,7 @@
     "accounts": [
       {
         "id": "acc_01",
-        "name": "Shoebox (Cash)",
+        "name": "Cash",
         "type": "cash",
         "balance": 15000.00,
         "apy": 0.0

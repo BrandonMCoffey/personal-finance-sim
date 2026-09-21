@@ -1,6 +1,6 @@
 {
   "levelId": 2,
-  "forecastMonths": 4,
+  "forecastMonths": 3,
   "client": {
     "name": "Sam",
     "description": "Sam is a high schooler with a new part-time job. They want to buy a gaming PC but keep spending their cash on hand.",
@@ -34,10 +34,10 @@
     "canCreateAccounts": true,
     "canDeleteAccounts": true,
     "maxNewAccounts": 1,
-    "allowedAccountTypes": ["checking"]
+    "allowedAccountTypes": ["bank"]
   },
   "winConditions": {
-    "requiredAccounts": ["checking"],
+    "requiredAccounts": ["bank"],
     "maxCashBalance": 0
   }
 }

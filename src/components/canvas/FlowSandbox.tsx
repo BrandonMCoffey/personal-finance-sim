@@ -38,7 +38,7 @@ function FlowSandboxInner() {
   const [snapTrigger, setSnapTrigger] = useState(0);
 
   const { 
-    accounts, incomes, goals, expenses, transferRules, cards, forecastMonths,
+    levelId, accounts, incomes, goals, expenses, transferRules, cards, forecastMonths,
     addIncomeRoute, addTransferRule, updateCardLink,
     removeIncomeRoute, removeTransferRule, removeAccount
   } = useFinanceStore();
@@ -57,11 +57,20 @@ function FlowSandboxInner() {
     accounts.forEach(a => childrenMap[a.id] = []);
     cards.forEach(c => childrenMap[c.id] = []);
     
-    const snappedMap: Record<string, { parentId: string, stackIndex: number }> = {};
+    const snappedMap: Record<string, { parentId: string, stackIndex: number, zIndex: number }> = {};
+  	const childSortRank = (id: string) => {
+  	  if (expenses.find(e => e.id === id && e.isFixed)) return 300;
+  	  if (expenses.find(e => e.id === id)) return 200;
+  	  if (goals.find(g => g.id === id)) return 100;
+  	  return 0;
+  	};
+
+    const isLockedExpense = (nodeId: string, snapped: boolean) =>
+      levelId === 1 && snapped && expenses.some(e => e.id === nodeId);
     
     cards.forEach(c => {
       if (c.type === 'debit' && c.linkedAccountId && accounts.find(a => a.id === c.linkedAccountId)) {
-        snappedMap[c.id] = { parentId: c.linkedAccountId, stackIndex: childrenMap[c.linkedAccountId].length };
+        snappedMap[c.id] = { parentId: c.linkedAccountId, stackIndex: childrenMap[c.linkedAccountId].length, zIndex: 400 };
         childrenMap[c.linkedAccountId].push(c.id);
       }
     });
@@ -71,7 +80,7 @@ function FlowSandboxInner() {
       if (rules.length === 1) {
         const pId = rules[0].sourceId;
         if (accounts.find(a => a.id === pId) || cards.find(c => c.id === pId)) {
-          snappedMap[item.id] = { parentId: pId, stackIndex: childrenMap[pId].length };
+          snappedMap[item.id] = { parentId: pId, stackIndex: childrenMap[pId].length, zIndex: childSortRank(item.id) };
           childrenMap[pId].push(item.id);
         }
       }
@@ -120,7 +129,7 @@ function FlowSandboxInner() {
       ...cards.map((card, i) => {
         const snap = snappedMap[card.id];
         return {
-          id: card.id, type: 'card', parentId: snap?.parentId,
+          id: card.id, type: 'card', parentId: snap?.parentId, zIndex: snap?.zIndex,
           position: snap ? { x: 0, y: accountHeight + snap.stackIndex * childHeight } : { x: 350, y: 50 + (accounts.length + i) * 150 },
           data: {
             id: card.id, name: card.name, type: card.type,
@@ -132,7 +141,7 @@ function FlowSandboxInner() {
      ...goals.map((goal, i) => {
         const snap = snappedMap[goal.id];
         return {
-          id: goal.id, type: 'goal', parentId: snap?.parentId,
+          id: goal.id, type: 'goal', parentId: snap?.parentId, zIndex: snap?.zIndex,
           position: snap ? { x: 0, y: accountHeight + snap.stackIndex * childHeight } : { x: 650, y: 50 + i * 100 },
           data: { 
             id: goal.id, name: goal.name, targetAmount: goal.targetAmount, 
@@ -146,7 +155,8 @@ function FlowSandboxInner() {
       ...sortedExpenses.map((exp, i) => {
         const snap = snappedMap[exp.id];
         return {
-          id: exp.id, type: 'expense', parentId: snap?.parentId,
+          id: exp.id, type: 'expense', parentId: snap?.parentId, zIndex: snap?.zIndex,
+          draggable: !isLockedExpense(exp.id, !!snap),
           position: snap ? { x: 0, y: accountHeight + snap.stackIndex * childHeight } : { x: 650, y: 50 + (goals.length + i) * 100 },
           data: {
             id: exp.id, name: exp.name, targetAmount: exp.amount,
@@ -245,7 +255,7 @@ function FlowSandboxInner() {
     });
 
     setEdges(newEdges);
-  }, [accounts, incomes, goals, expenses, cards, transferRules, forecastMonths, snapTrigger, setNodes, setEdges]); 
+  }, [levelId, accounts, incomes, goals, expenses, cards, transferRules, forecastMonths, snapTrigger, setNodes, setEdges]);
 
   const onConnect = useCallback((params: Connection) => {
     const { source, target } = params;
@@ -353,6 +363,7 @@ function FlowSandboxInner() {
       onConnect={onConnect} onNodeDragStop={onNodeDragStop}
       onEdgeClick={onEdgeClick} onEdgesDelete={onEdgesDelete}
       deleteKeyCode={['Backspace', 'Delete']} nodeTypes={nodeTypes} fitView
+      zIndexMode="manual" elevateNodesOnSelect={false}
     >
       <Controls />
       <MiniMap />

@@ -24,7 +24,7 @@
       { "id": "exp_04", "name": "Dining & Shopping", "amount": 700.00, "isFixed": false, "minValue": 300.00 }
     ],
     "goals": [
-      { "id": "goal_01", "name": "Emergency Fund", "targetAmount": 3000.00, "targetMonths": 6 },
+      { "id": "goal_01", "name": "Emergency Fund", "targetAmount": 4000.00, "targetMonths": 6 },
       { "id": "goal_02", "name": "Vacation", "targetAmount": 1000.00, "targetMonths": 5 }
     ],
     "transferRules": [
