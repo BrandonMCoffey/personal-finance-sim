@@ -2,10 +2,10 @@
   "levelId": 3,
   "forecastMonths": 6,
   "client": {
-    "name": "Marcus",
-    "description": "Marcus has a steady income but needs to learn how to split his savings between a safety net and short-term fun.",
+    "name": "Sarah",
+    "description": "Sarah has a steady income but needs to learn how to split her savings into categories.",
     "prompt": "I want to take a vacation in 5 months, but my parents keep telling me I need an emergency fund first. How can I do both?",
-    "portraitId": "marcus_01"
+    "portraitId": "sarah_01"
   },
   "startingState": {
     "accounts": [

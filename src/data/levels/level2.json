@@ -4,7 +4,7 @@
   "client": {
     "name": "Sam",
     "description": "Sam is a high schooler with a new part-time job. They want to buy a gaming PC but keep spending their cash on hand.",
-    "prompt": "I keep my paycheck and allowance in a shoebox, and I end up spending it. I need to save $1,200 for a new PC. How should I set this up?",
+    "prompt": "I keep my paycheck and allowance in cash, and I end up spending it all. I want to save $1,200 for a new PC, how should I set this up?",
     "portraitId": "sam_01"
   },
   "startingState": {
@@ -32,7 +32,7 @@
   },
   "allowedActions": {
     "canCreateAccounts": true,
-    "canDeleteAccounts": true,
+    "canDeleteAccounts": false,
     "maxNewAccounts": 1,
     "allowedAccountTypes": ["bank"]
   },
