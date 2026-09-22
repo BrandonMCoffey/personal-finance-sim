@@ -58,7 +58,7 @@ export function ForecastPanel() {
                   dot={{ r: 4, strokeWidth: 0 }} activeDot={{ r: 6 }}
                 />
               ))}
-              {cards.filter(c => c.type === 'credit').map((card, index) => (
+              {cards.filter(c => c.type === 'credit').map((card, _index) => (
                 <Line 
                   key={card.id} type="monotone" dataKey={card.name} 
                   stroke="#ef4444" strokeWidth={2} strokeDasharray="5 5"

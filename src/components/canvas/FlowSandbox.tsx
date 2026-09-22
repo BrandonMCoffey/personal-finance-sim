@@ -285,7 +285,7 @@ function FlowSandboxInner() {
     }
   }, [nodes, expenses, goals, accounts, cards, addIncomeRoute, addTransferRule]);
 
-  const onNodeDragStop = useCallback((event: any, node: Node) => {
+  const onNodeDragStop = useCallback((_event: any, node: Node) => {
     if (node.type !== 'expense' && node.type !== 'goal' && node.type !== 'card') return;
 
     const intersections = getIntersectingNodes(node);
@@ -340,7 +340,7 @@ function FlowSandboxInner() {
     }
   }, [getIntersectingNodes, transferRules, expenses, goals, cards, accounts, removeTransferRule, addTransferRule, updateCardLink]);
 
-  const onEdgeClick = useCallback((event: React.MouseEvent, edge: Edge) => { setSelectedEdgeId(edge.id); }, []);
+  const onEdgeClick = useCallback((_event: React.MouseEvent, edge: Edge) => { setSelectedEdgeId(edge.id); }, []);
   
   const onEdgesDelete = useCallback((deletedEdges: Edge[]) => {
     deletedEdges.forEach(edge => {
