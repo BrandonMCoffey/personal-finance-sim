@@ -66,54 +66,54 @@ export function ExpenseNode({ data }: ExpenseNodeProps) {
   const snappedStyle = data.isSnapped ? 'rounded-t-none shadow-none z-0' : 'rounded-md shadow-md z-10';
 
   return (
-    <div 
-      className={`relative px-4 py-3 border-2 w-[160px] bg-white transition-colors ${snappedStyle}`}
+    <div
+      className={`relative px-4 py-3 border-2 w-[160px] min-h-[70px] flex flex-col justify-between bg-white transition-colors ${snappedStyle}`}
       style={{ borderColor: `rgba(${currentRgb}, 0.5)` }}
     >
       <style>{`
-        .expense-slider::-webkit-slider-thumb { -webkit-appearance: none; appearance: none; width: 0; height: 0; }
-        .expense-slider::-moz-range-thumb { width: 0; height: 0; border: 0; }
-      `}</style>
-
+          .expense-slider::-webkit-slider-thumb { -webkit-appearance: none; appearance: none; width: 0; height: 0; }
+          .expense-slider::-moz-range-thumb { width: 0; height: 0; border: 0; }
+        `}</style>
       {!data.isSnapped && <Handle type="target" position={Position.Left} className="w-3 h-3 bg-red-500" />}
-      
-      <div className="flex justify-between items-center mb-1">
-        <span 
-          className="text-sm font-bold truncate" 
+
+      <div className="flex justify-between items-start mb-1">
+        <span
+          className="text-sm font-bold truncate leading-tight"
           style={{ color: `rgb(${currentRgb})` }}
         >
           {data.name}
         </span>
         {data.isFixed && <span className="text-[9px] uppercase font-black opacity-40 ml-1 shrink-0">Fixed</span>}
       </div>
-      
-      {incomingRule ? (
-        <input 
-          type="range" min="0" max={sliderMax} value={incomingRule.amount}
-          disabled={data.isFixed}
-          onChange={(e) => {
-            if (isIncomeRule) updateIncomeRoute(sourceId, data.id, Number(e.target.value), 'fixed');
-            else updateTransferRule(incomingRule.id, Number(e.target.value), 'fixed');
-          }}
-          style={{ 
-            background: `linear-gradient(to right, rgb(${currentRgb}) ${fillPercentage}%, rgba(${currentRgb}, 0.15) ${fillPercentage}%)` 
-          }}
-          className={`nodrag expense-slider w-full h-2 mt-2 rounded-full appearance-none outline-none ${data.isFixed ? 'cursor-not-allowed opacity-90' : 'cursor-pointer'}`}
-        />
-      ) : (
-        <div className="w-full bg-red-100 rounded-full h-2 mt-2">
-          <div 
-            className="h-2 rounded-full transition-all duration-300" 
-            style={{ width: `${Math.min((data.currentAmount / data.targetAmount) * 100, 100)}%`, backgroundColor: `rgb(${cRed.join(',')})` }}
-          ></div>
+
+      <div className="w-full">
+        {incomingRule ? (
+          <input
+            type="range" min="0" max={sliderMax} value={incomingRule.amount}
+            disabled={data.isFixed}
+            onChange={(e) => {
+              if (isIncomeRule) updateIncomeRoute(sourceId, data.id, Number(e.target.value), 'fixed');
+              else updateTransferRule(incomingRule.id, Number(e.target.value), 'fixed');
+            }}
+            style={{
+              background: `linear-gradient(to right, rgb(${currentRgb}) ${fillPercentage}%, rgba(${currentRgb}, 0.15) ${fillPercentage}%)`
+            }}
+            className={`nodrag expense-slider w-full h-2 mt-1 rounded-full appearance-none outline-none ${data.isFixed ? 'cursor-not-allowed opacity-90' : 'cursor-pointer'}`}
+          />
+        ) : (
+          <div className="w-full bg-red-100 rounded-full h-2 mt-1">
+            <div
+              className="h-2 rounded-full transition-all duration-300"
+              style={{ width: `${Math.min((data.currentAmount / data.targetAmount) * 100, 100)}%`, backgroundColor: `rgb(${cRed.join(',')})` }}
+            ></div>
+          </div>
+        )}
+        <div
+          className="text-[10px] text-right mt-1 font-medium opacity-80"
+          style={{ color: `rgb(${currentRgb})` }}
+        >
+          ${data.currentAmount.toFixed(0)} /${data.targetAmount.toFixed(0)} / mo
         </div>
-      )}
-      
-      <div 
-        className="text-[10px] text-right mt-1 font-medium opacity-80"
-        style={{ color: `rgb(${currentRgb})` }}
-      >
-        ${data.currentAmount.toFixed(0)} / ${data.targetAmount.toFixed(0)} / mo
       </div>
     </div>
   );

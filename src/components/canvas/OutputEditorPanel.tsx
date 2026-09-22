@@ -8,10 +8,10 @@ interface OutputEditorPanelProps {
 }
 
 export function OutputEditorPanel({ selectedEdgeId, onClose }: OutputEditorPanelProps) {
-  const { 
-    accounts, incomes, goals, expenses, transferRules, cards, 
+  const {
+    accounts, incomes, goals, expenses, transferRules, cards,
     updateIncomeRoute, removeIncomeRoute, reorderIncomeRoutes,
-    updateTransferRule, removeTransferRule, reorderTransferRules 
+    updateTransferRule, removeTransferRule, reorderTransferRules
   } = useFinanceStore();
 
   const [draggedIdx, setDraggedIdx] = useState<number | null>(null);
@@ -25,22 +25,21 @@ export function OutputEditorPanel({ selectedEdgeId, onClose }: OutputEditorPanel
     const ruleId = selectedEdgeId.split('|')[1];
     sourceId = transferRules.find(r => r.id === ruleId)?.sourceId || '';
   }
-  
+
   if (!sourceId) return null;
 
   const isIncome = incomes.some(i => i.id === sourceId);
   const sourceAccount = accounts.find(a => a.id === sourceId);
   const sourceCard = cards.find(c => c.id === sourceId);
-  const isCashAccount = sourceAccount?.type === 'cash';
 
-  const sourceName = isIncome 
-    ? incomes.find(i => i.id === sourceId)?.name 
+  const sourceName = isIncome
+    ? incomes.find(i => i.id === sourceId)?.name
     : (sourceAccount?.name || sourceCard?.name || 'Unknown');
-  
-  const sourceTotal = isIncome 
-    ? (incomes.find(i => i.id === sourceId)?.amount || 0) 
+
+  const sourceTotal = isIncome
+    ? (incomes.find(i => i.id === sourceId)?.amount || 0)
     : (sourceAccount?.balance || sourceCard?.balance || 0);
-  
+
   const activeIncome = incomes.find(i => i.id === sourceId);
   const itemsList = isIncome ? (activeIncome?.routings || []) : transferRules.filter(r => r.sourceId === sourceId);
 
@@ -60,7 +59,7 @@ export function OutputEditorPanel({ selectedEdgeId, onClose }: OutputEditorPanel
   const calculateUnallocated = () => {
     if (itemsList.length === 0) return '100%';
     const allFixed = itemsList.every((i: any) => i.type === 'fixed');
-    
+
     if (allFixed) {
       const sum = itemsList.reduce((acc: number, curr: any) => acc + curr.amount, 0);
       return `$${Math.max(0, sourceTotal - sum).toFixed(2)}`;
@@ -85,17 +84,17 @@ export function OutputEditorPanel({ selectedEdgeId, onClose }: OutputEditorPanel
         {itemsList.map((item: any, idx: number) => {
           const ruleId = item.id;
           const destId = item.destinationId;
-          const destName = 
-            accounts.find(a => a.id === destId)?.name || 
+          const destName =
+            accounts.find(a => a.id === destId)?.name ||
             cards.find(c => c.id === destId)?.name ||
-            goals.find(g => g.id === destId)?.name || 
+            goals.find(g => g.id === destId)?.name ||
             expenses.find(e => e.id === destId)?.name || 'Unknown';
-          
+
           const isGoal = goals.some(g => g.id === destId);
           const isLastIncomeRule = isIncome && idx === itemsList.length - 1;
 
           return (
-            <li 
+            <li
               key={ruleId || destId}
               draggable
               onDragStart={(e) => handleDragStart(e, idx)}
@@ -105,12 +104,7 @@ export function OutputEditorPanel({ selectedEdgeId, onClose }: OutputEditorPanel
             >
               <span className="text-gray-400 cursor-move">☰</span>
               <div className="flex-1 truncate text-sm font-semibold text-gray-700">{destName}</div>
-              
-              {isCashAccount ? (
-                <span className="text-xs font-bold text-gray-500 bg-gray-100 px-3 py-1 rounded text-center">
-                  Deposit
-                </span>
-              ) : isGoal ? (
+              {isGoal ? (
                 <span className="text-xs font-bold text-purple-600 bg-purple-50 px-2 py-1 rounded text-center whitespace-nowrap">
                   Monitors Balance
                 </span>
@@ -118,17 +112,26 @@ export function OutputEditorPanel({ selectedEdgeId, onClose }: OutputEditorPanel
                 <span className="text-xs font-bold text-blue-600 bg-blue-50 px-3 py-1 rounded text-center whitespace-nowrap">
                   Remaining
                 </span>
+              ) : sourceCard?.type === 'credit' ? (
+                <select
+                  value={item.type}
+                  onChange={(e) => updateTransferRule(ruleId, item.amount, e.target.value as any)}
+                  className="text-xs border rounded p-1 bg-white cursor-pointer w-24"
+                >
+                  <option value="fixed">Pay Custom</option>
+                  <option value="percentage">Pay Minimum</option>
+                </select>
               ) : (
                 <div className="flex items-center gap-1">
-                  <input 
+                  <input
                     type="number" min="0" value={item.amount}
-                    onChange={(e) => isIncome 
+                    onChange={(e) => isIncome
                       ? updateIncomeRoute(sourceId, destId, Number(e.target.value), item.type)
                       : updateTransferRule(ruleId, Number(e.target.value), item.type)
                     }
                     className="border rounded px-1 py-1 w-16 text-xs text-right bg-white"
                   />
-                  <select 
+                  <select
                     value={item.type}
                     onChange={(e) => isIncome
                       ? updateIncomeRoute(sourceId, destId, item.amount, e.target.value as any)
@@ -141,8 +144,7 @@ export function OutputEditorPanel({ selectedEdgeId, onClose }: OutputEditorPanel
                   </select>
                 </div>
               )}
-              
-              <button 
+              <button
                 onClick={() => {
                   if (isIncome) removeIncomeRoute(sourceId, destId);
                   else removeTransferRule(ruleId);

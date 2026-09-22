@@ -37,7 +37,7 @@ function FlowSandboxInner() {
   const [selectedEdgeId, setSelectedEdgeId] = useState<string | null>(null);
   const [snapTrigger, setSnapTrigger] = useState(0);
 
-  const { 
+  const {
     levelId, accounts, incomes, goals, expenses, transferRules, cards, forecastMonths,
     addIncomeRoute, addTransferRule, updateCardLink,
     removeIncomeRoute, removeTransferRule, removeAccount
@@ -56,18 +56,18 @@ function FlowSandboxInner() {
     const childrenMap: Record<string, string[]> = {};
     accounts.forEach(a => childrenMap[a.id] = []);
     cards.forEach(c => childrenMap[c.id] = []);
-    
+
     const snappedMap: Record<string, { parentId: string, stackIndex: number, zIndex: number }> = {};
-  	const childSortRank = (id: string) => {
-  	  if (expenses.find(e => e.id === id && e.isFixed)) return 300;
-  	  if (expenses.find(e => e.id === id)) return 200;
-  	  if (goals.find(g => g.id === id)) return 100;
-  	  return 0;
-  	};
+    const childSortRank = (id: string) => {
+      if (expenses.find(e => e.id === id && e.isFixed)) return 300;
+      if (expenses.find(e => e.id === id)) return 200;
+      if (goals.find(g => g.id === id)) return 100;
+      return 0;
+    };
 
     const isLockedExpense = (nodeId: string, snapped: boolean) =>
       levelId === 1 && snapped && expenses.some(e => e.id === nodeId);
-    
+
     cards.forEach(c => {
       if (c.type === 'debit' && c.linkedAccountId && accounts.find(a => a.id === c.linkedAccountId)) {
         snappedMap[c.id] = { parentId: c.linkedAccountId, stackIndex: childrenMap[c.linkedAccountId].length, zIndex: 400 };
@@ -86,8 +86,8 @@ function FlowSandboxInner() {
       }
     });
 
-    const accountHeight = forecastMonths > 1 ? 122 : 70; 
-    const childHeight = 88; 
+    const accountHeight = forecastMonths > 1 ? 115 : 75;
+    const childHeight = 72;
 
     const newNodes: Node[] = [
       ...incomes.map((inc, i) => {
@@ -101,16 +101,16 @@ function FlowSandboxInner() {
             totalUsed += intended;
           });
         }
-        
+
         if (totalUsed > inc.amount + 0.01) {
           overAllocated = true;
         }
 
         const isBalanced = (inc.routings && inc.routings.length > 0 && !overAllocated);
-        
+
         return {
-          id: inc.id, type: 'income', position: { x: 50, y: 50 + i * 100 }, 
-          data: { name: inc.name, amount: inc.amount, isBalanced } 
+          id: inc.id, type: 'income', position: { x: 50, y: 50 + i * 100 },
+          data: { name: inc.name, amount: inc.amount, isBalanced }
         };
       }),
       ...accounts.map((acc, i) => {
@@ -119,10 +119,10 @@ function FlowSandboxInner() {
           in: snap.accountFlows[acc.id].in, out: snap.accountFlows[acc.id].out
         }));
         return {
-          id: acc.id, type: 'account', position: { x: 350, y: 50 + i * 120 }, 
-          data: { 
+          id: acc.id, type: 'account', position: { x: 350, y: 50 + i * 120 },
+          data: {
             name: acc.name, balance: acc.balance, forecastBalance: finalSnapshot ? finalSnapshot.accountBalances[acc.id] : acc.balance,
-            forecastMonths, accountType: acc.type, history 
+            forecastMonths, accountType: acc.type, history
           }
         };
       }),
@@ -138,13 +138,13 @@ function FlowSandboxInner() {
           }
         };
       }),
-     ...goals.map((goal, i) => {
+      ...goals.map((goal, i) => {
         const snap = snappedMap[goal.id];
         return {
           id: goal.id, type: 'goal', parentId: snap?.parentId, zIndex: snap?.zIndex,
           position: snap ? { x: 0, y: accountHeight + snap.stackIndex * childHeight } : { x: 650, y: 50 + i * 100 },
-          data: { 
-            id: goal.id, name: goal.name, targetAmount: goal.targetAmount, 
+          data: {
+            id: goal.id, name: goal.name, targetAmount: goal.targetAmount,
             targetMonths: goal.targetMonths,
             currentAmount: finalSnapshot ? finalSnapshot.goalProgress[goal.id] : 0,
             hitMonth: finalSnapshot ? finalSnapshot.goalHitMonths[goal.id] : undefined,
@@ -176,29 +176,29 @@ function FlowSandboxInner() {
         const isChild = !!newNode.parentId;
 
         if (wasChild && !isChild) {
-          let dropPos = existing.position; 
+          let dropPos = existing.position;
           const absPos = (existing as any).computed?.positionAbsolute || (existing as any).positionAbsolute;
-          
+
           if (absPos) {
             dropPos = absPos;
           } else {
             let current = existing;
             let absX = existing.position.x;
             let absY = existing.position.y;
-            
+
             while (current.parentId) {
               const p = currentNodes.find(n => n.id === current.parentId);
-              if (p) { absX += p.position.x; absY += p.position.y; current = p; } 
+              if (p) { absX += p.position.x; absY += p.position.y; current = p; }
               else break;
             }
             dropPos = { x: absX, y: absY };
           }
-          return { ...newNode, position: dropPos }; 
+          return { ...newNode, position: dropPos };
         }
         if (isChild) {
-          return { ...newNode }; 
+          return { ...newNode };
         }
-        return { ...newNode, position: existing.position }; 
+        return { ...newNode, position: existing.position };
       }
       return newNode;
     }));
@@ -208,7 +208,7 @@ function FlowSandboxInner() {
       if (inc.routings) {
         let available = inc.amount;
         let prevType = 'fixed';
-        
+
         inc.routings.forEach((route, idx) => {
           const isLast = idx === inc.routings!.length - 1;
           let edgeLabel = '';
@@ -261,10 +261,14 @@ function FlowSandboxInner() {
     const { source, target } = params;
     const sourceNode = nodes.find(n => n.id === source);
     const targetNode = nodes.find(n => n.id === target);
-
     if (!sourceNode || !targetNode) return;
 
     const isValidTarget = ['account', 'card', 'goal', 'expense'].includes(targetNode.type || '');
+
+    if (sourceNode.type === 'card' && targetNode.type === 'account') {
+      const sourceCard = cards.find(c => c.id === source);
+      if (sourceCard?.type === 'credit') return; // Silently reject, cannot transfer CC to bank
+    }
 
     if (sourceNode.type === 'income' && ['account', 'card', 'expense'].includes(targetNode.type || '')) {
       const targetExpense = expenses.find(e => e.id === target);
@@ -292,7 +296,7 @@ function FlowSandboxInner() {
 
     let targetParentId: string | null = null;
     const directParent = intersections.find(n => n.type === 'account' || n.type === 'card');
-    
+
     if (directParent) {
       targetParentId = directParent.id;
     } else {
@@ -306,7 +310,7 @@ function FlowSandboxInner() {
       const cardData = cards.find(c => c.id === node.id);
       if (cardData?.type === 'debit') {
         if (targetParentId && node.parentId !== targetParentId) updateCardLink(node.id, targetParentId);
-        else if (!targetParentId && node.parentId) updateCardLink(node.id, ''); 
+        else if (!targetParentId && node.parentId) updateCardLink(node.id, '');
         else if (targetParentId && node.parentId === targetParentId) setSnapTrigger(s => s + 1); // NEW: Force snap-back
       }
       return;
@@ -315,7 +319,7 @@ function FlowSandboxInner() {
     if (targetParentId) {
       if (node.parentId === targetParentId) {
         setSnapTrigger(s => s + 1);
-        return; 
+        return;
       }
 
       if (node.type === 'expense') {
@@ -330,7 +334,7 @@ function FlowSandboxInner() {
       const existingRules = transferRules.filter(r => r.destinationId === node.id);
       existingRules.forEach(r => removeTransferRule(r.id));
 
-      const targetAmount = node.type === 'expense' ? expenses.find(e=>e.id===node.id)?.amount : goals.find(g=>g.id===node.id)?.targetAmount;
+      const targetAmount = node.type === 'expense' ? expenses.find(e => e.id === node.id)?.amount : goals.find(g => g.id === node.id)?.targetAmount;
       addTransferRule(targetParentId, node.id, targetAmount ? Math.min(10000, targetAmount) : 100, 'fixed');
     } else {
       if (node.parentId) {
@@ -341,7 +345,7 @@ function FlowSandboxInner() {
   }, [getIntersectingNodes, transferRules, expenses, goals, cards, accounts, removeTransferRule, addTransferRule, updateCardLink]);
 
   const onEdgeClick = useCallback((_event: React.MouseEvent, edge: Edge) => { setSelectedEdgeId(edge.id); }, []);
-  
+
   const onEdgesDelete = useCallback((deletedEdges: Edge[]) => {
     deletedEdges.forEach(edge => {
       if (edge.id.startsWith('inc|')) removeIncomeRoute(edge.id.split('|')[1], edge.id.split('|')[2]);

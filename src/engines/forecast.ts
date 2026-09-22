@@ -4,7 +4,7 @@ export interface MonthlySnapshot {
   month: number;
   accountBalances: Record<string, number>;
   accountFlows: Record<string, { in: number; out: number }>;
-  cardBalances: Record<string, number>; 
+  cardBalances: Record<string, number>;
   goalProgress: Record<string, number>;
   expenseProgress: Record<string, number>;
   goalHitMonths: Record<string, number>;
@@ -16,13 +16,13 @@ export function generateForecast(
   transferRules: TransferRule[],
   goals: Goal[],
   expenses: Expense[],
-  cards: Card[], 
+  cards: Card[],
   monthsToProject: number = 6
 ): MonthlySnapshot[] {
   const snapshots: MonthlySnapshot[] = [];
-  
+
   let currentBalances: Record<string, number> = {};
-  let currentCardBalances: Record<string, number> = {}; 
+  let currentCardBalances: Record<string, number> = {};
   let goalHitMonths: Record<string, number> = {};
   let goalProgress: Record<string, number> = {};
   goals.forEach(g => { goalProgress[g.id] = 0; });
@@ -35,7 +35,7 @@ export function generateForecast(
     const nextCardBalances = { ...currentCardBalances };
     const monthlyExpenseProgress: Record<string, number> = {};
     const monthlyFlows: Record<string, { in: number; out: number }> = {};
-    
+
     expenses.forEach(e => { monthlyExpenseProgress[e.id] = 0; });
     accounts.forEach(a => { monthlyFlows[a.id] = { in: 0, out: 0 }; });
 
@@ -44,7 +44,7 @@ export function generateForecast(
         nextBalances[destId] += amount;
         monthlyFlows[destId].in += amount;
         return amount;
-      } 
+      }
       else if (monthlyExpenseProgress[destId] !== undefined) {
         const expense = expenses.find(e => e.id === destId)!;
         const needed = Math.max(0, expense.amount - monthlyExpenseProgress[destId]);
@@ -59,17 +59,17 @@ export function generateForecast(
     incomes.forEach(income => {
       if (income.routings && income.routings.length > 0) {
         let available = income.amount;
-        
+
         income.routings.forEach((route, idx) => {
           const isLast = idx === income.routings!.length - 1;
           let intended = 0;
-          
+
           if (isLast) {
             intended = Math.max(0, available);
           } else {
             intended = route.type === 'fixed' ? route.amount : income.amount * (route.amount / 100);
           }
-          
+
           const acceptedAmount = Math.max(0, Math.min(intended, available));
           const accepted = applyTransfer(route.destinationId, acceptedAmount);
           available -= accepted;
@@ -86,7 +86,7 @@ export function generateForecast(
       const destCard = cards.find(c => c.id === rule.destinationId);
 
       if (sourceCard) {
-        const transferAmount = rule.amount; 
+        const transferAmount = rule.amount;
         if (sourceCard.type === 'debit') {
           if (nextBalances[sourceCard.linkedAccountId] !== undefined) {
             nextBalances[sourceCard.linkedAccountId] -= transferAmount;
@@ -97,7 +97,7 @@ export function generateForecast(
           nextCardBalances[sourceCard.id] += transferAmount;
           applyTransfer(rule.destinationId, transferAmount);
         }
-      } 
+      }
       else {
         const sourceBal = nextBalances[rule.sourceId];
         if (sourceBal === undefined) return;
@@ -133,15 +133,16 @@ export function generateForecast(
     // 4. Process Goals
     accounts.forEach(acc => {
       const attachedRules = transferRules.filter(r => r.sourceId === acc.id && goals.some(g => g.id === r.destinationId));
-      
       let availableBalance = Math.max(0, nextBalances[acc.id]);
-      
       attachedRules.forEach(rule => {
         const goal = goals.find(g => g.id === rule.destinationId)!;
         const remainingGoal = Math.max(0, goal.targetAmount - goalProgress[goal.id]);
         const allocated = Math.min(availableBalance, remainingGoal);
         goalProgress[goal.id] += allocated;
         availableBalance -= allocated;
+
+        nextBalances[acc.id] -= allocated;
+        monthlyFlows[acc.id].out += allocated;
       });
     });
 
@@ -155,12 +156,12 @@ export function generateForecast(
       month: m,
       accountBalances: nextBalances,
       accountFlows: monthlyFlows,
-      cardBalances: nextCardBalances, 
+      cardBalances: nextCardBalances,
       goalProgress: { ...goalProgress },
       expenseProgress: { ...monthlyExpenseProgress },
       goalHitMonths: { ...goalHitMonths }
     });
-    
+
     currentBalances = nextBalances;
     currentCardBalances = nextCardBalances;
   }

@@ -112,6 +112,7 @@ interface FinanceState {
   loadLevel: (levelData: any) => void;
 
   addAccount: (name: string, type: AccountType) => void;
+  renameAccount: (accountId: string, newName: string) => void;
   removeAccount: (accountId: string) => void;
   addCard: (name: string, type: 'debit' | 'credit', linkedAccountId: string) => void;
   removeCard: (cardId: string) => void;
@@ -196,6 +197,10 @@ export const useFinanceStore = create<FinanceState>()((set) => ({
     accounts: [...state.accounts, {
       id: `acc_${Date.now()}`, name, type, balance: 0, apy: type === 'savings' ? 2.5 : 0
     }]
+  })),
+
+  renameAccount: (accountId, newName) => set((state) => ({
+	accounts: state.accounts.map(a => a.id === accountId ? { ...a, name: newName } : a)
   })),
 
   removeAccount: (accountId) => set((state) => {

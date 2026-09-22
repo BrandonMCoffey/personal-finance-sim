@@ -3,7 +3,7 @@ import { useFinanceStore } from '../../store/financeStore';
 import type { AccountType } from '../../store/financeStore';
 
 export function CanvasControls() {
-  const { addAccount, addCard, allowedActions, accounts, initialAccountCount } = useFinanceStore();
+  const { addAccount, addCard, allowedActions, accounts, cards, initialAccountCount } = useFinanceStore();
 
   if (!allowedActions) return null;
 
@@ -11,19 +11,14 @@ export function CanvasControls() {
   const canAddMoreAccounts = allowedActions.maxNewAccounts === undefined || addedCount < allowedActions.maxNewAccounts;
 
   const handleAddAccount = (type: AccountType) => {
-    const defaultName = type.charAt(0).toUpperCase() + type.slice(1) + ' Account';
-    const accountName = window.prompt(`Enter a name for the ${type} account:`, defaultName);
-    if (accountName && accountName.trim() !== '') addAccount(accountName.trim(), type);
+    const defaultName = `${type.charAt(0).toUpperCase() + type.slice(1)} ${accounts.length + 1}`;
+    addAccount(defaultName, type);
   };
 
   const handleAddCard = (type: 'debit' | 'credit') => {
-    const defaultName = type === 'credit' ? 'Rewards Credit Card' : 'Bank Debit Card';
-    const cardName = window.prompt(`Enter a name for the ${type} card:`, defaultName);
-    if (cardName && cardName.trim() !== '') {
-      // Default to the first checking/bank account available for the linkedAccountId
-      const defaultLinkedAcc = accounts.find(a => a.type === 'checking' || a.type === 'bank')?.id || accounts[0]?.id || '';
-      addCard(cardName.trim(), type, defaultLinkedAcc);
-    }
+    const defaultName = type === 'credit' ? `Credit Card ${cards.length + 1}` : `Debit Card ${cards.length + 1}`;
+    const defaultLinkedAcc = accounts.find(a => a.type === 'checking' || a.type === 'bank')?.id || accounts[0]?.id || '';
+    addCard(defaultName, type, defaultLinkedAcc);
   };
 
   return (
@@ -31,8 +26,6 @@ export function CanvasControls() {
       <div className="flex items-center px-2 mr-2 border-r border-gray-200">
         <span className="text-sm font-semibold text-gray-600">Actions</span>
       </div>
-      
-      {/* Account Buttons */}
       {canAddMoreAccounts && allowedActions.canCreateAccounts && (
         <>
           {allowedActions.allowedAccountTypes.includes('checking') && (
@@ -46,8 +39,6 @@ export function CanvasControls() {
           )}
         </>
       )}
-
-      {/* Card Buttons */}
       {allowedActions.allowedCardTypes?.includes('debit') && (
         <button onClick={() => handleAddCard('debit')} className="px-3 py-1.5 bg-teal-50 text-teal-700 text-sm font-medium rounded border border-teal-200 hover:bg-teal-100">+ Debit Card</button>
       )}
