@@ -9,22 +9,17 @@ interface OutputEditorPanelProps {
 
 export function OutputEditorPanel({ selectedEdgeId, onClose }: OutputEditorPanelProps) {
   const {
-    accounts, incomes, goals, expenses, transferRules, cards,
+    accounts, incomes, goals, expenses, transferRules, cards, loans, retirements,
     updateIncomeRoute, removeIncomeRoute, reorderIncomeRoutes,
     updateTransferRule, removeTransferRule, reorderTransferRules
   } = useFinanceStore();
-
   const [draggedIdx, setDraggedIdx] = useState<number | null>(null);
 
   if (!selectedEdgeId) return null;
 
   let sourceId = '';
-  if (selectedEdgeId.startsWith('inc|')) {
-    sourceId = selectedEdgeId.split('|')[1];
-  } else if (selectedEdgeId.startsWith('rule|')) {
-    const ruleId = selectedEdgeId.split('|')[1];
-    sourceId = transferRules.find(r => r.id === ruleId)?.sourceId || '';
-  }
+  if (selectedEdgeId.startsWith('inc|')) sourceId = selectedEdgeId.split('|')[1];
+  else if (selectedEdgeId.startsWith('rule|')) sourceId = transferRules.find(r => r.id === selectedEdgeId.split('|')[1])?.sourceId || '';
 
   if (!sourceId) return null;
 
@@ -59,7 +54,6 @@ export function OutputEditorPanel({ selectedEdgeId, onClose }: OutputEditorPanel
   const calculateUnallocated = () => {
     if (itemsList.length === 0) return '100%';
     const allFixed = itemsList.every((i: any) => i.type === 'fixed');
-
     if (allFixed) {
       const sum = itemsList.reduce((acc: number, curr: any) => acc + curr.amount, 0);
       return `$${Math.max(0, sourceTotal - sum).toFixed(2)}`;
@@ -75,11 +69,7 @@ export function OutputEditorPanel({ selectedEdgeId, onClose }: OutputEditorPanel
         <h3 className="font-bold text-gray-800 text-sm">Outputs: {sourceName}</h3>
         <button onClick={onClose} className="text-gray-400 hover:text-gray-600 font-bold">×</button>
       </div>
-
-      <p className="text-xs text-gray-500 mb-3 italic">
-        Drag items to change execution priority.
-      </p>
-
+      <p className="text-xs text-gray-500 mb-3 italic">Drag items to change execution priority.</p>
       <ul className="flex flex-col gap-2">
         {itemsList.map((item: any, idx: number) => {
           const ruleId = item.id;
@@ -88,7 +78,9 @@ export function OutputEditorPanel({ selectedEdgeId, onClose }: OutputEditorPanel
             accounts.find(a => a.id === destId)?.name ||
             cards.find(c => c.id === destId)?.name ||
             goals.find(g => g.id === destId)?.name ||
-            expenses.find(e => e.id === destId)?.name || 'Unknown';
+            expenses.find(e => e.id === destId)?.name ||
+            loans.find(l => l.id === destId)?.name ||
+            retirements.find(r => r.id === destId)?.name || 'Unknown';
 
           const isGoal = goals.some(g => g.id === destId);
           const isLastIncomeRule = isIncome && idx === itemsList.length - 1;
@@ -155,7 +147,6 @@ export function OutputEditorPanel({ selectedEdgeId, onClose }: OutputEditorPanel
           );
         })}
       </ul>
-
       {!isIncome && (
         <div className="mt-3 pt-3 border-t border-gray-200 flex justify-between items-center text-xs font-bold text-gray-500">
           <span>Unallocated / Remaining:</span>

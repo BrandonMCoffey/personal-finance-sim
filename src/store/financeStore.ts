@@ -29,6 +29,22 @@ export interface Card {
   apr?: number;
 }
 
+export interface Loan {
+  id: string;
+  name: string;
+  balance: number;
+  apr: number;
+  minimumPayment: number;
+}
+
+export interface Retirement {
+  id: string;
+  name: string;
+  balance: number;
+  expectedApy: number;
+  employerMatchPercent: number;
+}
+
 export interface IncomeRoute {
   destinationId: string;
   amount: number;
@@ -97,6 +113,8 @@ interface FinanceState {
   expenses: Expense[];
   accounts: Account[];
   cards: Card[];
+  loans: Loan[];
+  retirements: Retirement[];
   incomes: Income[];
   goals: Goal[];
   transferRules: TransferRule[];
@@ -117,6 +135,8 @@ interface FinanceState {
   addCard: (name: string, type: 'debit' | 'credit', linkedAccountId: string) => void;
   removeCard: (cardId: string) => void;
   updateCardLink: (cardId: string, accountId: string) => void;
+  addLoan: (name: string, balance: number, apr: number, minimumPayment: number) => void;
+  addRetirement: (name: string, balance: number, expectedApy: number, employerMatchPercent: number) => void;
   
   addIncomeRoute: (incomeId: string, destinationId: string, defaultAmount?: number, defaultType?: 'fixed' | 'percentage') => void;
   updateIncomeRoute: (incomeId: string, destinationId: string, amount: number, type: 'fixed' | 'percentage') => void;
@@ -140,6 +160,8 @@ export const useFinanceStore = create<FinanceState>()((set) => ({
   expenses: [],
   accounts: [],
   cards: [],
+  loans: [],
+  retirements: [],
   incomes: [],
   goals: [],
   transferRules: [],
@@ -177,6 +199,8 @@ export const useFinanceStore = create<FinanceState>()((set) => ({
     })),
     accounts: levelData.startingState?.accounts || [],
     cards: levelData.startingState?.cards || [],
+    loans: levelData.startingState?.loans || [],
+	  retirements: levelData.startingState?.retirements || [],
     incomes: (levelData.startingState?.income || []).map((inc: any) => ({
       ...inc,
       routings: inc.routings ? inc.routings.map((r: any) => ({
@@ -241,6 +265,20 @@ export const useFinanceStore = create<FinanceState>()((set) => ({
 
   updateCardLink: (cardId, accountId) => set((state) => ({
     cards: state.cards.map(c => c.id === cardId ? { ...c, linkedAccountId: accountId } : c)
+  })),
+
+  addLoan: (name, balance, apr, minimumPayment) => set((state) => ({
+	loans: [
+	  ...state.loans,
+	  { id: `loan_${Date.now()}`, name, balance, apr, minimumPayment }
+	]
+  })),
+
+  addRetirement: (name, balance, expectedApy, employerMatchPercent) => set((state) => ({
+	retirements: [
+	  ...state.retirements,
+	  { id: `ret_${Date.now()}`, name, balance, expectedApy, employerMatchPercent }
+	]
   })),
 
   // --- INCOME ACTIONS ---

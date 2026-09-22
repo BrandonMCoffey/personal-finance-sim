@@ -21,6 +21,8 @@ import { IncomeNode } from './nodes/IncomeNode';
 import { GoalNode } from './nodes/GoalNode';
 import { ExpenseNode } from './nodes/ExpenseNode';
 import { CardNode } from './nodes/CardNode';
+import { LoanNode } from './nodes/LoanNode';
+import { RetirementNode } from './nodes/RetirementNode';
 
 const nodeTypes = {
   account: AccountNode,
@@ -28,6 +30,8 @@ const nodeTypes = {
   goal: GoalNode,
   expense: ExpenseNode,
   card: CardNode,
+  loan: LoanNode,
+  retirement: RetirementNode,
 };
 
 function FlowSandboxInner() {
@@ -38,13 +42,13 @@ function FlowSandboxInner() {
   const [snapTrigger, setSnapTrigger] = useState(0);
 
   const {
-    levelId, accounts, incomes, goals, expenses, transferRules, cards, forecastMonths,
+    levelId, accounts, incomes, goals, expenses, transferRules, cards, loans, retirements, forecastMonths,
     addIncomeRoute, addTransferRule, updateCardLink,
     removeIncomeRoute, removeTransferRule, removeAccount
   } = useFinanceStore();
 
   useEffect(() => {
-    const forecasts = generateForecast(accounts, incomes, transferRules, goals, expenses, cards, forecastMonths);
+    const forecasts = generateForecast(accounts, incomes, transferRules, goals, expenses, cards, loans, retirements, forecastMonths);
     const finalSnapshot = forecasts[forecasts.length - 1];
 
     const sortedExpenses = [...expenses].sort((a, b) => {
@@ -89,48 +93,61 @@ function FlowSandboxInner() {
     const accountHeight = forecastMonths > 1 ? 115 : 75;
     const childHeight = 72;
 
+    let currentMainY = 50;
+    const mainNodesY: Record<string, number> = {};
+
+    [...accounts, ...loans, ...retirements].forEach(item => {
+      mainNodesY[item.id] = currentMainY;
+      const childCount = childrenMap[item.id]?.length || 0;
+      currentMainY += accountHeight + (childCount * childHeight) + 40;
+    });
+
+    cards.forEach(card => {
+      if (!snappedMap[card.id]) {
+        mainNodesY[card.id] = currentMainY;
+        const childCount = childrenMap[card.id]?.length || 0;
+        currentMainY += accountHeight + (childCount * childHeight) + 40;
+      }
+    });
+
     const newNodes: Node[] = [
       ...incomes.map((inc, i) => {
         let totalUsed = 0;
         let overAllocated = false;
-
         if (inc.routings) {
           inc.routings.forEach((route, idx) => {
-            if (idx === inc.routings!.length - 1) return; // Ignore the last one, it's just a passive bucket
+            if (idx === inc.routings!.length - 1) return;
             let intended = route.type === 'fixed' ? route.amount : inc.amount * (route.amount / 100);
             totalUsed += intended;
           });
         }
-
         if (totalUsed > inc.amount + 0.01) {
           overAllocated = true;
         }
-
         const isBalanced = (inc.routings && inc.routings.length > 0 && !overAllocated);
-
         return {
           id: inc.id, type: 'income', position: { x: 50, y: 50 + i * 100 },
           data: { name: inc.name, amount: inc.amount, isBalanced }
         };
       }),
-      ...accounts.map((acc, i) => {
+      ...accounts.map((acc) => {
         const history = forecasts.map(snap => ({
           month: snap.month, balance: snap.accountBalances[acc.id],
           in: snap.accountFlows[acc.id].in, out: snap.accountFlows[acc.id].out
         }));
         return {
-          id: acc.id, type: 'account', position: { x: 350, y: 50 + i * 120 },
+          id: acc.id, type: 'account', position: { x: 350, y: mainNodesY[acc.id] },
           data: {
-            name: acc.name, balance: acc.balance, forecastBalance: finalSnapshot ? finalSnapshot.accountBalances[acc.id] : acc.balance,
-            forecastMonths, accountType: acc.type, history
+            id: acc.id, name: acc.name, balance: acc.balance, forecastBalance: finalSnapshot ? finalSnapshot.accountBalances[acc.id] : acc.balance,
+            forecastMonths, accountType: acc.type, apy: acc.apy, history
           }
         };
       }),
-      ...cards.map((card, i) => {
+      ...cards.map((card) => {
         const snap = snappedMap[card.id];
         return {
           id: card.id, type: 'card', parentId: snap?.parentId, zIndex: snap?.zIndex,
-          position: snap ? { x: 0, y: accountHeight + snap.stackIndex * childHeight } : { x: 350, y: 50 + (accounts.length + i) * 150 },
+          position: snap ? { x: 0, y: accountHeight + snap.stackIndex * childHeight } : { x: 350, y: mainNodesY[card.id] },
           data: {
             id: card.id, name: card.name, type: card.type,
             forecastBalance: finalSnapshot ? finalSnapshot.cardBalances[card.id] : card.balance,
@@ -138,6 +155,22 @@ function FlowSandboxInner() {
           }
         };
       }),
+      ...loans.map((loan) => ({
+        id: loan.id, type: 'loan', position: { x: 350, y: mainNodesY[loan.id] },
+        data: {
+          id: loan.id, name: loan.name, balance: loan.balance, apr: loan.apr,
+          minimumPayment: loan.minimumPayment,
+          forecastBalance: finalSnapshot ? finalSnapshot.loanBalances[loan.id] : loan.balance
+        }
+      })),
+      ...retirements.map((ret) => ({
+        id: ret.id, type: 'retirement', position: { x: 350, y: mainNodesY[ret.id] },
+        data: {
+          id: ret.id, name: ret.name, balance: ret.balance, expectedApy: ret.expectedApy,
+          employerMatchPercent: ret.employerMatchPercent,
+          forecastBalance: finalSnapshot ? finalSnapshot.retirementBalances[ret.id] : ret.balance
+        }
+      })),
       ...goals.map((goal, i) => {
         const snap = snappedMap[goal.id];
         return {

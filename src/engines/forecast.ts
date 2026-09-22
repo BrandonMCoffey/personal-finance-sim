@@ -1,10 +1,12 @@
-import type { Account, Income, TransferRule, Goal, Expense, Card } from '../store/financeStore';
+import type { Account, Income, TransferRule, Goal, Expense, Card, Loan, Retirement } from '../store/financeStore';
 
 export interface MonthlySnapshot {
   month: number;
   accountBalances: Record<string, number>;
   accountFlows: Record<string, { in: number; out: number }>;
   cardBalances: Record<string, number>;
+  loanBalances: Record<string, number>;
+  retirementBalances: Record<string, number>;
   goalProgress: Record<string, number>;
   expenseProgress: Record<string, number>;
   goalHitMonths: Record<string, number>;
@@ -17,35 +19,51 @@ export function generateForecast(
   goals: Goal[],
   expenses: Expense[],
   cards: Card[],
+  loans: Loan[] = [],
+  retirements: Retirement[] = [],
   monthsToProject: number = 6
 ): MonthlySnapshot[] {
   const snapshots: MonthlySnapshot[] = [];
-
   let currentBalances: Record<string, number> = {};
   let currentCardBalances: Record<string, number> = {};
+  let currentLoanBalances: Record<string, number> = {};
+  let currentRetirementBalances: Record<string, number> = {};
   let goalHitMonths: Record<string, number> = {};
   let goalProgress: Record<string, number> = {};
-  goals.forEach(g => { goalProgress[g.id] = 0; });
 
+  goals.forEach(g => { goalProgress[g.id] = 0; });
   accounts.forEach(acc => { currentBalances[acc.id] = acc.balance; });
   cards.forEach(card => { currentCardBalances[card.id] = card.balance || 0; });
+  loans.forEach(loan => { currentLoanBalances[loan.id] = loan.balance; });
+  retirements.forEach(ret => { currentRetirementBalances[ret.id] = ret.balance; });
 
   for (let m = 1; m <= monthsToProject; m++) {
     const nextBalances = { ...currentBalances };
     const nextCardBalances = { ...currentCardBalances };
+    const nextLoanBalances = { ...currentLoanBalances };
+    const nextRetirementBalances = { ...currentRetirementBalances };
     const monthlyExpenseProgress: Record<string, number> = {};
     const monthlyFlows: Record<string, { in: number; out: number }> = {};
 
     expenses.forEach(e => { monthlyExpenseProgress[e.id] = 0; });
     accounts.forEach(a => { monthlyFlows[a.id] = { in: 0, out: 0 }; });
 
-    const applyTransfer = (destId: string, amount: number): number => {
+    const applyTransfer = (destId: string, amount: number, sourceIsIncome = false): number => {
       if (nextBalances[destId] !== undefined) {
         nextBalances[destId] += amount;
         monthlyFlows[destId].in += amount;
         return amount;
-      }
-      else if (monthlyExpenseProgress[destId] !== undefined) {
+      } else if (nextLoanBalances[destId] !== undefined) {
+        nextLoanBalances[destId] -= amount;
+        return amount;
+      } else if (nextRetirementBalances[destId] !== undefined) {
+        const retirement = retirements.find(r => r.id === destId);
+        const matchMultiplier = (sourceIsIncome && retirement?.employerMatchPercent)
+          ? 1 + (retirement.employerMatchPercent / 100)
+          : 1;
+        nextRetirementBalances[destId] += amount * matchMultiplier;
+        return amount;
+      } else if (monthlyExpenseProgress[destId] !== undefined) {
         const expense = expenses.find(e => e.id === destId)!;
         const needed = Math.max(0, expense.amount - monthlyExpenseProgress[destId]);
         const accepted = Math.min(amount, needed);
@@ -59,19 +77,11 @@ export function generateForecast(
     incomes.forEach(income => {
       if (income.routings && income.routings.length > 0) {
         let available = income.amount;
-
         income.routings.forEach((route, idx) => {
           const isLast = idx === income.routings!.length - 1;
-          let intended = 0;
-
-          if (isLast) {
-            intended = Math.max(0, available);
-          } else {
-            intended = route.type === 'fixed' ? route.amount : income.amount * (route.amount / 100);
-          }
-
+          let intended = isLast ? Math.max(0, available) : (route.type === 'fixed' ? route.amount : income.amount * (route.amount / 100));
           const acceptedAmount = Math.max(0, Math.min(intended, available));
-          const accepted = applyTransfer(route.destinationId, acceptedAmount);
+          const accepted = applyTransfer(route.destinationId, acceptedAmount, true);
           available -= accepted;
         });
       }
@@ -87,36 +97,29 @@ export function generateForecast(
 
       if (sourceCard) {
         const transferAmount = rule.amount;
-        if (sourceCard.type === 'debit') {
-          if (nextBalances[sourceCard.linkedAccountId] !== undefined) {
-            nextBalances[sourceCard.linkedAccountId] -= transferAmount;
-            monthlyFlows[sourceCard.linkedAccountId].out += transferAmount;
-            applyTransfer(rule.destinationId, transferAmount);
-          }
+        if (sourceCard.type === 'debit' && nextBalances[sourceCard.linkedAccountId] !== undefined) {
+          nextBalances[sourceCard.linkedAccountId] -= transferAmount;
+          monthlyFlows[sourceCard.linkedAccountId].out += transferAmount;
+          applyTransfer(rule.destinationId, transferAmount);
         } else if (sourceCard.type === 'credit') {
           nextCardBalances[sourceCard.id] += transferAmount;
           applyTransfer(rule.destinationId, transferAmount);
         }
-      }
-      else {
+      } else {
         const sourceBal = nextBalances[rule.sourceId];
         if (sourceBal === undefined) return;
 
-        let transferAmount = 0;
-        if (rule.type === 'fixed') transferAmount = rule.amount;
-        else if (rule.type === 'percentage') transferAmount = Math.max(0, sourceBal) * (rule.amount / 100);
-
+        let transferAmount = rule.type === 'fixed' ? rule.amount : Math.max(0, sourceBal) * (rule.amount / 100);
         if (transferAmount > 0) {
           nextBalances[rule.sourceId] -= transferAmount;
           monthlyFlows[rule.sourceId].out += transferAmount;
-
           if (destCard && destCard.type === 'credit') nextCardBalances[destCard.id] -= transferAmount;
           else applyTransfer(rule.destinationId, transferAmount);
         }
       }
     });
 
-    // 3. Process Interest & APR
+    // 3. Process Interest, APR, and Compounding
     accounts.forEach(acc => {
       if (acc.apy > 0 && nextBalances[acc.id] > 0) {
         const interest = nextBalances[acc.id] * ((acc.apy / 100) / 12);
@@ -124,9 +127,22 @@ export function generateForecast(
         monthlyFlows[acc.id].in += interest;
       }
     });
+
     cards.forEach(card => {
       if (card.type === 'credit' && card.apr && card.apr > 0 && nextCardBalances[card.id] > 0) {
         nextCardBalances[card.id] += nextCardBalances[card.id] * ((card.apr / 100) / 12);
+      }
+    });
+
+    loans.forEach(loan => {
+      if (nextLoanBalances[loan.id] > 0) {
+        nextLoanBalances[loan.id] += nextLoanBalances[loan.id] * ((loan.apr / 100) / 12);
+      }
+    });
+
+    retirements.forEach(ret => {
+      if (nextRetirementBalances[ret.id] > 0 && ret.expectedApy > 0) {
+        nextRetirementBalances[ret.id] += nextRetirementBalances[ret.id] * ((ret.expectedApy / 100) / 12);
       }
     });
 
@@ -138,9 +154,9 @@ export function generateForecast(
         const goal = goals.find(g => g.id === rule.destinationId)!;
         const remainingGoal = Math.max(0, goal.targetAmount - goalProgress[goal.id]);
         const allocated = Math.min(availableBalance, remainingGoal);
+
         goalProgress[goal.id] += allocated;
         availableBalance -= allocated;
-
         nextBalances[acc.id] -= allocated;
         monthlyFlows[acc.id].out += allocated;
       });
@@ -157,6 +173,8 @@ export function generateForecast(
       accountBalances: nextBalances,
       accountFlows: monthlyFlows,
       cardBalances: nextCardBalances,
+      loanBalances: nextLoanBalances,
+      retirementBalances: nextRetirementBalances,
       goalProgress: { ...goalProgress },
       expenseProgress: { ...monthlyExpenseProgress },
       goalHitMonths: { ...goalHitMonths }
@@ -164,7 +182,8 @@ export function generateForecast(
 
     currentBalances = nextBalances;
     currentCardBalances = nextCardBalances;
+    currentLoanBalances = nextLoanBalances;
+    currentRetirementBalances = nextRetirementBalances;
   }
-
   return snapshots;
 }
