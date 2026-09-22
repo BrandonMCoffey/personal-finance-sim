@@ -90,8 +90,8 @@ function FlowSandboxInner() {
       }
     });
 
-    const accountHeight = forecastMonths > 1 ? 115 : 75;
-    const childHeight = 72;
+    const accountHeight = 85;
+    const childHeight = 60;
 
     let currentMainY = 50;
     const mainNodesY: Record<string, number> = {};
@@ -99,14 +99,14 @@ function FlowSandboxInner() {
     [...accounts, ...loans, ...retirements].forEach(item => {
       mainNodesY[item.id] = currentMainY;
       const childCount = childrenMap[item.id]?.length || 0;
-      currentMainY += accountHeight + (childCount * childHeight) + 40;
+      currentMainY += accountHeight + (childCount * childHeight) + 30; // Reduced bottom padding
     });
 
     cards.forEach(card => {
       if (!snappedMap[card.id]) {
         mainNodesY[card.id] = currentMainY;
         const childCount = childrenMap[card.id]?.length || 0;
-        currentMainY += accountHeight + (childCount * childHeight) + 40;
+        currentMainY += accountHeight + (childCount * childHeight) + 30;
       }
     });
 
@@ -132,8 +132,11 @@ function FlowSandboxInner() {
       }),
       ...accounts.map((acc) => {
         const history = forecasts.map(snap => ({
-          month: snap.month, balance: snap.accountBalances[acc.id],
-          in: snap.accountFlows[acc.id].in, out: snap.accountFlows[acc.id].out
+          month: snap.month,
+          balance: snap.accountBalances[acc.id],
+          goal: snap.accountGoalAllocations[acc.id] || 0,
+          in: snap.accountFlows[acc.id].in,
+          out: snap.accountFlows[acc.id].out
         }));
         return {
           id: acc.id, type: 'account', position: { x: 350, y: mainNodesY[acc.id] },

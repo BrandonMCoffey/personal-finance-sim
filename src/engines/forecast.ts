@@ -4,6 +4,7 @@ export interface MonthlySnapshot {
   month: number;
   accountBalances: Record<string, number>;
   accountFlows: Record<string, { in: number; out: number }>;
+  accountGoalAllocations: Record<string, number>;
   cardBalances: Record<string, number>;
   loanBalances: Record<string, number>;
   retirementBalances: Record<string, number>;
@@ -24,15 +25,20 @@ export function generateForecast(
   monthsToProject: number = 6
 ): MonthlySnapshot[] {
   const snapshots: MonthlySnapshot[] = [];
+
   let currentBalances: Record<string, number> = {};
   let currentCardBalances: Record<string, number> = {};
   let currentLoanBalances: Record<string, number> = {};
   let currentRetirementBalances: Record<string, number> = {};
+  let currentGoalEarmarks: Record<string, number> = {};
   let goalHitMonths: Record<string, number> = {};
   let goalProgress: Record<string, number> = {};
 
   goals.forEach(g => { goalProgress[g.id] = 0; });
-  accounts.forEach(acc => { currentBalances[acc.id] = acc.balance; });
+  accounts.forEach(acc => {
+    currentBalances[acc.id] = acc.balance;
+    currentGoalEarmarks[acc.id] = 0;
+  });
   cards.forEach(card => { currentCardBalances[card.id] = card.balance || 0; });
   loans.forEach(loan => { currentLoanBalances[loan.id] = loan.balance; });
   retirements.forEach(ret => { currentRetirementBalances[ret.id] = ret.balance; });
@@ -42,6 +48,7 @@ export function generateForecast(
     const nextCardBalances = { ...currentCardBalances };
     const nextLoanBalances = { ...currentLoanBalances };
     const nextRetirementBalances = { ...currentRetirementBalances };
+    const monthlyGoalEarmarks = { ...currentGoalEarmarks };
     const monthlyExpenseProgress: Record<string, number> = {};
     const monthlyFlows: Record<string, { in: number; out: number }> = {};
 
@@ -146,20 +153,24 @@ export function generateForecast(
       }
     });
 
-    // 4. Process Goals
+    // 4. Process Goals (Earmarking instead of subtracting from account)
     accounts.forEach(acc => {
       const attachedRules = transferRules.filter(r => r.sourceId === acc.id && goals.some(g => g.id === r.destinationId));
-      let availableBalance = Math.max(0, nextBalances[acc.id]);
+      let availableBalance = Math.max(0, nextBalances[acc.id] - monthlyGoalEarmarks[acc.id]);
+
       attachedRules.forEach(rule => {
         const goal = goals.find(g => g.id === rule.destinationId)!;
         const remainingGoal = Math.max(0, goal.targetAmount - goalProgress[goal.id]);
-        const allocated = Math.min(availableBalance, remainingGoal);
+        const intended = rule.type === 'fixed' ? rule.amount : (availableBalance * (rule.amount / 100));
+        const allocated = Math.min(availableBalance, remainingGoal, intended);
 
         goalProgress[goal.id] += allocated;
         availableBalance -= allocated;
-        nextBalances[acc.id] -= allocated;
-        monthlyFlows[acc.id].out += allocated;
+        monthlyGoalEarmarks[acc.id] += allocated;
       });
+
+      // Cap earmark in case an unexpected expense drops the balance below the earmarked amount
+      monthlyGoalEarmarks[acc.id] = Math.min(monthlyGoalEarmarks[acc.id], Math.max(0, nextBalances[acc.id]));
     });
 
     goals.forEach(goal => {
@@ -172,6 +183,7 @@ export function generateForecast(
       month: m,
       accountBalances: nextBalances,
       accountFlows: monthlyFlows,
+      accountGoalAllocations: { ...monthlyGoalEarmarks },
       cardBalances: nextCardBalances,
       loanBalances: nextLoanBalances,
       retirementBalances: nextRetirementBalances,
@@ -184,6 +196,7 @@ export function generateForecast(
     currentCardBalances = nextCardBalances;
     currentLoanBalances = nextLoanBalances;
     currentRetirementBalances = nextRetirementBalances;
+    currentGoalEarmarks = monthlyGoalEarmarks;
   }
   return snapshots;
 }

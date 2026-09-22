@@ -23,25 +23,29 @@ export function GoalNode({ data }: GoalNodeProps) {
   return (
     <BaseNode
       title={data.name}
+      subtitle="GOAL"
       bgColor={bgColor}
       borderColor={borderColor}
       titleColor="text-purple-900"
       isSnapped={data.isSnapped}
       targetHandle={!data.isSnapped ? { color: 'bg-purple-500' } : undefined}
+      className="w-[160px] flex-col justify-center"
     >
-      <div className="w-full bg-purple-100 rounded-full h-2 mt-2">
-        <div
-          className="bg-purple-500 h-2 rounded-full transition-all duration-500"
-          style={{ width: `${progress}%` }}
-        ></div>
-      </div>
-      <div className="flex justify-between mt-1">
-        <div className="text-[10px] text-purple-600 font-medium">
-          Target: ${data.targetAmount.toLocaleString()} {data.targetMonths ? `in ${data.targetMonths}mo` : ''}
+      <div className="w-full mt-1">
+        <div className="w-full bg-purple-100 rounded-full h-1.5">
+          <div
+            className="bg-purple-500 h-1.5 rounded-full transition-all duration-500"
+            style={{ width: `${progress}%` }}
+          ></div>
         </div>
-        <div className="text-[10px] text-purple-600 font-bold text-right">
-          ${current.toFixed(0)}
-          {data.hitMonth ? ` (M${data.hitMonth}!)` : ''}
+        <div className="flex justify-between mt-0.5">
+          <div className="text-[9px] text-purple-600 font-medium">
+            T: ${data.targetAmount}
+          </div>
+          <div className="text-[9px] text-purple-600 font-bold text-right">
+            ${current.toFixed(0)}
+            {data.hitMonth ? ` (M${data.hitMonth})` : ''}
+          </div>
         </div>
       </div>
     </BaseNode>

@@ -13,9 +13,10 @@ interface BaseNodeProps {
     children: React.ReactNode;
     onRename?: (newName: string) => void;
     headerElement?: React.ReactNode;
+    className?: string;
 }
 
-export function BaseNode({ title, subtitle, bgColor, borderColor, titleColor, isSnapped, sourceHandle, targetHandle, children, onRename, headerElement }: BaseNodeProps) {
+export function BaseNode({ title, subtitle, bgColor, borderColor, titleColor, isSnapped, sourceHandle, targetHandle, children, onRename, headerElement, className }: BaseNodeProps) {
     const [isEditing, setIsEditing] = useState(false);
     const [editName, setEditName] = useState(title);
 
@@ -36,13 +37,14 @@ export function BaseNode({ title, subtitle, bgColor, borderColor, titleColor, is
         }
     };
 
-    const snappedStyle = isSnapped ? 'rounded-t-none shadow-none z-0' : 'rounded-md shadow-md z-10';
+    const snappedStyle = isSnapped ? 'rounded-t-none shadow-none z-0 border-t-0' : 'rounded-md shadow-md z-10';
+    const containerClass = className || 'w-[160px] flex-col';
 
     return (
-        <div className={`relative px-4 py-3 border-2 w-[160px] min-h-[70px] flex flex-col ${bgColor} ${borderColor} ${snappedStyle}`}>
+        <div className={`relative px-3 py-2 border-2 flex min-h-[50px] ${containerClass} ${bgColor} ${borderColor} ${snappedStyle}`}>
             {targetHandle && !isSnapped && <Handle type="target" position={targetHandle.position || Position.Left} className={`w-3 h-3 ${targetHandle.color}`} />}
 
-            <div className="flex justify-between items-start mb-2">
+            <div className={`flex justify-between items-start ${className?.includes('flex-row') ? 'w-1/2 pr-2' : 'mb-1 w-full'}`}>
                 {isEditing && onRename ? (
                     <input
                         autoFocus
@@ -54,7 +56,7 @@ export function BaseNode({ title, subtitle, bgColor, borderColor, titleColor, is
                     />
                 ) : (
                     <span
-                        className={`text-sm font-bold truncate ${titleColor} ${onRename ? 'cursor-text hover:opacity-80' : ''}`}
+                        className={`text-sm font-bold truncate leading-tight ${titleColor} ${onRename ? 'cursor-text hover:opacity-80' : ''}`}
                         onDoubleClick={() => onRename && setIsEditing(true)}
                         title={onRename ? "Double click to rename" : ""}
                     >
@@ -62,12 +64,12 @@ export function BaseNode({ title, subtitle, bgColor, borderColor, titleColor, is
                     </span>
                 )}
                 <div className="flex flex-col items-end shrink-0 ml-1">
-                    {subtitle && <span className="text-[10px] uppercase font-black opacity-50">{subtitle}</span>}
+                    {subtitle && <span className="text-[9px] uppercase font-black opacity-50 leading-none mb-0.5">{subtitle}</span>}
                     {headerElement}
                 </div>
             </div>
 
-            <div className="flex-1 flex flex-col justify-end w-full">
+            <div className={`flex-1 flex w-full ${className?.includes('flex-row') ? 'flex-row items-center' : 'flex-col justify-end'}`}>
                 {children}
             </div>
 
