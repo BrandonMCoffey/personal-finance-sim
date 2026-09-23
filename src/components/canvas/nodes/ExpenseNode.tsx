@@ -1,6 +1,5 @@
 import { BaseNode } from './BaseNode';
 import { useFinanceStore } from '../../../store/financeStore';
-import { Position } from '@xyflow/react';
 
 interface ExpenseNodeProps {
   data: {
@@ -71,13 +70,13 @@ export function ExpenseNode({ data }: ExpenseNodeProps) {
   return (
     <BaseNode
       title={data.name}
-      subtitle={data.isFixed ? 'FIXED' : 'VAR'}
+      subtitle={data.isFixed ? 'FIXED' : undefined}
       bgColor="bg-white"
       borderColor={`border-[rgba(${currentRgb},0.5)]`}
       titleColor={`text-[rgb(${currentRgb})]`}
       isSnapped={data.isSnapped}
       targetHandle={!data.isSnapped ? { color: 'bg-red-500' } : undefined}
-      className="w-[160px] flex-col justify-center"
+      className={'w-[160px] h-[60px]'}
     >
       <style>{`
 		.expense-slider::-webkit-slider-thumb { -webkit-appearance: none; appearance: none; width: 0; height: 0; }
@@ -94,7 +93,7 @@ export function ExpenseNode({ data }: ExpenseNodeProps) {
               else updateTransferRule(incomingRule.id, Number(e.target.value), 'fixed');
             }}
             style={{
-              background: `linear-gradient(to right, rgb(${currentRgb}) ${fillPercentage}%, rgba(${currentRgb}, 0.15) ${fillPercentage}%)`
+              background: `linear-gradient(to right, rgb(${currentRgb}) ${fillPercentage}%, rgba(0,0,0,0.1) ${fillPercentage}%)`
             }}
             className={`nodrag expense-slider w-full h-1.5 rounded-full appearance-none outline-none ${data.isFixed ? 'cursor-not-allowed opacity-90' : 'cursor-pointer'}`}
           />

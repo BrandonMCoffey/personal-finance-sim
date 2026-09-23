@@ -29,7 +29,7 @@ export function GoalNode({ data }: GoalNodeProps) {
       titleColor="text-purple-900"
       isSnapped={data.isSnapped}
       targetHandle={!data.isSnapped ? { color: 'bg-purple-500' } : undefined}
-      className="w-[160px] flex-col justify-center"
+      className={'w-[160px] h-[60px]'}
     >
       <div className="w-full mt-1">
         <div className="w-full bg-purple-100 rounded-full h-1.5">

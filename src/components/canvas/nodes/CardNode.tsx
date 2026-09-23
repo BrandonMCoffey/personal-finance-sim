@@ -36,6 +36,7 @@ export function CardNode({ data }: CardNodeProps) {
       targetHandle={isCredit && !data.isSnapped ? { color: handleColor } : undefined}
       sourceHandle={{ color: handleColor }}
       headerElement={headerElement}
+      className={data.isSnapped ? 'w-[160px] h-[78px]' : 'w-[160px] h-[80px]'}
     >
       <div className="mt-2 text-white w-full">
         {isCredit ? (
