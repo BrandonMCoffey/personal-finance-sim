@@ -28,17 +28,28 @@ export function GradeModal({ isOpen, report, onRetry, onContinue }: GradeModalPr
 
 				<div className="p-6">
 					<h3 className="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-4">Financial Advisor Feedback</h3>
-					<ul className="space-y-3">
+					<ul className="space-y-3 mb-6">
 						{report.feedback.map((msg, idx) => {
 							const positive = isPositiveFeedback(msg);
 							return (
 								<li key={idx} className="flex items-start gap-3 text-gray-700">
 									<span className={`mt-1 flex-shrink-0 w-2 h-2 rounded-full ${positive ? "bg-green-500" : "bg-red-500"}`} />
-									<span className={positive ? "font-medium" : ""}>{msg}</span>
+									<span className={positive ? "font-medium" : "text-sm"}>{msg}</span>
 								</li>
 							);
 						})}
 					</ul>
+
+					{/* Contextual Hint Injection */}
+					{!report.passed && report.contextualHint && (
+						<div className="bg-blue-50 border border-blue-200 p-4 rounded-lg flex gap-3 items-start">
+							<span className="text-xl">💡</span>
+							<div>
+								<h4 className="text-sm font-bold text-blue-900 mb-1">Advisor Hint</h4>
+								<p className="text-sm text-blue-800 leading-relaxed">{report.contextualHint}</p>
+							</div>
+						</div>
+					)}
 				</div>
 
 				<div className="px-6 py-4 bg-gray-50 border-t flex justify-end gap-3">

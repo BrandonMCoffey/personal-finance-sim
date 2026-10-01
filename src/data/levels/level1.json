@@ -1,6 +1,12 @@
 {
 	"levelId": 1,
+	"category": "budgeting",
 	"forecastMonths": 3,
+	"hints": [
+		"Check your total monthly income vs your recurring expenses in the ledger. Are you making enough to cover everything?",
+		"Make sure you route exactly what is needed to your Fixed expenses first.",
+		"If your checking account is dropping below zero, change your flexible expense (Food, Entertainment) routings from fixed dollars ($) to percentages (%) to only spend what remains."
+	],
 	"client": {
 		"name": "Alex",
 		"description": "Alex just got their first apartment and wants to make sure they aren't spending more than they make.",
@@ -33,7 +39,8 @@
 	"allowedActions": {
 		"canCreateAccounts": false,
 		"canDeleteAccounts": false,
-		"allowedAccountTypes": []
+		"allowedAccountTypes": [],
+		"allowedCardTypes": []
 	},
 	"winConditions": {
 		"requiredAccounts": []

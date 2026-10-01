@@ -1,8 +1,20 @@
+import { useState, useEffect } from "react";
 import type { Income, Expense } from "../../store/financeStore";
 import { useFinanceStore } from "../../store/financeStore";
 
 export function InputPanel() {
-	const { client, incomes, expenses } = useFinanceStore();
+	const { levelId, client, incomes, expenses, hints } = useFinanceStore();
+	const [hintIndex, setHintIndex] = useState(-1);
+
+	useEffect(() => {
+		setHintIndex(-1);
+	}, [levelId]);
+
+	const revealNextHint = () => {
+		if (hintIndex < hints.length - 1) {
+			setHintIndex((prev) => prev + 1);
+		}
+	};
 
 	return (
 		<div className="flex flex-col h-full gap-6 text-sm">
@@ -22,6 +34,35 @@ export function InputPanel() {
 					<p className="text-gray-400 italic">No client loaded.</p>
 				)}
 			</section>
+
+			{/* Manual Hint Section */}
+			{hints && hints.length > 0 && (
+				<section>
+					<div className="flex justify-between items-center border-b pb-2 mb-3">
+						<h2 className="font-semibold text-gray-800">Assistance</h2>
+						<span className="text-xs text-gray-400 font-medium">
+							{hintIndex + 1} / {hints.length} Hints
+						</span>
+					</div>
+
+					<div className="flex flex-col gap-2">
+						{hints.slice(0, hintIndex + 1).map((hint, idx) => (
+							<div key={idx} className="bg-amber-50 border border-amber-200 p-3 rounded text-amber-900 text-xs leading-relaxed shadow-sm">
+								<span className="font-bold mr-1">Hint {idx + 1}:</span> {hint}
+							</div>
+						))}
+
+						{hintIndex < hints.length - 1 && (
+							<button
+								onClick={revealNextHint}
+								className="w-full py-2 bg-white border-2 border-dashed border-gray-300 text-gray-500 hover:text-gray-800 hover:border-gray-400 hover:bg-gray-50 rounded font-medium transition-all text-xs"
+							>
+								+ Request a Hint
+							</button>
+						)}
+					</div>
+				</section>
+			)}
 
 			{/* Ledger Section */}
 			<section className="flex-1">

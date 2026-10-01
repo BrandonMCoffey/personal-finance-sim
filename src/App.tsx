@@ -3,6 +3,7 @@ import { FlowSandbox } from "./components/canvas/FlowSandbox";
 import { ForecastPanel } from "./components/layout/ForecastPanel";
 import { InputPanel } from "./components/layout/InputPanel";
 import { LevelSelectMenu } from "./components/layout/LevelSelectMenu";
+import { MainMenu } from "./components/layout/MainMenu";
 import { GradeModal } from "./components/ui/GradeModal";
 import { useFinanceStore } from "./store/financeStore";
 import { evaluatePlan, type ValidationReport } from "./engines/validation";
@@ -41,10 +42,33 @@ export default function App() {
 	const handleContinue = () => {
 		if (report && levelId) saveLevelScore(levelId, report.score);
 		setIsModalOpen(false);
-		setCurrentScreen("menu");
+		setCurrentScreen("levels");
 	};
 
-	if (currentScreen === "menu") return <LevelSelectMenu />;
+	// --- Router Logic ---
+	if (currentScreen === "main_menu") return <MainMenu />;
+	if (currentScreen === "levels") return <LevelSelectMenu />;
+
+	if (currentScreen === "story") {
+		return (
+			<div className="w-full h-full flex flex-col items-center justify-center bg-gray-50">
+				<h2 className="text-2xl font-bold mb-4">Story Mode (WIP)</h2>
+				<button onClick={() => setCurrentScreen("main_menu")} className="px-4 py-2 bg-blue-600 text-white rounded">
+					Back to Menu
+				</button>
+			</div>
+		);
+	}
+	if (currentScreen === "endless") {
+		return (
+			<div className="w-full h-full flex flex-col items-center justify-center bg-gray-50">
+				<h2 className="text-2xl font-bold mb-4">Endless Mode (WIP)</h2>
+				<button onClick={() => setCurrentScreen("main_menu")} className="px-4 py-2 bg-blue-600 text-white rounded">
+					Back to Menu
+				</button>
+			</div>
+		);
+	}
 
 	return (
 		<div className="flex flex-col w-full h-full bg-gray-50 text-gray-900 relative overflow-hidden">
@@ -55,8 +79,9 @@ export default function App() {
 					<p className="text-sm text-gray-600">Goal: {primaryGoal}</p>
 				</div>
 				<div className="flex gap-4 items-center">
-					<button onClick={() => setCurrentScreen("menu")} className="text-sm text-gray-500 hover:text-gray-800 font-medium">
-						← Back to Menu
+					{/* Changed back navigation to return to the active sub-menu */}
+					<button onClick={() => setCurrentScreen("levels")} className="text-sm text-gray-500 hover:text-gray-800 font-medium">
+						← Back to Levels
 					</button>
 					<button onClick={handleSubmitPlan} className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 font-medium transition-colors">
 						Submit Plan

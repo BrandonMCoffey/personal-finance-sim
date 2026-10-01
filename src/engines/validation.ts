@@ -5,6 +5,7 @@ export interface ValidationReport {
 	passed: boolean;
 	score: number;
 	feedback: string[];
+	contextualHint?: string;
 }
 
 export function evaluatePlan(
@@ -20,6 +21,7 @@ export function evaluatePlan(
 ): ValidationReport {
 	const feedback: string[] = [];
 	let score = 100;
+	let contextualHint: string | undefined = undefined;
 
 	if (!winConditions) return { passed: false, score: 0, feedback: ["No win conditions found for this level."] };
 
@@ -45,9 +47,9 @@ export function evaluatePlan(
 			const forecast = generateForecast(accounts, incomes, transferRules, goals, expenses, cards, loans, retirements, configuredGoalDeadline);
 			const finalSnapshot = forecast[forecast.length - 1];
 			const finalAmount = finalSnapshot?.goalProgress[goal.id] || 0;
-			const hitMonth = finalSnapshot?.goalHitMonths[goal.id];
 
 			if (finalAmount >= goal.targetAmount) {
+				const hitMonth = finalSnapshot?.goalHitMonths[goal.id];
 				if (hitMonth && hitMonth < configuredGoalDeadline) {
 					score += 10;
 					feedback.push(`Excellent: You reached $${goal.targetAmount} for "${goal.name}" early in Month ${hitMonth}! (+10 pts)`);
@@ -56,9 +58,9 @@ export function evaluatePlan(
 				}
 			} else {
 				score -= 30;
-				feedback.push(
-					`Missed Timeline: "${goal.name}" only reached $${finalAmount.toFixed(2)} out of $${goal.targetAmount} after ${configuredGoalDeadline} months.`
-				);
+				feedback.push(`Missed Timeline: "${goal.name}" only reached $${finalAmount.toFixed(2)} out of $${goal.targetAmount}.`);
+				if (!contextualHint)
+					contextualHint = `You missed the target for ${goal.name}. Ensure you are routing funds directly into the goal node, and check if upstream expenses are eating the balance before it reaches the goal.`;
 			}
 		}
 	});
@@ -69,9 +71,9 @@ export function evaluatePlan(
 			const fundingRule = transferRules.find((r) => r.destinationId === exp.id);
 			if (fundingRule && accounts.some((a) => a.id === fundingRule.sourceId)) {
 				score -= 15;
-				feedback.push(
-					`Payment Error: "${exp.name}" requires a Debit or Credit Card, but you are trying to pay it directly via routing number from a bank account.`
-				);
+				feedback.push(`Payment Error: "${exp.name}" requires a Debit or Credit Card.`);
+				if (!contextualHint)
+					contextualHint = `To pay for ${exp.name}, you must create a Card node, link it to your bank, and route the payment from the Card to the Expense.`;
 			}
 		}
 	});
@@ -82,12 +84,12 @@ export function evaluatePlan(
 	expenses.forEach((expense) => {
 		if (expense.isFixed || expense.minValue === undefined) return;
 		const violation = expenseForecast.find((snapshot) => (snapshot.expenseProgress[expense.id] ?? 0) < expense.minValue! - 0.01);
+
 		if (violation) {
 			score -= VARIABLE_EXPENSE_MIN_PENALTY;
-			const actual = violation.expenseProgress[expense.id] ?? 0;
-			feedback.push(
-				`Minimum Funding Warning: "${expense.name}" falls below its $${expense.minValue!.toFixed(2)} minimum in Month ${violation.month}, receiving only $${actual.toFixed(2)}. (-${VARIABLE_EXPENSE_MIN_PENALTY} pts)`
-			);
+			feedback.push(`Minimum Funding Warning: "${expense.name}" falls below its $${expense.minValue!.toFixed(2)} minimum.`);
+			if (!contextualHint)
+				contextualHint = `You aren't allocating enough to ${expense.name}. Adjust the percentages in your Output Editor to ensure the minimum threshold is met.`;
 		}
 	});
 
@@ -112,6 +114,7 @@ export function evaluatePlan(
 		}
 	}
 
+	// Check Overdrafts
 	const fullForecast = generateForecast(accounts, incomes, transferRules, goals, expenses, cards, loans, retirements, 12);
 	let overdraftFound = false;
 	fullForecast.forEach((snap) => {
@@ -119,14 +122,14 @@ export function evaluatePlan(
 			if (balance < -0.01 && !overdraftFound) {
 				const accName = accounts.find((a) => a.id === accId)?.name || "An account";
 				score -= 40;
-				feedback.push(
-					`Overdraft Error: Your plan causes "${accName}" to drop into the negative. You cannot spend more money than you have in a bank account.`
-				);
+				feedback.push(`Overdraft Error: Your plan causes "${accName}" to drop into the negative.`);
+				if (!contextualHint)
+					contextualHint = `Your ${accName} is overdrafting. Convert fixed dollar ($) outputs into percentages (%) so you never spend more than the account actually holds.`;
 				overdraftFound = true;
 			}
 		});
 	});
 
 	const finalScore = Math.max(0, score);
-	return { passed: finalScore >= 60, score: finalScore, feedback };
+	return { passed: finalScore >= 60, score: finalScore, feedback, contextualHint };
 }

@@ -105,10 +105,12 @@ export interface WinConditions {
 
 // --- Store Interface ---
 interface FinanceState {
-	currentScreen: "menu" | "game";
+	currentScreen: "main_menu" | "levels" | "story" | "endless" | "game";
 	levelScores: Record<number, number>;
 	isAllUnlocked: boolean;
 	levelId: number | null;
+	category: string;
+	hints: string[];
 	client: Client | null;
 	expenses: Expense[];
 	accounts: Account[];
@@ -123,7 +125,7 @@ interface FinanceState {
 	allowedActions: AllowedActions | null;
 	initialAccountCount: number;
 
-	setCurrentScreen: (screen: "menu" | "game") => void;
+	setCurrentScreen: (screen: "main_menu" | "levels" | "story" | "endless" | "game") => void;
 	saveLevelScore: (levelId: number, score: number) => void;
 	unlockAllLevels: () => void;
 	clearProgress: () => void;
@@ -151,11 +153,13 @@ interface FinanceState {
 
 // --- Zustand Implementation ---
 export const useFinanceStore = create<FinanceState>()((set) => ({
-	currentScreen: "menu",
+	currentScreen: "main_menu",
 	levelScores: JSON.parse(localStorage.getItem("finance_scores") || "{}"),
 	isAllUnlocked: localStorage.getItem("finance_unlocked") === "true",
 
 	levelId: null,
+	category: "budgeting",
+	hints: [],
 	client: null,
 	expenses: [],
 	accounts: [],
@@ -196,6 +200,8 @@ export const useFinanceStore = create<FinanceState>()((set) => ({
 	loadLevel: (levelData: any) =>
 		set({
 			levelId: levelData.levelId,
+			category: levelData.category || "budgeting",
+			hints: levelData.hints || [],
 			client: levelData.client || null,
 			expenses: (levelData.startingState?.expenses || []).map((exp: any) => ({
 				...exp,
