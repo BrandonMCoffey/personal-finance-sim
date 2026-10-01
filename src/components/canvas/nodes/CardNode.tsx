@@ -6,6 +6,7 @@ interface CardNodeProps {
 		name: string;
 		type: "debit" | "credit";
 		forecastBalance: number;
+		interestPaid: number;
 		apr?: number;
 		isSnapped: boolean;
 	};
@@ -38,17 +39,24 @@ export function CardNode({ data }: CardNodeProps) {
 			targetHandle={isCredit && !data.isSnapped ? { color: handleColor } : undefined}
 			sourceHandle={{ color: handleColor }}
 			headerElement={headerElement}
-			className={data.isSnapped ? "w-[160px] h-[78px]" : "w-[160px] h-[80px]"}
+			className={data.isSnapped ? "w-[160px] h-[78px]" : "w-[160px] h-[95px]"}
 		>
 			<div className="mt-2 text-white w-full">
 				{isCredit ? (
-					<div className="flex justify-between items-end w-full">
-						<div>
-							<div className="text-[10px] opacity-75">Forecasted Debt</div>
-							<div className={`text-sm font-bold ${data.forecastBalance > 0 ? "text-red-300" : "text-white"}`}>
-								${data.forecastBalance.toFixed(2)}
+					<div className="flex flex-col w-full">
+						<div className="flex justify-between items-end w-full">
+							<div>
+								<div className="text-[10px] opacity-75">Forecasted Debt</div>
+								<div className={`text-sm font-bold ${data.forecastBalance > 0 ? "text-red-300" : "text-white"}`}>
+									${data.forecastBalance.toFixed(2)}
+								</div>
 							</div>
 						</div>
+						{data.interestPaid > 0 && (
+							<div className="text-[9px] font-bold text-red-200 bg-red-900/50 px-1.5 py-0.5 rounded w-fit mt-1">
+								Interest Paid: -${data.interestPaid.toFixed(2)}
+							</div>
+						)}
 					</div>
 				) : (
 					<div className="text-[10px] opacity-75 italic">

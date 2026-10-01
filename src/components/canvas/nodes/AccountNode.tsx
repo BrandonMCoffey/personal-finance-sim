@@ -7,10 +7,13 @@ interface AccountNodeProps {
 		name: string;
 		balance: number;
 		forecastBalance: number;
+		interestEarned: number;
 		forecastMonths: number;
 		accountType: string;
 		apy?: number;
 		history: { month: number; balance: number; goal: number; in: number; out: number }[];
+		originalBalance?: number;
+		isDeposited?: boolean;
 	};
 }
 
@@ -18,6 +21,7 @@ export function AccountNode({ data }: AccountNodeProps) {
 	const { renameAccount } = useFinanceStore();
 	const isCash = data.accountType === "cash";
 	const isNegative = data.forecastBalance < 0 && !isCash;
+	const originalBalance = data.originalBalance !== undefined ? data.originalBalance : data.balance;
 
 	let bgColor = "bg-white";
 	let borderColor = "border-gray-200";
@@ -33,6 +37,7 @@ export function AccountNode({ data }: AccountNodeProps) {
 	const titleColor = isCash ? "text-green-800" : "text-gray-700";
 	const maxScale = Math.max(...data.history.map((h) => Math.max(0, h.balance) + h.out), 500);
 
+	const isDeposited = data.isDeposited;
 	const headerElement = isNegative ? (
 		<div
 			className="w-4 h-4 bg-red-600 rounded-full flex items-center justify-center text-white text-[11px] font-black shadow-sm cursor-help animate-pulse"
@@ -40,15 +45,15 @@ export function AccountNode({ data }: AccountNodeProps) {
 		>
 			!
 		</div>
-	) : data.apy ? (
+	) : data.apy && !isDeposited ? (
 		<div className="text-[10px] font-bold text-blue-500 cursor-help" title="Annual Percentage Yield">
 			+{data.apy}% APY
 		</div>
 	) : undefined;
 
 	const rightPanel =
-		data.forecastMonths > 1 ? (
-			<div className="flex flex-col justify-center h-full w-24 border-l border-black/10 px-1.5 gap-[2px] bg-gray-50/30 rounded-r-md">
+		data.forecastMonths > 1 && history.length > 0 && !isDeposited ? (
+			<div className="nodrag nopan flex flex-col justify-center h-full w-24 border-l border-black/10 px-1.5 gap-[2px] bg-gray-50/30 rounded-r-md pointer-events-auto">
 				{data.history.map((h) => {
 					const totalBalance = Math.max(0, h.balance);
 					const goalEarmark = Math.min(h.goal || 0, totalBalance);
@@ -97,17 +102,28 @@ export function AccountNode({ data }: AccountNodeProps) {
 			bgColor={bgColor}
 			borderColor={borderColor}
 			titleColor={titleColor}
-			targetHandle={{ color: handleColor }}
+			targetHandle={!isDeposited ? { color: handleColor } : undefined}
 			sourceHandle={{ color: handleColor }}
 			onRename={(newName) => renameAccount(data.id, newName)}
 			headerElement={headerElement}
 			rightPanel={rightPanel}
-			className={data.forecastMonths > 1 ? "w-[260px] h-[85px]" : "w-[160px] h-[75px]"}
+			className={data.forecastMonths > 1 && !isDeposited ? "w-[260px] h-[95px]" : "w-[160px] h-[85px]"}
 		>
-			<div className={`text-[10px] ${isCash ? "text-green-600/80" : "text-gray-400"}`}>Start: ${data.balance.toFixed(0)}</div>
-			<div className={`text-xs font-bold mt-0.5 ${isNegative ? "text-red-600" : isCash ? "text-green-700" : "text-blue-600"}`}>
-				{data.forecastMonths}m: ${data.forecastBalance.toFixed(0)}
-			</div>
+			{isDeposited ? (
+				<div className="text-xs font-bold text-gray-500 mt-2">Deposited: ${originalBalance.toFixed(0)}</div>
+			) : (
+				<>
+					<div className={`text-[10px] ${isCash ? "text-green-600/80" : "text-gray-400"}`}>Start: ${data.balance.toFixed(0)}</div>
+					<div className={`text-xs font-bold mt-0.5 ${isNegative ? "text-red-600" : isCash ? "text-green-700" : "text-blue-600"}`}>
+						{data.forecastMonths}m: ${data.forecastBalance.toFixed(0)}
+					</div>
+					{data.interestEarned > 0 && (
+						<div className="text-[9px] font-bold text-green-500 bg-green-50 px-1 py-0.5 rounded w-fit mt-1 border border-green-100">
+							Earned: +${data.interestEarned.toFixed(2)}
+						</div>
+					)}
+				</>
+			)}
 		</BaseNode>
 	);
 }

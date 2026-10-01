@@ -6,26 +6,60 @@ import level3Data from "../../data/levels/level3.json";
 import level4Data from "../../data/levels/level4.json";
 import level5Data from "../../data/levels/level5.json";
 
-const CATEGORIES = [
-	{ id: "budgeting", title: "Budgeting & Cash Flow", icon: "📊" },
-	{ id: "banking", title: "Banking 101", icon: "🏦" },
-	{ id: "savings", title: "Saving for Goals", icon: "🎯" },
-	{ id: "retirement", title: "Long-term & Retirement", icon: "📈" },
-	{ id: "debt", title: "Managing Debt & Loans", icon: "💳" }
+const MAIN_CATEGORIES = [
+	{ id: "foundations", title: "Financial Foundations", icon: "🏦" },
+	{ id: "debt", title: "Credit & Debt", icon: "💳" },
+	{ id: "investing", title: "Investing & Retirement", icon: "📈" },
+	{ id: "life", title: "Life Events & Taxes", icon: "🏠" }
 ];
 
 const LEVEL_MANIFEST = [
-	{ id: 1, categoryId: "budgeting", title: "Level 1: Cash Flow Basics", desc: "Track income and expenses.", data: level1Data },
-	{ id: 2, categoryId: "banking", title: "Level 2: Banking 101", desc: "Open accounts to secure physical cash.", data: level2Data },
-	{ id: 3, categoryId: "savings", title: "Level 3: Short vs Long Term", desc: "Split savings into multiple buckets.", data: level3Data },
-	{ id: 4, categoryId: "retirement", title: "Level 4: Account Interest", desc: "Maximize APY gains.", data: level4Data },
-	{ id: 5, categoryId: "debt", title: "Level 5: Credit & Debt", desc: "Manage high-APR liabilities.", data: level5Data }
+	{
+		id: 1,
+		mainCategory: "foundations",
+		subCategory: "Cash Flow",
+		title: "Level 1: Income vs Expenses",
+		desc: "Balance your budget and avoid overdrafts.",
+		data: level1Data
+	},
+	{
+		id: 2,
+		mainCategory: "foundations",
+		subCategory: "Banking 101",
+		title: "Level 2: Securing Physical Cash",
+		desc: "Move money from under the mattress into a bank.",
+		data: level2Data
+	},
+	{
+		id: 3,
+		mainCategory: "foundations",
+		subCategory: "Saving for Goals",
+		title: "Level 3: The Emergency Fund",
+		desc: "Split your savings into multiple targeted buckets.",
+		data: level3Data
+	},
+	{
+		id: 4,
+		mainCategory: "foundations",
+		subCategory: "Saving for Goals",
+		title: "Level 4: Maximizing APY",
+		desc: "Take advantage of high-yield interest rates.",
+		data: level4Data
+	},
+	{
+		id: 5,
+		mainCategory: "debt",
+		subCategory: "Managing Credit Cards",
+		title: "Level 5: High-APR Liabilities",
+		desc: "Stop paying just the minimum balance.",
+		data: level5Data
+	}
 ];
 
 export function LevelSelectMenu() {
 	const { levelScores, isAllUnlocked, loadLevel, setCurrentScreen, unlockAllLevels, clearProgress } = useFinanceStore();
 
-	const [activeCategory, setActiveCategory] = useState<string>(CATEGORIES[0].id);
+	const [activeCategory, setActiveCategory] = useState<string>(MAIN_CATEGORIES[0].id);
 
 	const handlePlay = (levelData: any) => {
 		if (levelData) {
@@ -36,7 +70,16 @@ export function LevelSelectMenu() {
 		}
 	};
 
-	const activeLevels = LEVEL_MANIFEST.filter((lvl) => lvl.categoryId === activeCategory);
+	const activeLevels = LEVEL_MANIFEST.filter((lvl) => lvl.mainCategory === activeCategory);
+
+	const groupedLevels = activeLevels.reduce(
+		(acc, level) => {
+			if (!acc[level.subCategory]) acc[level.subCategory] = [];
+			acc[level.subCategory].push(level);
+			return acc;
+		},
+		{} as Record<string, typeof LEVEL_MANIFEST>
+	);
 
 	return (
 		<div className="w-full h-full bg-gray-50 flex flex-col overflow-hidden">
@@ -54,11 +97,11 @@ export function LevelSelectMenu() {
 			</header>
 
 			<main className="flex-1 w-full flex overflow-hidden">
-				{/* Category */}
+				{/* Categories */}
 				<aside className="w-80 border-r border-gray-200 p-6 overflow-y-auto shrink-0 bg-white">
 					<h2 className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-4">Curriculum</h2>
 					<nav className="flex flex-col gap-2">
-						{CATEGORIES.map((category) => {
+						{MAIN_CATEGORIES.map((category) => {
 							const isActive = activeCategory === category.id;
 							return (
 								<button
@@ -90,47 +133,54 @@ export function LevelSelectMenu() {
 				{/* Scenarios */}
 				<section className="flex-1 p-8 overflow-y-auto bg-gray-50">
 					<div className="max-w-4xl">
-						<h2 className="text-xl font-bold text-gray-800 mb-6 border-b pb-2">{CATEGORIES.find((c) => c.id === activeCategory)?.title} Scenarios</h2>
+						<h2 className="text-2xl font-bold text-gray-800 mb-8">{MAIN_CATEGORIES.find((c) => c.id === activeCategory)?.title}</h2>
 
-						{activeLevels.length === 0 ? (
+						{Object.keys(groupedLevels).length === 0 ? (
 							<div className="p-8 text-center border-2 border-dashed border-gray-300 rounded-xl text-gray-500">
-								New scenarios for this module are currently under development.
+								No Scenarios exist for this module yet.
 							</div>
 						) : (
-							<div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
-								{activeLevels.map((level) => {
-									const score = levelScores[level.id];
-									const isCompleted = score >= 60;
-									const isUnlocked = isAllUnlocked || level.id === 1 || levelScores[level.id - 1] >= 60;
+							<div className="flex flex-col gap-10">
+								{Object.entries(groupedLevels).map(([subCategory, levels]) => (
+									<div key={subCategory}>
+										<h3 className="text-lg font-bold text-gray-700 mb-4 border-b border-gray-200 pb-2">{subCategory}</h3>
+										<div className="grid grid-cols-1 xl:grid-cols-2 gap-4">
+											{levels.map((level) => {
+												const score = levelScores[level.id];
+												const isCompleted = score >= 60;
+												const isUnlocked = isAllUnlocked || level.id === 1 || levelScores[level.id - 1] >= 60;
 
-									return (
-										<div
-											key={level.id}
-											className={`p-6 rounded-xl border-2 transition-all flex flex-col ${
-												isUnlocked
-													? "bg-white border-gray-200 hover:border-blue-400 hover:shadow-md cursor-pointer"
-													: "bg-gray-100 border-gray-200 opacity-60 grayscale cursor-not-allowed"
-											}`}
-											onClick={() => isUnlocked && handlePlay(level.data)}
-										>
-											<div className="flex justify-between items-start mb-3">
-												<h3 className="font-bold text-lg text-gray-800 leading-tight">{level.title}</h3>
-												{isCompleted && (
-													<span className="bg-green-100 text-green-700 text-xs font-bold px-2 py-1 rounded-full shrink-0">✓ {score}%</span>
-												)}
-											</div>
-											<p className="text-sm text-gray-600 mb-6 flex-1">{level.desc}</p>
-											<button
-												disabled={!isUnlocked}
-												className={`w-full py-2.5 rounded font-bold text-sm transition-colors ${
-													isUnlocked ? "bg-blue-50 text-blue-700 hover:bg-blue-100" : "bg-gray-200 text-gray-400"
-												}`}
-											>
-												{isUnlocked ? (isCompleted ? "Replay Scenario" : "Start Scenario") : "Locked"}
-											</button>
+												return (
+													<div
+														key={level.id}
+														className={`p-5 rounded-xl border-2 transition-all flex flex-col ${
+															isUnlocked
+																? "bg-white border-gray-200 hover:border-blue-400 hover:shadow-md cursor-pointer"
+																: "bg-gray-100 border-gray-200 opacity-60 grayscale cursor-not-allowed"
+														}`}
+														onClick={() => isUnlocked && handlePlay(level.data)}
+													>
+														<div className="flex justify-between items-start mb-2">
+															<h4 className="font-bold text-gray-800 leading-tight">{level.title}</h4>
+															{isCompleted && (
+																<span className="bg-green-100 text-green-700 text-xs font-bold px-2 py-1 rounded-full shrink-0 ml-2">✓ {score}%</span>
+															)}
+														</div>
+														<p className="text-sm text-gray-600 mb-4 flex-1">{level.desc}</p>
+														<button
+															disabled={!isUnlocked}
+															className={`w-full py-2 rounded font-bold text-xs transition-colors ${
+																isUnlocked ? "bg-blue-50 text-blue-700 hover:bg-blue-100" : "bg-gray-200 text-gray-400"
+															}`}
+														>
+															{isUnlocked ? (isCompleted ? "Replay" : "Start Scenario") : "Locked"}
+														</button>
+													</div>
+												);
+											})}
 										</div>
-									);
-								})}
+									</div>
+								))}
 							</div>
 						)}
 					</div>

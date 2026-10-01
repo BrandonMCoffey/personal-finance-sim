@@ -10,6 +10,7 @@ interface RetirementNodeProps {
 		expectedApy: number;
 		employerMatchPercent: number;
 		forecastBalance: number;
+		employerMatchTotal: number;
 	};
 }
 
@@ -27,15 +28,23 @@ export function RetirementNode({ data }: RetirementNodeProps) {
 			sourceHandle={{ color: "bg-emerald-500", position: Position.Right }}
 			onRename={(newName) => renameAccount(data.id, newName)}
 			headerElement={<span className="text-[10px] font-bold text-emerald-600">~{data.expectedApy}% APY</span>}
+			className="w-[160px] h-[95px]"
 		>
-			<div className="flex justify-between items-end w-full mt-2">
-				<div>
-					<div className="text-[10px] opacity-75 text-emerald-800">Forecasted Value</div>
-					<div className="text-sm font-bold text-emerald-700">${Math.max(0, data.forecastBalance).toFixed(2)}</div>
+			<div className="flex flex-col w-full mt-1">
+				<div className="flex justify-between items-end w-full">
+					<div>
+						<div className="text-[10px] opacity-75 text-emerald-800">Forecasted Value</div>
+						<div className="text-sm font-bold text-emerald-700">${Math.max(0, data.forecastBalance).toFixed(2)}</div>
+					</div>
+					{data.employerMatchPercent > 0 && (
+						<div className="text-[9px] text-emerald-700 font-medium bg-emerald-100 px-1 py-0.5 rounded" title="Employer Match">
+							Match: {data.employerMatchPercent}%
+						</div>
+					)}
 				</div>
-				{data.employerMatchPercent > 0 && (
-					<div className="text-[10px] text-emerald-700 font-medium bg-emerald-100 px-1.5 py-0.5 rounded" title="Employer Match">
-						Match: {data.employerMatchPercent}%
+				{data.employerMatchTotal > 0 && (
+					<div className="text-[9px] font-bold text-emerald-600 bg-emerald-100/50 border border-emerald-200 px-1.5 py-0.5 rounded w-fit mt-1">
+						Free Money: +${data.employerMatchTotal.toFixed(2)}
 					</div>
 				)}
 			</div>

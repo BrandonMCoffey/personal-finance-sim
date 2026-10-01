@@ -40,6 +40,7 @@ export interface Loan {
 export interface Retirement {
 	id: string;
 	name: string;
+	type?: "401k" | "roth_ira" | "traditional_ira";
 	balance: number;
 	expectedApy: number;
 	employerMatchPercent: number;
@@ -49,12 +50,14 @@ export interface IncomeRoute {
 	destinationId: string;
 	amount: number;
 	type: "fixed" | "percentage";
+	isAuto?: boolean;
 }
 
 export interface Income {
 	id: string;
 	name: string;
 	amount: number;
+	taxRate?: number;
 	frequency: string;
 	routings: IncomeRoute[];
 }
@@ -72,6 +75,7 @@ export interface TransferRule {
 	destinationId: string;
 	amount: number;
 	type: "fixed" | "percentage";
+	isAuto?: boolean;
 }
 
 export interface Client {
@@ -140,13 +144,14 @@ interface FinanceState {
 	addLoan: (name: string, balance: number, apr: number, minimumPayment: number) => void;
 	addRetirement: (name: string, balance: number, expectedApy: number, employerMatchPercent: number) => void;
 
-	addIncomeRoute: (incomeId: string, destinationId: string, defaultAmount?: number, defaultType?: "fixed" | "percentage") => void;
-	updateIncomeRoute: (incomeId: string, destinationId: string, amount: number, type: "fixed" | "percentage") => void;
+	addIncomeRoute: (incomeId: string, destinationId: string, defaultAmount?: number, defaultType?: "fixed" | "percentage", isAuto?: boolean) => void;
+	updateIncomeRoute: (incomeId: string, destinationId: string, amount: number, type: "fixed" | "percentage", isAuto?: boolean) => void;
+
 	removeIncomeRoute: (incomeId: string, destinationId: string) => void;
 	reorderIncomeRoutes: (incomeId: string, startIndex: number, endIndex: number) => void;
 
-	addTransferRule: (sourceId: string, destinationId: string, amount?: number, type?: "fixed" | "percentage") => void;
-	updateTransferRule: (ruleId: string, amount: number, type: "fixed" | "percentage") => void;
+	addTransferRule: (sourceId: string, destinationId: string, amount?: number, type?: "fixed" | "percentage", isAuto?: boolean) => void;
+	updateTransferRule: (ruleId: string, amount: number, type: "fixed" | "percentage", isAuto?: boolean) => void;
 	removeTransferRule: (ruleId: string) => void;
 	reorderTransferRules: (sourceId: string, startIndex: number, endIndex: number) => void;
 }
@@ -198,35 +203,48 @@ export const useFinanceStore = create<FinanceState>()((set) => ({
 		}),
 
 	loadLevel: (levelData: any) =>
-		set({
-			levelId: levelData.levelId,
-			category: levelData.category || "budgeting",
-			hints: levelData.hints || [],
-			client: levelData.client || null,
-			expenses: (levelData.startingState?.expenses || []).map((exp: any) => ({
-				...exp,
-				requiresCard: exp.requiresCard || false
-			})),
-			accounts: levelData.startingState?.accounts || [],
-			cards: levelData.startingState?.cards || [],
-			loans: levelData.startingState?.loans || [],
-			retirements: levelData.startingState?.retirements || [],
-			incomes: (levelData.startingState?.income || []).map((inc: any) => ({
-				...inc,
-				routings: inc.routings
-					? inc.routings.map((r: any) => ({
-							destinationId: r.destinationId,
-							amount: r.percentage || r.amount || 10,
-							type: r.type || "percentage"
-						}))
-					: []
-			})),
-			goals: levelData.startingState?.goals || [],
-			transferRules: levelData.startingState?.transferRules || [],
-			winConditions: levelData.winConditions || null,
-			forecastMonths: levelData.forecastMonths || 6,
-			allowedActions: levelData.allowedActions || null,
-			initialAccountCount: levelData.startingState?.accounts?.length || 0
+		set((_) => {
+			const rawAccounts = levelData.startingState?.accounts || [];
+			const isChecking = (destId: string) => rawAccounts.some((a: any) => a.id === destId && a.type === "checking");
+
+			return {
+				levelId: levelData.levelId,
+				category: levelData.category || "budgeting",
+				hints: levelData.hints || [],
+				client: levelData.client || null,
+				expenses: (levelData.startingState?.expenses || []).map((exp: any) => ({
+					...exp,
+					requiresCard: exp.requiresCard || false
+				})),
+				accounts: rawAccounts,
+				cards: levelData.startingState?.cards || [],
+				loans: levelData.startingState?.loans || [],
+				retirements: (levelData.startingState?.retirements || []).map((ret: any) => ({
+					...ret,
+					type: ret.type || "401k"
+				})),
+				incomes: (levelData.startingState?.income || []).map((inc: any) => ({
+					...inc,
+					taxRate: inc.taxRate || 0,
+					routings: inc.routings
+						? inc.routings.map((r: any) => ({
+								destinationId: r.destinationId,
+								amount: r.percentage || r.amount || 10,
+								type: r.type || "percentage",
+								isAuto: r.isAuto !== undefined ? r.isAuto : isChecking(r.destinationId)
+							}))
+						: []
+				})),
+				goals: levelData.startingState?.goals || [],
+				transferRules: (levelData.startingState?.transferRules || []).map((rule: any) => ({
+					...rule,
+					isAuto: rule.isAuto !== undefined ? rule.isAuto : isChecking(rule.destinationId)
+				})),
+				winConditions: levelData.winConditions || null,
+				forecastMonths: levelData.forecastMonths || 6,
+				allowedActions: levelData.allowedActions || null,
+				initialAccountCount: rawAccounts.length || 0
+			};
 		}),
 
 	addAccount: (name, type) =>
@@ -303,7 +321,7 @@ export const useFinanceStore = create<FinanceState>()((set) => ({
 		})),
 
 	// --- INCOME ACTIONS ---
-	addIncomeRoute: (incomeId, destinationId, defaultAmount = 10, defaultType = "percentage") =>
+	addIncomeRoute: (incomeId, destinationId, defaultAmount = 10, defaultType = "percentage", isAuto = false) =>
 		set((state) => ({
 			incomes: state.incomes.map((income) => {
 				if (income.id !== incomeId) return income;
@@ -314,28 +332,29 @@ export const useFinanceStore = create<FinanceState>()((set) => ({
 				if (defaultType === "fixed") {
 					return {
 						...income,
-						routings: [{ destinationId, amount: defaultAmount, type: "fixed" }, ...existing]
+						routings: [{ destinationId, amount: defaultAmount, type: "fixed", isAuto }, ...existing]
 					};
 				}
 
 				const newCount = existing.length + 1;
 				const split = Math.floor(100 / newCount);
-				const updatedPrior = existing.map((r) => (r.type === "percentage" ? { ...r, amount: split } : r));
-
+				const updatedPrior = existing.map((r) => (r.type === "percentage" && !r.isAuto ? { ...r, amount: split } : r));
 				return {
 					...income,
-					routings: [...updatedPrior, { destinationId, amount: split, type: "percentage" }]
+					routings: [...updatedPrior, { destinationId, amount: split, type: "percentage", isAuto }]
 				};
 			})
 		})),
 
-	updateIncomeRoute: (incomeId, destinationId, amount, type) =>
+	updateIncomeRoute: (incomeId, destinationId, amount, type, isAuto) =>
 		set((state) => ({
 			incomes: state.incomes.map((income) => {
 				if (income.id !== incomeId || !income.routings) return income;
 				return {
 					...income,
-					routings: income.routings.map((r) => (r.destinationId === destinationId ? { ...r, amount, type } : r))
+					routings: income.routings.map((r) =>
+						r.destinationId === destinationId ? { ...r, amount, type, isAuto: isAuto !== undefined ? isAuto : r.isAuto } : r
+					)
 				};
 			})
 		})),
@@ -363,19 +382,21 @@ export const useFinanceStore = create<FinanceState>()((set) => ({
 		})),
 
 	// --- TRANSFER ACTIONS ---
-	addTransferRule: (sourceId, destinationId, amount = 10, type = "percentage") =>
+	addTransferRule: (sourceId, destinationId, amount = 10, type = "percentage", isAuto = false) =>
 		set((state) => {
 			if (state.transferRules.find((r) => r.sourceId === sourceId && r.destinationId === destinationId)) {
 				return { transferRules: state.transferRules };
 			}
 			return {
-				transferRules: [...state.transferRules, { id: `rule_${Date.now()}`, sourceId, destinationId, amount, type }]
+				transferRules: [...state.transferRules, { id: `rule_${Date.now()}`, sourceId, destinationId, amount, type, isAuto }]
 			};
 		}),
 
-	updateTransferRule: (ruleId, amount, type) =>
+	updateTransferRule: (ruleId, amount, type, isAuto) =>
 		set((state) => ({
-			transferRules: state.transferRules.map((rule) => (rule.id === ruleId ? { ...rule, amount, type } : rule))
+			transferRules: state.transferRules.map((rule) =>
+				rule.id === ruleId ? { ...rule, amount, type, isAuto: isAuto !== undefined ? isAuto : rule.isAuto } : rule
+			)
 		})),
 
 	removeTransferRule: (ruleId) =>

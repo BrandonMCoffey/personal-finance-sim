@@ -94,6 +94,8 @@ export function OutputEditorPanel({ selectedEdgeId, onClose }: OutputEditorPanel
 
 					const isGoal = goals.some((g) => g.id === destId);
 					const isLastIncomeRule = isIncome && idx === itemsList.length - 1;
+					const destAccount = accounts.find((a) => a.id === destId);
+					const isChecking = destAccount?.type === "checking";
 
 					return (
 						<li
@@ -106,11 +108,26 @@ export function OutputEditorPanel({ selectedEdgeId, onClose }: OutputEditorPanel
 						>
 							<span className="text-gray-400 cursor-move">☰</span>
 							<div className="flex-1 truncate text-sm font-semibold text-gray-700">{destName}</div>
+
+							{isChecking && (
+								<label className="flex items-center gap-1 text-[10px] font-bold text-gray-500 mr-2 cursor-pointer">
+									<input
+										type="checkbox"
+										checked={item.isAuto || false}
+										onChange={(e) => {
+											if (isIncome) updateIncomeRoute(sourceId, destId, item.amount, item.type, e.target.checked);
+											else updateTransferRule(ruleId, item.amount, item.type, e.target.checked);
+										}}
+									/>
+									Auto
+								</label>
+							)}
+
 							{isGoal ? (
 								<span className="text-xs font-bold text-purple-600 bg-purple-50 px-2 py-1 rounded text-center whitespace-nowrap">
 									Monitors Balance
 								</span>
-							) : isLastIncomeRule ? (
+							) : isLastIncomeRule && !item.isAuto ? (
 								<span className="text-xs font-bold text-blue-600 bg-blue-50 px-3 py-1 rounded text-center whitespace-nowrap">Remaining</span>
 							) : sourceCard?.type === "credit" ? (
 								<select
@@ -127,21 +144,23 @@ export function OutputEditorPanel({ selectedEdgeId, onClose }: OutputEditorPanel
 										type="number"
 										min="0"
 										value={item.amount}
+										disabled={item.isAuto}
 										onChange={(e) =>
 											isIncome
-												? updateIncomeRoute(sourceId, destId, Number(e.target.value), item.type)
-												: updateTransferRule(ruleId, Number(e.target.value), item.type)
+												? updateIncomeRoute(sourceId, destId, Number(e.target.value), item.type, false)
+												: updateTransferRule(ruleId, Number(e.target.value), item.type, false)
 										}
-										className="border rounded px-1 py-1 w-16 text-xs text-right bg-white"
+										className={`border rounded px-1 py-1 w-16 text-xs text-right ${item.isAuto ? "bg-gray-100 text-gray-400" : "bg-white"}`}
 									/>
 									<select
 										value={item.type}
+										disabled={item.isAuto}
 										onChange={(e) =>
 											isIncome
-												? updateIncomeRoute(sourceId, destId, item.amount, e.target.value as any)
-												: updateTransferRule(ruleId, item.amount, e.target.value as any)
+												? updateIncomeRoute(sourceId, destId, item.amount, e.target.value as any, false)
+												: updateTransferRule(ruleId, item.amount, e.target.value as any, false)
 										}
-										className="text-xs border rounded p-1 bg-white cursor-pointer"
+										className={`text-xs border rounded p-1 cursor-pointer ${item.isAuto ? "bg-gray-100 text-gray-400" : "bg-white"}`}
 									>
 										<option value="percentage">%</option>
 										<option value="fixed">$</option>

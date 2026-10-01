@@ -48,8 +48,45 @@ function FlowSandboxInner() {
 		updateCardLink,
 		removeIncomeRoute,
 		removeTransferRule,
-		removeAccount
+		removeAccount,
+		updateIncomeRoute,
+		updateTransferRule
 	} = useFinanceStore();
+
+	useEffect(() => {
+		const accountRequiredSums: Record<string, number> = {};
+
+		accounts.forEach((a) => {
+			let sum = 0;
+			transferRules
+				.filter((r) => r.sourceId === a.id)
+				.forEach((r) => {
+					const exp = expenses.find((e) => e.id === r.destinationId);
+					if (exp) sum += exp.amount;
+				});
+			accountRequiredSums[a.id] = sum;
+		});
+
+		incomes.forEach((inc) => {
+			inc.routings?.forEach((route) => {
+				if (route.isAuto) {
+					const required = accountRequiredSums[route.destinationId] || 0;
+					if (route.amount !== required || route.type !== "fixed") {
+						updateIncomeRoute(inc.id, route.destinationId, required, "fixed", true);
+					}
+				}
+			});
+		});
+
+		transferRules.forEach((rule) => {
+			if (rule.isAuto) {
+				const required = accountRequiredSums[rule.destinationId] || 0;
+				if (rule.amount !== required || rule.type !== "fixed") {
+					updateTransferRule(rule.id, required, "fixed", true);
+				}
+			}
+		});
+	}, [expenses, transferRules, incomes, accounts, updateIncomeRoute, updateTransferRule]);
 
 	useEffect(() => {
 		const forecasts = generateForecast(accounts, incomes, transferRules, goals, expenses, cards, loans, retirements, forecastMonths);
@@ -93,7 +130,7 @@ function FlowSandboxInner() {
 			}
 		});
 
-		const accountHeight = 85;
+		const accountHeight = 95;
 		const childHeight = 60;
 
 		let currentMainY = 50;
@@ -117,6 +154,9 @@ function FlowSandboxInner() {
 			...incomes.map((inc, i) => {
 				let totalUsed = 0;
 				let overAllocated = false;
+				let taxAmount = inc.taxRate ? inc.amount * (inc.taxRate / 100) : 0;
+				let netAmount = inc.amount - taxAmount;
+
 				if (inc.routings) {
 					inc.routings.forEach((route, idx) => {
 						if (idx === inc.routings!.length - 1) return;
@@ -124,18 +164,37 @@ function FlowSandboxInner() {
 						totalUsed += intended;
 					});
 				}
-				if (totalUsed > inc.amount + 0.01) {
-					overAllocated = true;
-				}
+				if (totalUsed > netAmount + 0.01) overAllocated = true;
 				const isBalanced = inc.routings && inc.routings.length > 0 && !overAllocated;
+
 				return {
 					id: inc.id,
 					type: "income",
-					position: { x: 50, y: 50 + i * 100 },
-					data: { name: inc.name, amount: inc.amount, isBalanced }
+					position: { x: 50, y: 50 + i * 140 },
+					data: {
+						name: inc.name,
+						amount: inc.amount,
+						netAmount,
+						taxRate: inc.taxRate || 0,
+						taxAmount,
+						isBalanced
+					}
 				};
 			}),
 			...accounts.map((acc) => {
+				const isDepositedRule = transferRules.find((r) => r.sourceId === acc.id && accounts.some((a) => a.id === r.destinationId));
+				const isDeposited = !!isDepositedRule;
+
+				let adjustedStartBalance = acc.balance;
+				transferRules.forEach((rule) => {
+					if (rule.destinationId === acc.id && accounts.some((a) => a.id === rule.sourceId)) {
+						const sourceAcc = accounts.find((a) => a.id === rule.sourceId);
+						if (sourceAcc) {
+							adjustedStartBalance += sourceAcc.balance;
+						}
+					}
+				});
+
 				const history = forecasts.map((snap) => ({
 					month: snap.month,
 					balance: snap.accountBalances[acc.id],
@@ -143,6 +202,7 @@ function FlowSandboxInner() {
 					in: snap.accountFlows[acc.id].in,
 					out: snap.accountFlows[acc.id].out
 				}));
+
 				return {
 					id: acc.id,
 					type: "account",
@@ -150,12 +210,15 @@ function FlowSandboxInner() {
 					data: {
 						id: acc.id,
 						name: acc.name,
-						balance: acc.balance,
+						balance: adjustedStartBalance,
+						originalBalance: acc.balance,
 						forecastBalance: finalSnapshot ? finalSnapshot.accountBalances[acc.id] : acc.balance,
+						interestEarned: finalSnapshot ? finalSnapshot.accountInterestEarned[acc.id] : 0,
 						forecastMonths,
 						accountType: acc.type,
 						apy: acc.apy,
-						history
+						history,
+						isDeposited
 					}
 				};
 			}),
@@ -172,6 +235,7 @@ function FlowSandboxInner() {
 						name: card.name,
 						type: card.type,
 						forecastBalance: finalSnapshot ? finalSnapshot.cardBalances[card.id] : card.balance,
+						interestPaid: finalSnapshot ? finalSnapshot.cardInterestPaid[card.id] : 0, // <-- Added
 						apr: card.apr,
 						isSnapped: !!snap
 					}
@@ -187,7 +251,8 @@ function FlowSandboxInner() {
 					balance: loan.balance,
 					apr: loan.apr,
 					minimumPayment: loan.minimumPayment,
-					forecastBalance: finalSnapshot ? finalSnapshot.loanBalances[loan.id] : loan.balance
+					forecastBalance: finalSnapshot ? finalSnapshot.loanBalances[loan.id] : loan.balance,
+					interestPaid: finalSnapshot ? finalSnapshot.loanInterestPaid[loan.id] : 0 // <-- Added
 				}
 			})),
 			...retirements.map((ret) => ({
@@ -200,7 +265,8 @@ function FlowSandboxInner() {
 					balance: ret.balance,
 					expectedApy: ret.expectedApy,
 					employerMatchPercent: ret.employerMatchPercent,
-					forecastBalance: finalSnapshot ? finalSnapshot.retirementBalances[ret.id] : ret.balance
+					forecastBalance: finalSnapshot ? finalSnapshot.retirementBalances[ret.id] : ret.balance,
+					employerMatchTotal: finalSnapshot ? finalSnapshot.retirementEmployerMatch[ret.id] : 0 // <-- Added
 				}
 			})),
 			...goals.map((goal, i) => {
@@ -354,23 +420,28 @@ function FlowSandboxInner() {
 
 			if (sourceNode.type === "card" && targetNode.type === "account") {
 				const sourceCard = cards.find((c) => c.id === source);
-				if (sourceCard?.type === "credit") return; // Silently reject, cannot transfer CC to bank
+				if (sourceCard?.type === "credit") return;
 			}
 
 			if (sourceNode.type === "income" && ["account", "card", "expense"].includes(targetNode.type || "")) {
 				const targetExpense = expenses.find((e) => e.id === target);
+				const targetAcc = accounts.find((a) => a.id === target);
+
 				if (targetExpense) addIncomeRoute(source, target, targetExpense.amount, "fixed");
+				else if (targetAcc?.type === "checking") addIncomeRoute(source, target, 0, "fixed", true);
 				else addIncomeRoute(source, target);
 			} else if ((sourceNode.type === "account" || sourceNode.type === "card") && isValidTarget) {
 				const sourceAcc = accounts.find((a) => a.id === source);
 				const targetCard = cards.find((c) => c.id === target);
 				const targetExpense = expenses.find((e) => e.id === target);
 				const targetGoal = goals.find((g) => g.id === target);
+				const targetAcc = accounts.find((a) => a.id === target);
 
 				if (sourceAcc?.type === "cash") addTransferRule(source, target, 100, "percentage");
 				else if (targetCard && targetCard.type === "credit") addTransferRule(source, target, 100, "fixed");
 				else if (targetExpense) addTransferRule(source, target, targetExpense.amount, "fixed");
 				else if (targetGoal) addTransferRule(source, target, Math.min(100, targetGoal.targetAmount), "fixed");
+				else if (targetAcc?.type === "checking") addTransferRule(source, target, 0, "fixed", true);
 				else addTransferRule(source, target, 10, "percentage");
 			}
 		},
