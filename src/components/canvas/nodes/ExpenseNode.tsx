@@ -83,14 +83,13 @@ export function ExpenseNode({ data }: ExpenseNodeProps) {
 			titleColor={`text-[rgb(${currentRgb})]`}
 			isSnapped={data.isSnapped}
 			targetHandle={!data.isSnapped ? { color: "bg-red-500" } : undefined}
-			className={"w-[160px] h-[60px]"}
+			className="w-[160px] h-[68px]"
 		>
 			<style>{`
-		.expense-slider::-webkit-slider-thumb { -webkit-appearance: none; appearance: none; width: 0; height: 0; }
-		.expense-slider::-moz-range-thumb { width: 0; height: 0; border: 0; }
-	  `}</style>
-
-			<div className="w-full mt-1">
+        .expense-slider::-webkit-slider-thumb { -webkit-appearance: none; appearance: none; width: 0; height: 0; }
+        .expense-slider::-moz-range-thumb { width: 0; height: 0; border: 0; }
+      `}</style>
+			<div className="w-full mt-0.5">
 				{incomingRule ? (
 					<input
 						type="range"
@@ -105,7 +104,7 @@ export function ExpenseNode({ data }: ExpenseNodeProps) {
 						style={{
 							background: `linear-gradient(to right, rgb(${currentRgb}) ${fillPercentage}%, rgba(0,0,0,0.1) ${fillPercentage}%)`
 						}}
-						className={`nodrag expense-slider w-full h-1.5 rounded-full appearance-none outline-none ${data.isFixed ? "cursor-not-allowed opacity-90" : "cursor-pointer"}`}
+						className={`nodrag nopan expense-slider w-full h-1.5 rounded-full appearance-none outline-none ${data.isFixed ? "cursor-not-allowed opacity-90" : "cursor-pointer"}`}
 					/>
 				) : (
 					<div className="w-full bg-red-100 rounded-full h-1.5">
@@ -115,7 +114,7 @@ export function ExpenseNode({ data }: ExpenseNodeProps) {
 						></div>
 					</div>
 				)}
-				<div className="text-[9px] text-right mt-0.5 font-medium opacity-80" style={{ color: `rgb(${currentRgb})` }}>
+				<div className="text-[9px] text-right mt-1 font-medium opacity-80" style={{ color: `rgb(${currentRgb})` }}>
 					{amountText}
 				</div>
 			</div>
