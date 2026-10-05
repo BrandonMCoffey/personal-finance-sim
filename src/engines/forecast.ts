@@ -10,6 +10,7 @@ export interface MonthlySnapshot {
 	retirementBalances: Record<string, number>;
 	goalProgress: Record<string, number>;
 	expenseProgress: Record<string, number>;
+	activeExpenses: Record<string, boolean>;
 	goalHitMonths: Record<string, number>;
 	accountInterestEarned: Record<string, number>;
 	cardInterestPaid: Record<string, number>;
@@ -85,6 +86,7 @@ export function generateForecast(
 		const nextRetirementBalances = { ...currentRetirementBalances };
 		const monthlyGoalEarmarks = { ...currentGoalEarmarks };
 		const monthlyExpenseProgress: Record<string, number> = {};
+		const activeExpenses: Record<string, boolean> = {};
 		const monthlyFlows: Record<string, { in: number; out: number }> = {};
 
 		const monthlyAccInterest = { ...cumAccInterest };
@@ -94,6 +96,11 @@ export function generateForecast(
 		const monthlyTaxesPaid = { ...cumTaxesPaid };
 
 		expenses.forEach((e) => {
+			let isActive = true;
+			if (e.occurrenceMonth && m !== e.occurrenceMonth) isActive = false;
+			if (e.frequency && (m - 1) % e.frequency !== 0) isActive = false;
+
+			activeExpenses[e.id] = isActive;
 			monthlyExpenseProgress[e.id] = 0;
 		});
 		accounts.forEach((a) => {
@@ -119,7 +126,8 @@ export function generateForecast(
 				return amount;
 			} else if (monthlyExpenseProgress[destId] !== undefined) {
 				const expense = expenses.find((e) => e.id === destId)!;
-				const needed = Math.max(0, expense.amount - monthlyExpenseProgress[destId]);
+				const isActive = activeExpenses[destId];
+				const needed = isActive ? Math.max(0, expense.amount - monthlyExpenseProgress[destId]) : 0;
 				const accepted = Math.min(amount, needed);
 				monthlyExpenseProgress[destId] += accepted;
 				return accepted;
@@ -243,6 +251,7 @@ export function generateForecast(
 			retirementBalances: nextRetirementBalances,
 			goalProgress: { ...goalProgress },
 			expenseProgress: { ...monthlyExpenseProgress },
+			activeExpenses: { ...activeExpenses },
 			goalHitMonths: { ...goalHitMonths },
 			accountInterestEarned: { ...monthlyAccInterest },
 			cardInterestPaid: { ...monthlyCardInterest },

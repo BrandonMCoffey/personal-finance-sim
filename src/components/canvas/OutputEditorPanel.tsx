@@ -106,7 +106,9 @@ export function OutputEditorPanel({ selectedEdgeId, onClose }: OutputEditorPanel
 							onDrop={(e) => handleDrop(e, idx)}
 							className={`flex items-center gap-2 p-2 rounded border cursor-move ${draggedIdx === idx ? "opacity-50" : "bg-gray-50"}`}
 						>
-							<span className="text-gray-400 cursor-move">☰</span>
+							<div className="w-4 h-4 rounded-full bg-gray-200 text-gray-500 flex items-center justify-center text-[9px] font-black shrink-0">
+								{idx + 1}
+							</div>
 							<div className="flex-1 truncate text-sm font-semibold text-gray-700">{destName}</div>
 
 							{isChecking && (

@@ -10,6 +10,9 @@ interface ExpenseNodeProps {
 		isFixed: boolean;
 		minValue?: number;
 		isSnapped: boolean;
+		frequency?: number;
+		occurrenceMonth?: number;
+		isActiveThisMonth?: boolean;
 	};
 }
 
@@ -58,7 +61,9 @@ export function ExpenseNode({ data }: ExpenseNodeProps) {
 	const cIndigo = [5, 50, 255];
 
 	let currentRgb = cRedLight.join(", ");
-	if (fundedAmount == data.targetAmount) {
+	if (!data.isActiveThisMonth) {
+		currentRgb = "156, 163, 175";
+	} else if (fundedAmount == data.targetAmount) {
 		currentRgb = cBlue.join(", ");
 	} else if (fundedAmount < minRequired) {
 		currentRgb = cRed.join(", ");
@@ -72,13 +77,17 @@ export function ExpenseNode({ data }: ExpenseNodeProps) {
 		currentRgb = interpolateColor(cBlue, cIndigo, factor);
 	}
 
-	const amountText = data.isFixed ? `$${data.targetAmount.toFixed(0)} / mo` : `$${data.currentAmount.toFixed(0)} / $${data.targetAmount.toFixed(0)}`;
+	let timingLabel = "";
+	if (data.occurrenceMonth) timingLabel = `Month ${data.occurrenceMonth}`;
+	else if (data.frequency && data.frequency > 1) timingLabel = `Every ${data.frequency} Mos`;
+
+	const amountText = data.isFixed ? `$${data.targetAmount.toFixed(0)}` : `$${data.currentAmount.toFixed(0)} / $${data.targetAmount.toFixed(0)}`;
 
 	return (
 		<BaseNode
 			title={data.name}
 			subtitle={data.isFixed ? "FIXED" : undefined}
-			bgColor="bg-white"
+			bgColor={data.isActiveThisMonth ? "bg-white" : "bg-gray-50"}
 			borderColor={`border-[rgba(${currentRgb},0.5)]`}
 			titleColor={`text-[rgb(${currentRgb})]`}
 			isSnapped={data.isSnapped}
@@ -89,7 +98,7 @@ export function ExpenseNode({ data }: ExpenseNodeProps) {
         .expense-slider::-webkit-slider-thumb { -webkit-appearance: none; appearance: none; width: 0; height: 0; }
         .expense-slider::-moz-range-thumb { width: 0; height: 0; border: 0; }
       `}</style>
-			<div className="w-full mt-0.5">
+			<div className={`w-full mt-0.5 ${!data.isActiveThisMonth ? "opacity-50" : ""}`}>
 				{incomingRule ? (
 					<input
 						type="range"
@@ -114,8 +123,11 @@ export function ExpenseNode({ data }: ExpenseNodeProps) {
 						></div>
 					</div>
 				)}
-				<div className="text-[9px] text-right mt-1 font-medium opacity-80" style={{ color: `rgb(${currentRgb})` }}>
-					{amountText}
+				<div className="flex justify-between items-center mt-1">
+					<span className="text-[8px] font-bold uppercase tracking-wider text-gray-400">{timingLabel}</span>
+					<div className="text-[9px] text-right font-medium opacity-80" style={{ color: `rgb(${currentRgb})` }}>
+						{!data.isActiveThisMonth ? "Inactive" : amountText}
+					</div>
 				</div>
 			</div>
 		</BaseNode>

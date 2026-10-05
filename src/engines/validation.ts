@@ -83,15 +83,56 @@ export function evaluatePlan(
 	const expenseForecast = generateForecast(accounts, incomes, transferRules, goals, expenses, cards, loans, retirements, 12);
 	expenses.forEach((expense) => {
 		if (expense.isFixed || expense.minValue === undefined) return;
-		const violation = expenseForecast.find((snapshot) => (snapshot.expenseProgress[expense.id] ?? 0) < expense.minValue! - 0.01);
+
+		const violation = expenseForecast.find(
+			(snapshot) => snapshot.activeExpenses[expense.id] && (snapshot.expenseProgress[expense.id] ?? 0) < expense.minValue! - 0.01
+		);
 
 		if (violation) {
 			score -= VARIABLE_EXPENSE_MIN_PENALTY;
-			feedback.push(`Minimum Funding Warning: "${expense.name}" falls below its $${expense.minValue!.toFixed(2)} minimum.`);
+			const actual = violation.expenseProgress[expense.id] ?? 0;
+			feedback.push(
+				`Minimum Funding Warning: "${expense.name}" falls below its $${expense.minValue!.toFixed(2)} minimum in Month ${violation.month}, receiving only $${actual.toFixed(2)}.`
+			);
 			if (!contextualHint)
 				contextualHint = `You aren't allocating enough to ${expense.name}. Adjust the percentages in your Output Editor to ensure the minimum threshold is met.`;
 		}
 	});
+
+	// Add Optimal Debt Routing Validation
+	if (winConditions.optimalDebtRouting) {
+		const strategy = winConditions.optimalDebtRouting;
+		const allDebts = [
+			...cards.filter((c) => c.type === "credit").map((c) => ({ id: c.id, name: c.name, balance: c.balance, apr: c.apr || 0 })),
+			...loans.map((l) => ({ id: l.id, name: l.name, balance: l.balance, apr: l.apr }))
+		];
+
+		if (allDebts.length > 1) {
+			const sortedDebts = [...allDebts].sort((a, b) => (strategy === "avalanche" ? b.apr - a.apr : a.balance - b.balance));
+			const optimalTarget = sortedDebts[0];
+
+			const month1 = expenseForecast[0];
+			const getPaymentToDebt = (debtId: string) => {
+				const startBal = allDebts.find((d) => d.id === debtId)?.balance || 0;
+				const endBal = month1.cardBalances[debtId] ?? month1.loanBalances[debtId] ?? startBal;
+				return startBal - endBal;
+			};
+
+			const optimalPayment = getPaymentToDebt(optimalTarget.id);
+
+			const subOptimalPayments = allDebts.filter((d) => d.id !== optimalTarget.id && getPaymentToDebt(d.id) > optimalPayment);
+
+			if (subOptimalPayments.length > 0) {
+				score -= 20;
+				const formattedStrategy = strategy === "avalanche" ? "Debt Avalanche (Highest APR first)" : "Debt Snowball (Lowest Balance first)";
+				feedback.push(`Suboptimal Debt Strategy: You are not following the ${formattedStrategy} method.`);
+				if (!contextualHint)
+					contextualHint = `To follow the ${formattedStrategy} method, you must route your extra payments to "${optimalTarget.name}". Only pay the minimums on the others until the primary target is cleared.`;
+			} else {
+				feedback.push(`Excellent: You correctly prioritized "${optimalTarget.name}" using the ${strategy} method.`);
+			}
+		}
+	}
 
 	// Ensure cash balance isn't piling up
 	if (winConditions.maxCashBalance !== undefined) {

@@ -52,6 +52,14 @@ export function CanvasControls() {
 							+ Bank Account
 						</button>
 					)}
+					{allowedActions.allowedAccountTypes.includes("brokerage") && (
+						<button
+							onClick={() => handleAddAccount("brokerage")}
+							className="px-3 py-1.5 bg-emerald-50 text-emerald-700 text-sm font-medium rounded border border-emerald-200 hover:bg-emerald-100"
+						>
+							+ Brokerage
+						</button>
+					)}
 				</>
 			)}
 			{allowedActions.allowedCardTypes?.includes("debit") && (

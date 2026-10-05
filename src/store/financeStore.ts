@@ -1,7 +1,7 @@
 import { create } from "zustand";
 
 // --- Type Definitions ---
-export type AccountType = "cash" | "checking" | "savings" | "credit" | "bank";
+export type AccountType = "cash" | "checking" | "savings" | "credit" | "bank" | "brokerage";
 
 export interface AllowedActions {
 	canCreateAccounts: boolean;
@@ -92,6 +92,8 @@ export interface Expense {
 	isFixed: boolean;
 	minValue?: number;
 	requiresCard?: boolean;
+	frequency?: number;
+	occurrenceMonth?: number;
 }
 
 export interface WinConditions {
@@ -105,6 +107,7 @@ export interface WinConditions {
 		type: string;
 		description: string;
 	}[];
+	optimalDebtRouting?: "avalanche" | "snowball";
 }
 
 // --- Store Interface ---
@@ -214,7 +217,9 @@ export const useFinanceStore = create<FinanceState>()((set) => ({
 				client: levelData.client || null,
 				expenses: (levelData.startingState?.expenses || []).map((exp: any) => ({
 					...exp,
-					requiresCard: exp.requiresCard || false
+					requiresCard: exp.requiresCard || false,
+					frequency: exp.frequency || 1,
+					occurrenceMonth: exp.occurrenceMonth
 				})),
 				accounts: rawAccounts,
 				cards: levelData.startingState?.cards || [],

@@ -290,6 +290,7 @@ function FlowSandboxInner() {
 			}),
 			...sortedExpenses.map((exp, i) => {
 				const snap = snappedMap[exp.id];
+				const isActiveThisMonth = finalSnapshot ? finalSnapshot.activeExpenses[exp.id] : true;
 				return {
 					id: exp.id,
 					type: "expense",
@@ -304,6 +305,9 @@ function FlowSandboxInner() {
 						currentAmount: finalSnapshot ? finalSnapshot.expenseProgress[exp.id] : 0,
 						isFixed: exp.isFixed,
 						minValue: exp.minValue,
+						frequency: exp.frequency,
+						occurrenceMonth: exp.occurrenceMonth,
+						isActiveThisMonth,
 						isSnapped: !!snap
 					}
 				};
