@@ -1,0 +1,31 @@
+{
+	"levelId": 5,
+	"category": "investing",
+	"forecastMonths": 12,
+	"hints": [
+		"Create a Brokerage account from the Actions menu.",
+		"Route your excess income from Checking into the Brokerage account to take advantage of the 8% APY."
+	],
+	"client": {
+		"name": "Elena",
+		"description": "Elena has maxed out her retirement accounts and wants to invest her excess cash flow in the stock market.",
+		"prompt": "I have $1,000 left over every month. I don't want it sitting in a 0% checking account, I want to invest it!",
+		"portraitId": "elena_01"
+	},
+	"startingState": {
+		"accounts": [{ "id": "acc_01", "name": "Checking", "type": "checking", "balance": 2000.0, "apy": 0.0 }],
+		"income": [
+			{
+				"id": "inc_01",
+				"name": "Income",
+				"amount": 6000.0,
+				"taxRate": 25,
+				"frequency": "monthly",
+				"routings": [{ "destinationId": "acc_01", "amount": 100, "type": "percentage" }]
+			}
+		],
+		"expenses": [{ "id": "exp_01", "name": "Expenses", "amount": 3500.0, "isFixed": true }]
+	},
+	"allowedActions": { "canCreateAccounts": true, "canDeleteAccounts": true, "maxNewAccounts": 1, "allowedAccountTypes": ["brokerage"] },
+	"winConditions": { "requiredAccounts": ["brokerage"] }
+}

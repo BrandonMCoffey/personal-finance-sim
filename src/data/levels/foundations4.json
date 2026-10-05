@@ -1,0 +1,34 @@
+{
+	"levelId": 3,
+	"category": "foundations",
+	"forecastMonths": 6,
+	"hints": [
+		"Notice the 'Car Repair' expense is inactive right now, but strikes in Month 4.",
+		"You need to build up an emergency fund in a Savings account before Month 4 so you have the cash ready."
+	],
+	"client": {
+		"name": "David",
+		"description": "David's mechanic told him his transmission will need a $2,000 replacement in about 4 months.",
+		"prompt": "I have 4 months to save $2,000 for a car repair. If I just leave it in my checking account, I'll spend it.",
+		"portraitId": "david_01"
+	},
+	"startingState": {
+		"accounts": [{ "id": "acc_01", "name": "Checking", "type": "checking", "balance": 500.0, "apy": 0.0 }],
+		"income": [
+			{
+				"id": "inc_01",
+				"name": "Income",
+				"amount": 3000.0,
+				"frequency": "monthly",
+				"routings": [{ "destinationId": "acc_01", "amount": 100, "type": "percentage" }]
+			}
+		],
+		"expenses": [
+			{ "id": "exp_01", "name": "Standard Living", "amount": 2000.0, "isFixed": true },
+			{ "id": "exp_02", "name": "Car Repair", "amount": 2000.0, "isFixed": true, "occurrenceMonth": 4 }
+		],
+		"goals": [{ "id": "goal_01", "name": "Mechanic Fund", "targetAmount": 2000.0, "targetMonths": 4 }]
+	},
+	"allowedActions": { "canCreateAccounts": true, "canDeleteAccounts": true, "maxNewAccounts": 1, "allowedAccountTypes": ["savings"] },
+	"winConditions": { "requiredAccounts": ["savings"], "goalsFundedWithinMonths": { "goalId": "goal_01", "months": 4 } }
+}

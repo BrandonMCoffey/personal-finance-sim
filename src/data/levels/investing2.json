@@ -1,0 +1,32 @@
+{
+	"levelId": 4,
+	"category": "investing",
+	"forecastMonths": 6,
+	"hints": [
+		"Your employer offers a 5% match. That means if you route 5% of your gross pay ($250) directly from Income to the 401k, they double it for free.",
+		"Connect your Salary node directly to the 401k node and set it to 5%."
+	],
+	"client": {
+		"name": "Marcus",
+		"description": "Marcus just got a corporate job with a 5% 401k match, but he's routing all his money to checking.",
+		"prompt": "My HR rep said I'm leaving 'free money' on the table. How do I get it?",
+		"portraitId": "marcus_01"
+	},
+	"startingState": {
+		"accounts": [{ "id": "acc_01", "name": "Checking", "type": "checking", "balance": 1000.0, "apy": 0.0 }],
+		"retirements": [{ "id": "ret_01", "name": "Company 401k", "type": "401k", "balance": 0, "expectedApy": 7.0, "employerMatchPercent": 5.0 }],
+		"income": [
+			{
+				"id": "inc_01",
+				"name": "Corporate Salary",
+				"amount": 5000.0,
+				"taxRate": 22,
+				"frequency": "monthly",
+				"routings": [{ "destinationId": "acc_01", "amount": 100, "type": "percentage" }]
+			}
+		],
+		"expenses": [{ "id": "exp_01", "name": "Monthly Bills", "amount": 3500.0, "isFixed": true }]
+	},
+	"allowedActions": { "canCreateAccounts": false, "canDeleteAccounts": false, "allowedAccountTypes": [] },
+	"winConditions": { "requiredAccounts": [] }
+}

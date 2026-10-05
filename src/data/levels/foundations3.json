@@ -1,0 +1,34 @@
+{
+	"levelId": 1,
+	"category": "foundations",
+	"forecastMonths": 3,
+	"hints": [
+		"Your Gross Pay is $4,000, but taxes take 20%. You only have $3,200 of Net Pay to spend.",
+		"Make sure your routing from the Income node to the Checking account does not exceed the remaining Net Pay."
+	],
+	"client": {
+		"name": "Alex",
+		"description": "Alex got a raise to $4,000/mo, but forgot that taxes eat a large portion of that.",
+		"prompt": "I should have $4,000 to spend, right? Why am I overdrafting when my expenses are only $3,500?",
+		"portraitId": "alex_01"
+	},
+	"startingState": {
+		"accounts": [{ "id": "acc_01", "name": "Checking Account", "type": "checking", "balance": 0.0, "apy": 0.0 }],
+		"income": [
+			{
+				"id": "inc_01",
+				"name": "Salary",
+				"amount": 4000.0,
+				"taxRate": 20,
+				"frequency": "monthly",
+				"routings": []
+			}
+		],
+		"expenses": [
+			{ "id": "exp_01", "name": "Rent", "amount": 1500.0, "isFixed": true },
+			{ "id": "exp_02", "name": "Living Expenses", "amount": 1500.0, "isFixed": false, "minValue": 1200.0 }
+		]
+	},
+	"allowedActions": { "canCreateAccounts": false, "canDeleteAccounts": false, "allowedAccountTypes": [] },
+	"winConditions": { "requiredAccounts": [] }
+}

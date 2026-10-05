@@ -1,0 +1,36 @@
+{
+	"levelId": 2,
+	"category": "debt",
+	"forecastMonths": 6,
+	"hints": [
+		"The Debt Avalanche method saves you the most money by attacking the highest interest rate first.",
+		"Route the minimum payment to your Car Loan and Store Card, and dump all remaining income into the High-Interest Visa."
+	],
+	"client": {
+		"name": "Sarah",
+		"description": "Sarah has $1,500 of extra income each month to throw at her debt, but doesn't know which one to pay first.",
+		"prompt": "Should I pay off my smallest card first, or attack the one with the crazy 25% APR?",
+		"portraitId": "sarah_01"
+	},
+	"startingState": {
+		"accounts": [{ "id": "acc_01", "name": "Checking", "type": "checking", "balance": 500.0, "apy": 0.0 }],
+		"income": [
+			{
+				"id": "inc_01",
+				"name": "Income",
+				"amount": 1500.0,
+				"taxRate": 0,
+				"frequency": "monthly",
+				"routings": [{ "destinationId": "acc_01", "amount": 100, "type": "percentage" }]
+			}
+		],
+		"cards": [
+			{ "id": "card_01", "name": "Store Card", "type": "credit", "linkedAccountId": "", "balance": 800.0, "apr": 15.0 },
+			{ "id": "card_02", "name": "High-Interest Visa", "type": "credit", "linkedAccountId": "", "balance": 3000.0, "apr": 25.99 }
+		],
+		"loans": [{ "id": "loan_01", "name": "Car Loan", "balance": 12000.0, "apr": 6.5, "minimumPayment": 300.0 }],
+		"expenses": []
+	},
+	"allowedActions": { "canCreateAccounts": false, "canDeleteAccounts": false, "allowedAccountTypes": [] },
+	"winConditions": { "optimalDebtRouting": "avalanche" }
+}
