@@ -113,9 +113,9 @@ export interface WinConditions {
 // --- Store Interface ---
 interface FinanceState {
 	currentScreen: "main_menu" | "levels" | "story" | "endless" | "game";
-	levelScores: Record<number, number>;
+	levelScores: Record<string, number>;
+	levelId: string | null;
 	isAllUnlocked: boolean;
-	levelId: number | null;
 	category: string;
 	hints: string[];
 	client: Client | null;
@@ -133,7 +133,7 @@ interface FinanceState {
 	initialAccountCount: number;
 
 	setCurrentScreen: (screen: "main_menu" | "levels" | "story" | "endless" | "game") => void;
-	saveLevelScore: (levelId: number, score: number) => void;
+	saveLevelScore: (levelId: string, score: number) => void;
 	unlockAllLevels: () => void;
 	clearProgress: () => void;
 	loadLevel: (levelData: any) => void;
@@ -220,7 +220,7 @@ export const useFinanceStore = create<FinanceState>()((set) => ({
 			const isChecking = (destId: string) => rawAccounts.some((a: any) => a.id === destId && a.type === "checking");
 
 			return {
-				levelId: levelData.levelId,
+				levelId: levelData.id,
 				category: levelData.category || "budgeting",
 				hints: levelData.hints || [],
 				client: levelData.client || null,

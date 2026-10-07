@@ -61,7 +61,7 @@ export default function App() {
 			setIsModalOpen(false);
 			setCurrentScreen("story");
 		} else {
-			if (report && levelId) saveLevelScore(levelId as number, report.score);
+			if (report && levelId) saveLevelScore(levelId as string, report.score);
 			setIsModalOpen(false);
 			setCurrentScreen("levels");
 		}

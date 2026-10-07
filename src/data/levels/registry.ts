@@ -1,23 +1,70 @@
-import debt1 from "./debt1.json";
-import debt2 from "./debt2.json";
-import foundations1 from "./foundations1.json";
-import foundations2 from "./foundations2.json";
-import foundations3 from "./foundations3.json";
-import foundations4 from "./foundations4.json";
-import foundations5 from "./foundations5.json";
-import investing1 from "./investing1.json";
-import investing2 from "./investing2.json";
-import investing3 from "./investing3.json";
+export interface CategoryDef {
+	id: string;
+	title: string;
+	icon: string;
+	subCategories: string[];
+}
 
-export const LevelRegistry: Record<string, any> = {
-	debt1,
-	debt2,
-	foundations1,
-	foundations2,
-	foundations3,
-	foundations4,
-	foundations5,
-	investing1,
-	investing2,
-	investing3
-};
+export const CATEGORIES: CategoryDef[] = [
+	{
+		id: "foundations",
+		title: "Financial Foundations",
+		icon: "🏦",
+		subCategories: ["Cash Flow", "Saving for Goals"]
+	},
+	{
+		id: "debt",
+		title: "Credit & Debt",
+		icon: "💳",
+		subCategories: ["Managing Credit Cards"]
+	},
+	{
+		id: "investing",
+		title: "Investing & Retirement",
+		icon: "📈",
+		subCategories: ["Retirement", "Wealth Building"]
+	},
+	{
+		id: "life",
+		title: "Life Events & Taxes",
+		icon: "🏠",
+		subCategories: []
+	}
+];
+
+export interface LevelData {
+	id: string;
+	category: string;
+	subCategoryIndex: number;
+	title: string;
+	desc: string;
+	forecastMonths: number;
+	hints?: string[];
+	client?: any;
+	startingState?: any;
+	allowedActions?: any;
+	winConditions?: any;
+}
+
+const modules = import.meta.glob("./*/*.json", { eager: true });
+
+export const LevelRegistry: Record<string, LevelData> = {};
+export const levels: LevelData[] = [];
+
+for (const path in modules) {
+	const parts = path.split("/");
+	const categoryId = parts[1];
+	const filename = parts[2];
+	const id = filename.replace(".json", "");
+
+	const rawData = (modules[path] as any).default || modules[path];
+
+	const levelData: LevelData = {
+		...rawData,
+		id,
+		category: categoryId
+	};
+
+	LevelRegistry[id] = levelData;
+	levels.push(levelData);
+}

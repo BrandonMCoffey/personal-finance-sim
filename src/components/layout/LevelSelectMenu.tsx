@@ -1,14 +1,13 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { useFinanceStore } from "../../store/financeStore";
-import manifest from "../../data/levels/manifest.json";
-import { LevelRegistry } from "../../data/levels/registry";
+import { CATEGORIES, levels, LevelRegistry, type LevelData } from "../../data/levels/registry";
 
 export function LevelSelectMenu() {
 	const { levelScores, isAllUnlocked, loadLevel, setCurrentScreen, unlockAllLevels, clearProgress } = useFinanceStore();
-	const [activeCategory, setActiveCategory] = useState<string>(manifest.categories[0].id);
+	const [activeCategory, setActiveCategory] = useState<string>(CATEGORIES[0].id);
 
-	const handlePlay = (fileId: string) => {
-		const levelData = LevelRegistry[fileId];
+	const handlePlay = (id: string) => {
+		const levelData = LevelRegistry[id];
 		if (levelData) {
 			loadLevel(levelData);
 			setCurrentScreen("game");
@@ -17,16 +16,32 @@ export function LevelSelectMenu() {
 		}
 	};
 
-	const activeLevels = manifest.levels.filter((lvl) => lvl.mainCategory === activeCategory);
+	const flatSubCategories = useMemo(() => {
+		const flat: { categoryId: string; subCategoryIndex: number }[] = [];
+		CATEGORIES.forEach((cat) => {
+			cat.subCategories.forEach((_, idx) => {
+				flat.push({ categoryId: cat.id, subCategoryIndex: idx });
+			});
+		});
+		return flat;
+	}, []);
 
-	const groupedLevels = activeLevels.reduce(
-		(acc, level) => {
-			if (!acc[level.subCategory]) acc[level.subCategory] = [];
-			acc[level.subCategory].push(level);
-			return acc;
-		},
-		{} as Record<string, typeof manifest.levels>
-	);
+	const highestCompletedSubCatIndex = useMemo(() => {
+		let maxIndex = -1;
+		levels.forEach((level) => {
+			const score = levelScores[level.id] || 0;
+			if (score >= 60) {
+				const flatIdx = flatSubCategories.findIndex((f) => f.categoryId === level.category && f.subCategoryIndex === level.subCategoryIndex);
+				if (flatIdx > maxIndex) {
+					maxIndex = flatIdx;
+				}
+			}
+		});
+		return maxIndex;
+	}, [levelScores, flatSubCategories]);
+
+	const activeCatDef = CATEGORIES.find((c) => c.id === activeCategory);
+	const activeLevels = levels.filter((lvl) => lvl.category === activeCategory);
 
 	return (
 		<div className="w-full h-full bg-gray-50 flex flex-col overflow-hidden">
@@ -42,12 +57,11 @@ export function LevelSelectMenu() {
 					← Main Menu
 				</button>
 			</header>
-
 			<main className="flex-1 w-full flex overflow-hidden">
 				<aside className="w-80 border-r border-gray-200 p-6 overflow-y-auto shrink-0 bg-white">
 					<h2 className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-4">Curriculum</h2>
 					<nav className="flex flex-col gap-2">
-						{manifest.categories.map((category) => {
+						{CATEGORIES.map((category) => {
 							const isActive = activeCategory === category.id;
 							return (
 								<button
@@ -74,54 +88,59 @@ export function LevelSelectMenu() {
 						</button>
 					</div>
 				</aside>
-
 				<section className="flex-1 p-8 overflow-y-auto bg-gray-50">
 					<div className="max-w-4xl">
-						<h2 className="text-2xl font-bold text-gray-800 mb-8">{manifest.categories.find((c) => c.id === activeCategory)?.title}</h2>
-						{Object.keys(groupedLevels).length === 0 ? (
+						<h2 className="text-2xl font-bold text-gray-800 mb-8">{activeCatDef?.title}</h2>
+						{!activeCatDef || activeCatDef.subCategories.length === 0 ? (
 							<div className="p-8 text-center border-2 border-dashed border-gray-300 rounded-xl text-gray-500">
 								New scenarios for this module are currently under development.
 							</div>
 						) : (
 							<div className="flex flex-col gap-10">
-								{Object.entries(groupedLevels).map(([subCategory, levels]) => (
-									<div key={subCategory}>
-										<h3 className="text-lg font-bold text-gray-700 mb-4 border-b border-gray-200 pb-2">{subCategory}</h3>
-										<div className="grid grid-cols-1 xl:grid-cols-2 gap-4">
-											{levels.map((level) => {
-												const score = levelScores[level.id];
-												const isCompleted = score >= 60;
-												const isUnlocked = isAllUnlocked || level.id === 1 || levelScores[level.id - 1] >= 60;
+								{activeCatDef.subCategories.map((subCategoryName, subIdx) => {
+									const catLevels = activeLevels.filter((l) => l.subCategoryIndex === subIdx);
 
-												return (
-													<div
-														key={level.id}
-														className={`p-5 rounded-xl border-2 transition-all flex flex-col ${
-															isUnlocked
-																? "bg-white border-gray-200 hover:border-blue-400 hover:shadow-md cursor-pointer"
-																: "bg-gray-100 border-gray-200 opacity-60 grayscale cursor-not-allowed"
-														}`}
-														onClick={() => isUnlocked && handlePlay(level.fileId)}
-													>
-														<div className="flex justify-between items-start mb-2">
-															<h4 className="font-bold text-gray-800 leading-tight">{level.title}</h4>
-															{isCompleted && (
-																<span className="bg-green-100 text-green-700 text-xs font-bold px-2 py-1 rounded-full shrink-0 ml-2">✓ {score}%</span>
-															)}
-														</div>
-														<p className="text-sm text-gray-600 mb-4 flex-1">{level.desc}</p>
-														<button
-															disabled={!isUnlocked}
-															className={`w-full py-2 rounded font-bold text-xs transition-colors ${isUnlocked ? "bg-blue-50 text-blue-700 hover:bg-blue-100" : "bg-gray-200 text-gray-400"}`}
+									const flatIdx = flatSubCategories.findIndex((f) => f.categoryId === activeCategory && f.subCategoryIndex === subIdx);
+									const isUnlocked = isAllUnlocked || flatIdx <= highestCompletedSubCatIndex + 1;
+
+									if (catLevels.length === 0) return null;
+
+									return (
+										<div key={subIdx}>
+											<h3 className="text-lg font-bold text-gray-700 mb-4 border-b border-gray-200 pb-2">{subCategoryName}</h3>
+											<div className="grid grid-cols-1 xl:grid-cols-2 gap-4">
+												{catLevels.map((level: LevelData) => {
+													const score = levelScores[level.id] || 0;
+													const isCompleted = score >= 60;
+
+													return (
+														<div
+															key={level.id}
+															className={`p-5 rounded-xl border-2 transition-all flex flex-col ${isUnlocked ? "bg-white border-gray-200 hover:border-blue-400 hover:shadow-md cursor-pointer" : "bg-gray-100 border-gray-200 opacity-60 grayscale cursor-not-allowed"}`}
+															onClick={() => isUnlocked && handlePlay(level.id)}
 														>
-															{isUnlocked ? (isCompleted ? "Replay" : "Start Scenario") : "Locked"}
-														</button>
-													</div>
-												);
-											})}
+															<div className="flex justify-between items-start mb-2">
+																<h4 className="font-bold text-gray-800 leading-tight">{level.title}</h4>
+																{isCompleted && (
+																	<span className="bg-green-100 text-green-700 text-xs font-bold px-2 py-1 rounded-full shrink-0 ml-2">
+																		✓ {score}%
+																	</span>
+																)}
+															</div>
+															<p className="text-sm text-gray-600 mb-4 flex-1">{level.desc}</p>
+															<button
+																disabled={!isUnlocked}
+																className={`w-full py-2 rounded font-bold text-xs transition-colors ${isUnlocked ? "bg-blue-50 text-blue-700 hover:bg-blue-100" : "bg-gray-200 text-gray-400"}`}
+															>
+																{isUnlocked ? (isCompleted ? "Replay" : "Start Scenario") : "Locked"}
+															</button>
+														</div>
+													);
+												})}
+											</div>
 										</div>
-									</div>
-								))}
+									);
+								})}
 							</div>
 						)}
 					</div>
