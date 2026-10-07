@@ -30,7 +30,6 @@ export function MainMenu() {
 				>
 					<div className="flex justify-between items-start mb-3">
 						<h2 className="text-2xl font-bold text-gray-800 group-hover:text-purple-600 transition-colors">Story Mode</h2>
-						<span className="bg-purple-100 text-purple-700 text-[10px] font-black px-2 py-1 rounded uppercase tracking-wider">New</span>
 					</div>
 					<p className="text-gray-600 flex-1 leading-relaxed">
 						Advise recurring clients over multiple years. Navigate their major life events, changing goals, and unique spending habits.
@@ -47,7 +46,6 @@ export function MainMenu() {
 				>
 					<div className="flex justify-between items-start mb-3">
 						<h2 className="text-2xl font-bold text-gray-800 group-hover:text-emerald-600 transition-colors">Endless Mode</h2>
-						<span className="bg-emerald-100 text-emerald-700 text-[10px] font-black px-2 py-1 rounded uppercase tracking-wider">New</span>
 					</div>
 					<p className="text-gray-600 flex-1 leading-relaxed">
 						Simulate an entire lifetime of financial decisions. Build generational wealth and adapt to dynamic, unpredictable events.

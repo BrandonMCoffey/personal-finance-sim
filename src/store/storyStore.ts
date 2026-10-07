@@ -10,6 +10,7 @@ export interface StoryCharacter {
 	traits: CharacterTrait[];
 	portraitId: string;
 	familyState: FamilyState;
+	prompt: string;
 	savedFinancialState?: any;
 }
 

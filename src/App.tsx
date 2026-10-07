@@ -4,9 +4,13 @@ import { ForecastPanel } from "./components/layout/ForecastPanel";
 import { InputPanel } from "./components/layout/InputPanel";
 import { LevelSelectMenu } from "./components/layout/LevelSelectMenu";
 import { MainMenu } from "./components/layout/MainMenu";
+import { StoryMenu } from "./components/layout/StoryMenu";
+import { EndlessMenu } from "./components/layout/EndlessMenu";
+import { TimelineManager } from "./components/layout/TimelineManager";
 import { GradeModal } from "./components/ui/GradeModal";
 import { useFinanceStore } from "./store/financeStore";
 import { evaluatePlan, type ValidationReport } from "./engines/validation";
+import { useStoryStore } from "./store/storyStore";
 
 export default function App() {
 	const {
@@ -14,6 +18,7 @@ export default function App() {
 		setCurrentScreen,
 		saveLevelScore,
 		levelId,
+		category,
 		client,
 		goals,
 		accounts,
@@ -26,6 +31,7 @@ export default function App() {
 		winConditions
 	} = useFinanceStore();
 
+	const { advanceRound, activeCharacterId, updateCharacterState } = useStoryStore();
 	const [isModalOpen, setIsModalOpen] = useState(false);
 	const [report, setReport] = useState<ValidationReport | null>(null);
 
@@ -40,54 +46,60 @@ export default function App() {
 	const handleRetry = () => setIsModalOpen(false);
 
 	const handleContinue = () => {
-		if (report && levelId) saveLevelScore(levelId, report.score);
-		setIsModalOpen(false);
-		setCurrentScreen("levels");
+		if (category === "story" && activeCharacterId) {
+			updateCharacterState(activeCharacterId, {
+				accounts,
+				incomes,
+				transferRules,
+				goals,
+				expenses,
+				cards,
+				loans,
+				retirements
+			});
+			advanceRound();
+			setIsModalOpen(false);
+			setCurrentScreen("story");
+		} else {
+			if (report && levelId) saveLevelScore(levelId as number, report.score);
+			setIsModalOpen(false);
+			setCurrentScreen("levels");
+		}
 	};
 
 	// --- Router Logic ---
 	if (currentScreen === "main_menu") return <MainMenu />;
 	if (currentScreen === "levels") return <LevelSelectMenu />;
-
-	if (currentScreen === "story") {
-		return (
-			<div className="w-full h-full flex flex-col items-center justify-center bg-gray-50">
-				<h2 className="text-2xl font-bold mb-4">Story Mode (WIP)</h2>
-				<button onClick={() => setCurrentScreen("main_menu")} className="px-4 py-2 bg-blue-600 text-white rounded">
-					Back to Menu
-				</button>
-			</div>
-		);
-	}
-	if (currentScreen === "endless") {
-		return (
-			<div className="w-full h-full flex flex-col items-center justify-center bg-gray-50">
-				<h2 className="text-2xl font-bold mb-4">Endless Mode (WIP)</h2>
-				<button onClick={() => setCurrentScreen("main_menu")} className="px-4 py-2 bg-blue-600 text-white rounded">
-					Back to Menu
-				</button>
-			</div>
-		);
-	}
+	if (currentScreen === "story") return <StoryMenu />;
+	if (currentScreen === "endless") return <EndlessMenu />;
 
 	return (
 		<div className="flex flex-col w-full h-full bg-gray-50 text-gray-900 relative overflow-hidden">
 			<GradeModal isOpen={isModalOpen} report={report} onRetry={handleRetry} onContinue={handleContinue} />
-			<header className="flex justify-between items-center p-4 bg-white border-b shadow-sm h-16 shrink-0">
+
+			{category === "endless" && <TimelineManager />}
+
+			<header className="flex justify-between items-center p-4 bg-white border-b shadow-sm h-16 shrink-0 relative z-10">
 				<div>
 					<h1 className="text-xl font-bold">Client: {client ? client.name : "None"}</h1>
 					<p className="text-sm text-gray-600">Goal: {primaryGoal}</p>
 				</div>
 				<div className="flex gap-4 items-center">
-					{/* Changed back navigation to return to the active sub-menu */}
-					<button onClick={() => setCurrentScreen("levels")} className="text-sm text-gray-500 hover:text-gray-800 font-medium">
-						← Back to Levels
+					<button
+						onClick={() => setCurrentScreen(category === "endless" ? "main_menu" : "levels")}
+						className="text-sm text-gray-500 hover:text-gray-800 font-medium"
+					>
+						← Back to {category === "endless" ? "Menu" : "Levels"}
 					</button>
-					<button onClick={handleSubmitPlan} className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 font-medium transition-colors">
-						Submit Plan
-					</button>
+
+					{category !== "endless" && (
+						<button onClick={handleSubmitPlan} className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 font-medium transition-colors">
+							Submit Plan
+						</button>
+					)}
 				</div>
 			</header>
+
 			<main className="flex flex-1 overflow-hidden">
 				<aside className="w-72 bg-white border-r p-4 overflow-y-auto shrink-0">
 					<InputPanel />

@@ -10,22 +10,46 @@ export function ForecastPanel() {
 
 	const chartData = useMemo(() => {
 		const snapshots = generateForecast(accounts, incomes, transferRules, goals, expenses, cards, loans, retirements, forecastMonths);
-		return snapshots.map((snap) => {
-			const dataPoint: any = { month: `M${snap.month}` };
-			accounts.forEach((acc) => {
-				dataPoint[acc.name] = snap.accountBalances[acc.id] || 0;
+		const useAnnualAggregation = forecastMonths > 60;
+
+		if (!useAnnualAggregation) {
+			return snapshots.map((snap) => {
+				const dataPoint: any = { timeLabel: `M${snap.month}` };
+				accounts.forEach((acc) => {
+					dataPoint[acc.name] = snap.accountBalances[acc.id] || 0;
+				});
+				retirements.forEach((ret) => {
+					dataPoint[ret.name] = snap.retirementBalances[ret.id] || 0;
+				});
+				cards.forEach((card) => {
+					if (card.type === "credit") dataPoint[card.name] = -(snap.cardBalances[card.id] || 0);
+				});
+				loans.forEach((loan) => {
+					dataPoint[loan.name] = -(snap.loanBalances[loan.id] || 0);
+				});
+				return dataPoint;
 			});
-			retirements.forEach((ret) => {
-				dataPoint[ret.name] = snap.retirementBalances[ret.id] || 0;
-			});
-			cards.forEach((card) => {
-				if (card.type === "credit") dataPoint[card.name] = -(snap.cardBalances[card.id] || 0);
-			});
-			loans.forEach((loan) => {
-				dataPoint[loan.name] = -(snap.loanBalances[loan.id] || 0);
-			});
-			return dataPoint;
-		});
+		} else {
+			const annualData: any[] = [];
+			for (let i = 0; i < snapshots.length; i += 12) {
+				const snap = snapshots[i];
+				const dataPoint: any = { timeLabel: `Year ${Math.floor(snap.month / 12) + 1}` };
+				accounts.forEach((acc) => {
+					dataPoint[acc.name] = snap.accountBalances[acc.id] || 0;
+				});
+				retirements.forEach((ret) => {
+					dataPoint[ret.name] = snap.retirementBalances[ret.id] || 0;
+				});
+				cards.forEach((card) => {
+					if (card.type === "credit") dataPoint[card.name] = -(snap.cardBalances[card.id] || 0);
+				});
+				loans.forEach((loan) => {
+					dataPoint[loan.name] = -(snap.loanBalances[loan.id] || 0);
+				});
+				annualData.push(dataPoint);
+			}
+			return annualData;
+		}
 	}, [accounts, incomes, transferRules, goals, expenses, cards, loans, retirements, forecastMonths]);
 
 	return (
@@ -41,7 +65,7 @@ export function ForecastPanel() {
 					<ResponsiveContainer width="100%" height="100%">
 						<LineChart data={chartData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
 							<CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e5e7eb" />
-							<XAxis dataKey="month" tick={{ fontSize: 12, fill: "#6b7280" }} axisLine={false} tickLine={false} />
+							<XAxis dataKey="timeLabel" tick={{ fontSize: 12, fill: "#6b7280" }} axisLine={false} tickLine={false} />
 							<YAxis tick={{ fontSize: 12, fill: "#6b7280" }} axisLine={false} tickLine={false} tickFormatter={(val) => `$${val}`} />
 							<Tooltip
 								formatter={(value: any) => [`$${Number(value).toFixed(2)}`, "Balance"]}

@@ -157,6 +157,15 @@ interface FinanceState {
 	updateTransferRule: (ruleId: string, amount: number, type: "fixed" | "percentage", isAuto?: boolean) => void;
 	removeTransferRule: (ruleId: string) => void;
 	reorderTransferRules: (sourceId: string, startIndex: number, endIndex: number) => void;
+
+	addExpense: (
+		name: string,
+		amount: number,
+		isFixed: boolean,
+		options?: { minValue?: number; requiresCard?: boolean; frequency?: number; occurrenceMonth?: number }
+	) => void;
+	addIncome: (name: string, amount: number, taxRate: number, frequency: string) => void;
+	applyTimeSkip: (newState: any) => void;
 }
 
 // --- Zustand Implementation ---
@@ -419,5 +428,29 @@ export const useFinanceStore = create<FinanceState>()((set) => ({
 			newSourceRules.splice(endIndex, 0, moved);
 
 			return { transferRules: [...otherRules, ...newSourceRules] };
+		}),
+
+	addExpense: (name, amount, isFixed, options) =>
+		set((state) => ({
+			expenses: [...state.expenses, { id: `exp_${Date.now()}`, name, amount, isFixed, ...options }]
+		})),
+
+	addIncome: (name, amount, taxRate, frequency) =>
+		set((state) => ({
+			incomes: [...state.incomes, { id: `inc_${Date.now()}`, name, amount, taxRate, frequency, routings: [] }]
+		})),
+
+	applyTimeSkip: (snapshot: any) =>
+		set((state) => {
+			return {
+				accounts: state.accounts.map((a) => ({ ...a, balance: snapshot.accountBalances[a.id] || 0 })),
+				cards: state.cards.map((c) => ({ ...c, balance: snapshot.cardBalances[c.id] || 0 })),
+				loans: state.loans.map((l) => ({ ...l, balance: snapshot.loanBalances[l.id] || 0 })),
+				retirements: state.retirements.map((r) => ({ ...r, balance: snapshot.retirementBalances[r.id] || 0 })),
+				goals: state.goals.filter((g) => (snapshot.goalProgress[g.id] || 0) < g.targetAmount),
+				transferRules: state.transferRules.filter(
+					(rule) => !state.goals.some((g) => g.id === rule.destinationId && (snapshot.goalProgress[g.id] || 0) >= g.targetAmount)
+				)
+			};
 		})
 }));
