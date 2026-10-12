@@ -1,27 +1,41 @@
 {
   "title": "Paying Yourself",
-  "desc": "Ensure 20% of your net income is routed to savings.",
-  "to-teach": "Route twenty percent of income to savings.",
+  "desc": "Ensure 20% of your net income is automated to savings alongside separate bill and spending accounts.",
+  "to-teach": "Automate twenty percent of income to savings using multi-account budgeting.",
   "subCategoryIndex": 3,
   "forecastMonths": 3,
   "hints": [
     "20% of your $2,500 net pay is $500.",
-    "Open a savings account and route $500 monthly into it to complete the 50/30/20 budget."
+    "Click the Salary connection to open the Output Editor. Route 50% ($1,250) to Bills Checking, 30% ($750) to Spending Checking, and 20% ($500) to 20% Savings."
   ],
   "client": {
     "name": "Morgan",
-    "description": "Morgan covers needs ($1,250) and wants ($750) but keeps forgetting to allocate the remaining 20% toward savings.",
-    "prompt": "I have $500 left over every month after bills and spending, but it just sits in checking and gets wasted. How do I lock down the 20% savings rule?",
+    "description": "Morgan has separate accounts for bills, fun, and savings, but hasn't automated the 20% savings rule.",
+    "prompt": "I want to follow the 50/30/20 rule perfectly. I created separate accounts so I never spend bill money or savings, but how do I divide my $2,500 paycheck among all three?",
     "portraitId": "morgan_01"
   },
   "startingState": {
     "accounts": [
       {
-        "id": "acc_01",
-        "name": "Primary Checking",
+        "id": "acc_primary_needs",
+        "name": "Bills Checking",
         "type": "checking",
         "balance": 100,
         "apy": 0
+      },
+      {
+        "id": "acc_discretionary",
+        "name": "Spending Checking",
+        "type": "checking",
+        "balance": 100,
+        "apy": 0
+      },
+      {
+        "id": "acc_savings_20",
+        "name": "20% Goal Savings",
+        "type": "savings",
+        "balance": 200,
+        "apy": 3.8
       }
     ],
     "income": [
@@ -31,13 +45,7 @@
         "amount": 2500,
         "taxRate": 0,
         "frequency": "monthly",
-        "routings": [
-          {
-            "destinationId": "acc_01",
-            "amount": 100,
-            "type": "percentage"
-          }
-        ]
+        "routings": []
       }
     ],
     "expenses": [
@@ -66,30 +74,37 @@
     "transferRules": [
       {
         "id": "rule_01",
-        "sourceId": "acc_01",
+        "sourceId": "acc_primary_needs",
         "destinationId": "exp_01",
         "amount": 1250,
         "type": "fixed"
       },
       {
         "id": "rule_02",
-        "sourceId": "acc_01",
+        "sourceId": "acc_discretionary",
         "destinationId": "exp_02",
         "amount": 750,
+        "type": "fixed"
+      },
+      {
+        "id": "rule_03",
+        "sourceId": "acc_savings_20",
+        "destinationId": "goal_01",
+        "amount": 500,
         "type": "fixed"
       }
     ]
   },
   "allowedActions": {
-    "canCreateAccounts": true,
+    "canCreateAccounts": false,
     "canDeleteAccounts": false,
-    "maxNewAccounts": 1,
-    "allowedAccountTypes": [
-      "savings"
-    ]
+    "allowedAccountTypes": [],
+    "allowedCardTypes": [],
+    "lockExpenses": true
   },
   "winConditions": {
     "requiredAccounts": [
+      "checking",
       "savings"
     ],
     "goalsFundedWithinMonths": {

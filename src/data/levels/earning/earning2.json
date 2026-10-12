@@ -70,7 +70,8 @@
     "canCreateAccounts": false,
     "canDeleteAccounts": false,
     "allowedAccountTypes": [],
-    "allowedCardTypes": []
+    "allowedCardTypes": [],
+    "lockExpenses": true
   },
   "winConditions": {
     "requiredAccounts": [

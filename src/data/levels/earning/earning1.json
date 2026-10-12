@@ -1,80 +1,46 @@
 {
-  "title": "The Paycheck Illusion",
-  "desc": "Route your first paycheck while accounting for standard tax deductions.",
-  "to-teach": "Route only net income after taxes.",
+  "title": "Opening an Account",
+  "desc": "Open your first bank account and route your paycheck into it.",
+  "to-teach": "Open a checking account from Actions and connect your income.",
   "subCategoryIndex": 0,
   "forecastMonths": 3,
   "hints": [
-    "Gross salary is $3,000, but a 20% tax rate leaves $2,400 in net pay.",
-    "Do not route more than the net income of $2,400 to your checking account."
+    "Click '+ Checking' in the top Actions menu to open your account.",
+    "Drag a connection from your Job Salary node to your newly opened checking account."
   ],
   "client": {
     "name": "Alex",
-    "description": "Alex just graduated and landed an entry-level role, but was surprised when their take-home pay was lower than expected.",
-    "prompt": "My salary offer was $3,000 a month, but my bank account keeps falling behind my bills! What am I doing wrong?",
+    "description": "Alex just graduated and landed an entry-level job, but needs to set up a bank account for direct deposit.",
+    "prompt": "I just started my first job, but my paycheck has nowhere to go! How do I open a bank account and get my money deposited?",
     "portraitId": "alex_01"
   },
   "startingState": {
-    "accounts": [
-      {
-        "id": "acc_01",
-        "name": "Main Checking",
-        "type": "checking",
-        "balance": 200,
-        "apy": 0
-      }
-    ],
+    "accounts": [],
     "income": [
       {
         "id": "inc_01",
-        "name": "Salary",
-        "amount": 3000,
-        "taxRate": 20,
+        "name": "Job Salary",
+        "amount": 2500,
+        "taxRate": 0,
         "frequency": "monthly",
         "routings": []
       }
     ],
-    "expenses": [
-      {
-        "id": "exp_01",
-        "name": "Apartment Rent",
-        "isFixed": true,
-        "defaultAmount": 1400
-      },
-      {
-        "id": "exp_02",
-        "name": "Groceries & Utilities",
-        "isFixed": false,
-        "minValue": 600,
-        "defaultAmount": 800
-      }
-    ],
-    "transferRules": [
-      {
-        "id": "rule_01",
-        "sourceId": "acc_01",
-        "destinationId": "exp_01",
-        "amount": 1400,
-        "type": "fixed"
-      },
-      {
-        "id": "rule_02",
-        "sourceId": "acc_01",
-        "destinationId": "exp_02",
-        "amount": 800,
-        "type": "fixed"
-      }
-    ]
+    "expenses": [],
+    "transferRules": []
   },
   "allowedActions": {
-    "canCreateAccounts": false,
-    "canDeleteAccounts": false,
-    "allowedAccountTypes": [],
-    "allowedCardTypes": []
+    "canCreateAccounts": true,
+    "canDeleteAccounts": true,
+    "allowedAccountTypes": [
+      "bank"
+    ],
+    "allowedCardTypes": [],
+    "lockExpenses": true
   },
   "winConditions": {
     "requiredAccounts": [
-      "checking"
+      "bank"
     ]
   }
 }

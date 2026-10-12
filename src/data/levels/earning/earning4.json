@@ -42,15 +42,7 @@
         "defaultAmount": 400
       }
     ],
-    "transferRules": [
-      {
-        "id": "rule_01",
-        "sourceId": "acc_01",
-        "destinationId": "exp_01",
-        "amount": 400,
-        "type": "fixed"
-      }
-    ]
+    "transferRules": []
   },
   "allowedActions": {
     "canCreateAccounts": false,
