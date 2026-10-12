@@ -242,4 +242,88 @@ describe("forecast engine", () => {
 		expect(m1.accountBalances["source_acc"]).toBe(0);
 		expect(m1.accountBalances["dest_acc"]).toBe(1000);
 	});
+
+	it("executes credit card payment methods: statement, minimum, and custom", () => {
+		const accounts: Account[] = [
+			{ id: "checking", name: "Checking", type: "checking", balance: 2000, apy: 0 }
+		];
+		const cards: Card[] = [
+			{ id: "c_stmt", name: "Card 1", type: "credit", linkedAccountId: "checking", balance: 500, apr: 0, minimumPayment: 50 },
+			{ id: "c_min", name: "Card 2", type: "credit", linkedAccountId: "checking", balance: 800, apr: 0, minimumPayment: 40 },
+			{ id: "c_cust", name: "Card 3", type: "credit", linkedAccountId: "checking", balance: 600, apr: 0, minimumPayment: 30 }
+		];
+		const rules: TransferRule[] = [
+			{ id: "r1", sourceId: "checking", destinationId: "c_stmt", amount: 0, type: "fixed", paymentMethod: "statement" },
+			{ id: "r2", sourceId: "checking", destinationId: "c_min", amount: 0, type: "fixed", paymentMethod: "minimum" },
+			{ id: "r3", sourceId: "checking", destinationId: "c_cust", amount: 150, type: "fixed", paymentMethod: "custom" }
+		];
+
+		const snapshots = generateForecast(accounts, [], rules, [], [], cards, [], [], 1);
+		const m1 = snapshots[0];
+
+		// Card 1 paid full statement ($500)
+		expect(m1.cardBalances["c_stmt"]).toBe(0);
+		expect(m1.debtPayments["c_stmt"]).toBe(500);
+
+		// Card 2 paid minimum ($40)
+		expect(m1.cardBalances["c_min"]).toBe(760);
+		expect(m1.debtPayments["c_min"]).toBe(40);
+
+		// Card 3 paid custom ($150)
+		expect(m1.cardBalances["c_cust"]).toBe(450);
+		expect(m1.debtPayments["c_cust"]).toBe(150);
+
+		// Checking account decreased by 500 + 40 + 150 = 690 -> 2000 - 690 = 1310
+		expect(m1.accountBalances["checking"]).toBe(1310);
+	});
+
+	it("waterfalls auto balance from account to credit card then to savings account", () => {
+		const accounts: Account[] = [
+			{ id: "checking", name: "Checking", type: "checking", balance: 1000, apy: 0 },
+			{ id: "savings", name: "Savings", type: "savings", balance: 200, apy: 0 }
+		];
+		const cards: Card[] = [
+			{ id: "card1", name: "Credit Card", type: "credit", linkedAccountId: "checking", balance: 350, apr: 0, minimumPayment: 25 }
+		];
+		const rules: TransferRule[] = [
+			// Rule 1: Pay credit card statement balance
+			{ id: "r1", sourceId: "checking", destinationId: "card1", amount: 0, type: "fixed", paymentMethod: "statement" },
+			// Rule 2: Auto waterfall remaining surplus into savings
+			{ id: "r2", sourceId: "checking", destinationId: "savings", amount: 0, type: "percentage", isAuto: true }
+		];
+
+		const snapshots = generateForecast(accounts, [], rules, [], [], cards, [], [], 1);
+		const m1 = snapshots[0];
+
+		// Card is paid off ($350)
+		expect(m1.cardBalances["card1"]).toBe(0);
+		expect(m1.debtPayments["card1"]).toBe(350);
+
+		// Remaining surplus in checking ($1000 - $350 = $650) waterfalls into savings
+		expect(m1.accountBalances["checking"]).toBe(0);
+		expect(m1.accountBalances["savings"]).toBe(850); // 200 starting + 650 surplus
+	});
+
+	it("supports transfers from accounts to loans and retirements", () => {
+		const accounts: Account[] = [
+			{ id: "checking", name: "Checking", type: "checking", balance: 1500, apy: 0 }
+		];
+		const loans: Loan[] = [
+			{ id: "loan1", name: "Car Loan", balance: 1000, apr: 0, minimumPayment: 150 }
+		];
+		const retirements = [
+			{ id: "ret1", name: "Roth IRA", balance: 500, expectedApy: 0, employerMatchPercent: 0 }
+		];
+		const rules: TransferRule[] = [
+			{ id: "r_loan", sourceId: "checking", destinationId: "loan1", amount: 200, type: "fixed" },
+			{ id: "r_ret", sourceId: "checking", destinationId: "ret1", amount: 300, type: "fixed" }
+		];
+
+		const snapshots = generateForecast(accounts, [], rules, [], [], [], loans, retirements, 1);
+		const m1 = snapshots[0];
+
+		expect(m1.loanBalances["loan1"]).toBe(800);
+		expect(m1.retirementBalances["ret1"]).toBe(800);
+		expect(m1.accountBalances["checking"]).toBe(1000);
+	});
 });

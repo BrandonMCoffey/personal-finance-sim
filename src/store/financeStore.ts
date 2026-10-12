@@ -177,6 +177,7 @@ export interface TransferRule {
 	amount: number;
 	type: "fixed" | "percentage";
 	isAuto?: boolean;
+	paymentMethod?: "minimum" | "statement" | "custom";
 }
 
 export interface Client {
@@ -297,8 +298,21 @@ interface FinanceState {
 	removeIncomeRoute: (incomeId: string, destinationId: string) => void;
 	reorderIncomeRoutes: (incomeId: string, startIndex: number, endIndex: number) => void;
 
-	addTransferRule: (sourceId: string, destinationId: string, amount?: number, type?: "fixed" | "percentage", isAuto?: boolean) => void;
-	updateTransferRule: (ruleId: string, amount: number, type: "fixed" | "percentage", isAuto?: boolean) => void;
+	addTransferRule: (
+		sourceId: string,
+		destinationId: string,
+		amount?: number,
+		type?: "fixed" | "percentage",
+		isAuto?: boolean,
+		paymentMethod?: "minimum" | "statement" | "custom"
+	) => void;
+	updateTransferRule: (
+		ruleId: string,
+		amount: number,
+		type: "fixed" | "percentage",
+		isAuto?: boolean,
+		paymentMethod?: "minimum" | "statement" | "custom"
+	) => void;
 	removeTransferRule: (ruleId: string) => void;
 	reorderTransferRules: (sourceId: string, startIndex: number, endIndex: number) => void;
 
@@ -449,10 +463,20 @@ export const useFinanceStore = create<FinanceState>()((set) => ({
 						: []
 				})),
 				goals: levelData.startingState?.goals || [],
-				transferRules: (levelData.startingState?.transferRules || []).map((rule: any) => ({
-					...rule,
-					isAuto: rule.isAuto !== undefined ? rule.isAuto : isChecking(rule.destinationId)
-				})),
+				transferRules: (levelData.startingState?.transferRules || []).map((rule: any) => {
+					const isCreditCard = (levelData.startingState?.cards || []).some(
+						(c: any) => c.id === rule.destinationId && c.type === "credit"
+					);
+					return {
+						...rule,
+						isAuto: rule.isAuto !== undefined ? rule.isAuto : isChecking(rule.destinationId),
+						paymentMethod: rule.paymentMethod
+							? rule.paymentMethod
+							: isCreditCard
+							? (rule.amount !== undefined && rule.amount > 0 && rule.amount !== 100 && rule.type === "fixed" ? "custom" : "statement")
+							: undefined
+					};
+				}),
 				winConditions: levelData.winConditions || null,
 				forecastMonths: levelData.forecastMonths || 6,
 				allowedActions: levelData.allowedActions || null,
@@ -625,21 +649,34 @@ export const useFinanceStore = create<FinanceState>()((set) => ({
 		})),
 
 	// --- TRANSFER ACTIONS ---
-	addTransferRule: (sourceId, destinationId, amount = 10, type = "percentage", isAuto = false) =>
+	addTransferRule: (sourceId, destinationId, amount = 10, type = "percentage", isAuto = false, paymentMethod) =>
 		set((state) => {
 			if (state.transferRules.find((r) => r.sourceId === sourceId && r.destinationId === destinationId)) {
 				return { transferRules: state.transferRules };
 			}
+			const targetCard = state.cards.find((c) => c.id === destinationId);
+			const resolvedMethod =
+				paymentMethod || (targetCard?.type === "credit" ? "statement" : undefined);
 			return {
-				transferRules: [...state.transferRules, { id: `rule_${Date.now()}`, sourceId, destinationId, amount, type, isAuto }]
+				transferRules: [
+					...state.transferRules,
+					{ id: `rule_${Date.now()}`, sourceId, destinationId, amount, type, isAuto, paymentMethod: resolvedMethod }
+				]
 			};
 		}),
 
-	updateTransferRule: (ruleId, amount, type, isAuto) =>
+	updateTransferRule: (ruleId, amount, type, isAuto, paymentMethod) =>
 		set((state) => ({
-			transferRules: state.transferRules.map((rule) =>
-				rule.id === ruleId ? { ...rule, amount, type, isAuto: isAuto !== undefined ? isAuto : rule.isAuto } : rule
-			)
+			transferRules: state.transferRules.map((rule) => {
+				if (rule.id !== ruleId) return rule;
+				return {
+					...rule,
+					amount,
+					type,
+					isAuto: isAuto !== undefined ? isAuto : rule.isAuto,
+					paymentMethod: paymentMethod !== undefined ? paymentMethod : rule.paymentMethod
+				};
+			})
 		})),
 
 	removeTransferRule: (ruleId) =>

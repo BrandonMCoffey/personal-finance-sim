@@ -44,7 +44,7 @@ export function InsuranceNode({ data }: InsuranceNodeProps) {
 			titleColor={titleColor}
 			targetHandle={{ color: targetColor }}
 			headerElement={headerElement}
-			className="w-[170px] h-[95px]"
+			className="w-[184px] h-[95px]"
 			isFlashing={data.isFlashing}
 		>
 			<div className="flex flex-col w-full mt-1">

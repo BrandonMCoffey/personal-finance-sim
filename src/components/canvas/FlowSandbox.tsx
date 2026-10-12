@@ -119,9 +119,11 @@ function FlowSandboxInner() {
 						updateTransferRule(rule.id, 100, "percentage", true);
 					}
 				} else {
-					const required = accountRequiredSums[rule.destinationId] || 0;
-					if (rule.amount !== required || rule.type !== "fixed") {
-						updateTransferRule(rule.id, required, "fixed", true);
+					const required = accountRequiredSums[rule.destinationId];
+					if (required !== undefined && required > 0) {
+						if (rule.amount !== required || rule.type !== "fixed") {
+							updateTransferRule(rule.id, required, "fixed", true);
+						}
 					}
 				}
 			}
@@ -143,6 +145,7 @@ function FlowSandboxInner() {
 			inflationRate
 		);
 		const finalSnapshot = forecasts[forecasts.length - 1];
+		const oneYearSnapshot = forecasts[Math.min(12, forecasts.length) - 1];
 
 		const sortedExpenses = [...expenses].sort((a, b) => {
 			if (a.isFixed && !b.isFixed) return -1;
@@ -300,7 +303,7 @@ function FlowSandboxInner() {
 				return {
 					id: acc.id,
 					type: "account",
-					position: { x: 350, y: mainNodesY[acc.id] },
+					position: { x: 360, y: mainNodesY[acc.id] },
 					data: {
 						id: acc.id,
 						name: acc.name,
@@ -308,7 +311,7 @@ function FlowSandboxInner() {
 						originalBalance: acc.balance,
 						forecastBalance: finalSnapshot ? finalSnapshot.accountBalances[acc.id] : acc.balance,
 						realForecastBalance: finalSnapshot ? finalSnapshot.realAccountBalances[acc.id] : acc.balance,
-						interestEarned: finalSnapshot ? finalSnapshot.accountInterestEarned[acc.id] : 0,
+						interestEarned: oneYearSnapshot ? oneYearSnapshot.accountInterestEarned[acc.id] : 0,
 						inflationDrag: finalSnapshot ? finalSnapshot.inflationDrag[acc.id] : 0,
 						forecastMonths,
 						accountType: acc.type,
@@ -339,7 +342,7 @@ function FlowSandboxInner() {
 				return {
 					id: ins.id,
 					type: "insurance",
-					position: { x: 350, y: mainNodesY[ins.id] },
+					position: { x: 360, y: mainNodesY[ins.id] },
 					data: {
 						id: ins.id,
 						name: ins.name,
@@ -359,7 +362,7 @@ function FlowSandboxInner() {
 					type: "card",
 					parentId: snap?.parentId,
 					zIndex: snap?.zIndex,
-					position: snap ? { x: 0, y: snappedYMap[card.id] ?? 95 } : { x: 350, y: mainNodesY[card.id] },
+					position: snap ? { x: 0, y: snappedYMap[card.id] ?? 95 } : { x: 360, y: mainNodesY[card.id] },
 					data: {
 						id: card.id,
 						name: card.name,
@@ -375,22 +378,23 @@ function FlowSandboxInner() {
 			...loans.map((loan) => ({
 				id: loan.id,
 				type: "loan",
-				position: { x: 350, y: mainNodesY[loan.id] },
+				position: { x: 360, y: mainNodesY[loan.id] },
 				data: {
 					id: loan.id,
 					name: loan.name,
 					balance: loan.balance,
 					apr: loan.apr,
 					minimumPayment: loan.minimumPayment,
-					forecastBalance: finalSnapshot ? finalSnapshot.loanBalances[loan.id] : loan.balance,
-					interestPaid: finalSnapshot ? finalSnapshot.loanInterestPaid[loan.id] : 0,
+					forecastBalance: oneYearSnapshot ? oneYearSnapshot.loanBalances[loan.id] : loan.balance,
+					interestPaid: oneYearSnapshot ? oneYearSnapshot.loanInterestPaid[loan.id] : 0,
+					forecastMonths,
 					isFlashing: flashingNodeId === loan.id
 				}
 			})),
 			...retirements.map((ret) => ({
 				id: ret.id,
 				type: "retirement",
-				position: { x: 350, y: mainNodesY[ret.id] },
+				position: { x: 360, y: mainNodesY[ret.id] },
 				data: {
 					id: ret.id,
 					name: ret.name,
@@ -409,7 +413,7 @@ function FlowSandboxInner() {
 					type: "goal",
 					parentId: snap?.parentId,
 					zIndex: snap?.zIndex,
-					position: snap ? { x: 0, y: snappedYMap[goal.id] ?? 95 } : { x: 650, y: 50 + i * 100 },
+					position: snap ? { x: 0, y: snappedYMap[goal.id] ?? 95 } : { x: 670, y: 50 + i * 100 },
 					data: {
 						id: goal.id,
 						name: goal.name,
@@ -431,7 +435,7 @@ function FlowSandboxInner() {
 					parentId: snap?.parentId,
 					zIndex: snap?.zIndex,
 					draggable: !isLockedExpense(exp.id, !!snap),
-					position: snap ? { x: 0, y: snappedYMap[exp.id] ?? 95 } : { x: 650, y: 50 + (goals.length + i) * 100 },
+					position: snap ? { x: 0, y: snappedYMap[exp.id] ?? 95 } : { x: 670, y: 50 + (goals.length + i) * 100 },
 					data: {
 						id: exp.id,
 						name: exp.name,
@@ -542,10 +546,23 @@ function FlowSandboxInner() {
 			if (!snappedMap[rule.destinationId]) {
 				const isCash = accounts.find((a) => a.id === rule.sourceId)?.type === "cash";
 				const isGoal = goals.some((g) => g.id === rule.destinationId);
+				const destCard = cards.find((c) => c.id === rule.destinationId);
 
 				let edgeLabel = rule.type === "percentage" ? `${rule.amount}%` : `$${rule.amount}`;
 				if (rule.isAuto) {
 					edgeLabel = rule.type === "percentage" ? `Auto (${rule.amount}%)` : `Auto ($${rule.amount})`;
+				}
+				if (destCard && destCard.type === "credit") {
+					const method = rule.paymentMethod || "statement";
+					if (method === "statement") {
+						edgeLabel = rule.isAuto ? "Auto (Statement)" : "Statement";
+					} else if (method === "minimum") {
+						edgeLabel = rule.isAuto ? "Auto (Min)" : "Minimum";
+					} else {
+						edgeLabel = rule.type === "percentage" ? `${rule.amount}%` : `$${rule.amount}`;
+					}
+				} else if (rule.isAuto && accounts.some((a) => a.id === rule.destinationId)) {
+					edgeLabel = "Auto";
 				}
 				if (isCash) edgeLabel = "Deposit";
 				if (isGoal) edgeLabel = "Monitors";
@@ -575,20 +592,24 @@ function FlowSandboxInner() {
 			const targetNode = nodes.find((n) => n.id === target);
 			if (!sourceNode || !targetNode) return;
 
-			const isValidTarget = ["account", "card", "goal", "expense", "insurance"].includes(targetNode.type || "");
+			const isValidTarget = ["account", "card", "goal", "expense", "insurance", "loan", "retirement"].includes(targetNode.type || "");
 
 			if (sourceNode.type === "card" && targetNode.type === "account") {
 				const sourceCard = cards.find((c) => c.id === source);
 				if (sourceCard?.type === "credit") return;
 			}
 
-			if (sourceNode.type === "income" && ["account", "card", "expense", "insurance"].includes(targetNode.type || "")) {
+			if (sourceNode.type === "income" && ["account", "card", "expense", "insurance", "loan", "retirement"].includes(targetNode.type || "")) {
 				const targetExpense = expenses.find((e) => e.id === target);
 				const targetAcc = accounts.find((a) => a.id === target);
 				const targetIns = insurances.find((i) => i.id === target);
+				const targetLoan = loans.find((l) => l.id === target);
+				const targetRet = retirements.find((r) => r.id === target);
 
 				if (targetExpense) addIncomeRoute(source, target, targetExpense.defaultAmount !== undefined ? targetExpense.defaultAmount : targetExpense.amount, "fixed");
 				else if (targetIns) addIncomeRoute(source, target, targetIns.premium, "fixed");
+				else if (targetLoan) addIncomeRoute(source, target, targetLoan.minimumPayment, "fixed");
+				else if (targetRet) addIncomeRoute(source, target, 10, "percentage");
 				else if (targetAcc?.type === "checking") {
 					const currentInc = incomes.find((i) => i.id === source);
 					const willBeSingle = (currentInc?.routings?.length || 0) === 0;
@@ -602,9 +623,13 @@ function FlowSandboxInner() {
 				const targetGoal = goals.find((g) => g.id === target);
 				const targetIns = insurances.find((i) => i.id === target);
 				const targetAcc = accounts.find((a) => a.id === target);
+				const targetLoan = loans.find((l) => l.id === target);
+				const targetRet = retirements.find((r) => r.id === target);
 
 				if (sourceAcc?.type === "cash") addTransferRule(source, target, 100, "percentage");
-				else if (targetCard && targetCard.type === "credit") addTransferRule(source, target, 100, "fixed");
+				else if (targetCard && targetCard.type === "credit") addTransferRule(source, target, 0, "fixed", false, "statement");
+				else if (targetLoan) addTransferRule(source, target, targetLoan.minimumPayment, "fixed");
+				else if (targetRet) addTransferRule(source, target, 10, "percentage");
 				else if (targetExpense) addTransferRule(source, target, targetExpense.defaultAmount !== undefined ? targetExpense.defaultAmount : targetExpense.amount, "fixed");
 				else if (targetIns) addTransferRule(source, target, targetIns.premium, "fixed");
 				else if (targetGoal) addTransferRule(source, target, Math.min(100, targetGoal.targetAmount), "fixed");
@@ -618,7 +643,7 @@ function FlowSandboxInner() {
 				else addTransferRule(source, target, 10, "percentage");
 			}
 		},
-		[nodes, expenses, goals, accounts, cards, insurances, incomes, transferRules, addIncomeRoute, addTransferRule]
+		[nodes, expenses, goals, accounts, cards, loans, retirements, insurances, incomes, transferRules, addIncomeRoute, addTransferRule]
 	);
 
 	const onNodeDragStop = useCallback(

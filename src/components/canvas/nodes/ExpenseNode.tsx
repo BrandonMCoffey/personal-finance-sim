@@ -99,7 +99,7 @@ export function ExpenseNode({ data }: ExpenseNodeProps) {
 			isSnapped={data.isSnapped}
 			isFlashing={data.isFlashing}
 			targetHandle={!data.isSnapped ? { color: "bg-red-500" } : undefined}
-			className="w-[164px] h-[74px]"
+			className="w-[180px] h-[74px]"
 		>
 			<style>{`
         .expense-slider::-webkit-slider-thumb { -webkit-appearance: none; appearance: none; width: 0; height: 0; }

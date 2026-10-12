@@ -41,9 +41,9 @@ export function CardNode({ data }: CardNodeProps) {
 			targetHandle={isCredit && !data.isSnapped ? { color: handleColor } : undefined}
 			sourceHandle={{ color: handleColor }}
 			headerElement={headerElement}
-			className={data.isSnapped ? "w-[160px] h-[78px]" : "w-[160px] h-[95px]"}
+			className={data.isSnapped ? "w-[180px] h-[78px]" : "w-[180px] h-[95px]"}
 		>
-			<div className="mt-2 text-white w-full">
+			<div className="mt-1 text-white w-full">
 				{isCredit ? (
 					<div className="flex flex-col w-full">
 						<div className="flex justify-between items-end w-full">
@@ -53,12 +53,12 @@ export function CardNode({ data }: CardNodeProps) {
 									${data.forecastBalance.toFixed(2)}
 								</div>
 							</div>
+							{data.interestPaid > 0 && (
+								<div className="text-[9px] font-bold text-red-200 bg-red-900/60 border border-red-700/50 px-1.5 py-0.5 rounded text-right shrink-0">
+									Int: -${data.interestPaid.toFixed(2)}
+								</div>
+							)}
 						</div>
-						{data.interestPaid > 0 && (
-							<div className="text-[9px] font-bold text-red-200 bg-red-900/50 px-1.5 py-0.5 rounded w-fit mt-1">
-								Interest Paid: -${data.interestPaid.toFixed(2)}
-							</div>
-						)}
 					</div>
 				) : (
 					<div className="text-[10px] opacity-75 italic">

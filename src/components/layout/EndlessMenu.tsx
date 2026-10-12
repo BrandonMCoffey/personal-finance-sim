@@ -7,7 +7,7 @@ export function EndlessMenu() {
 		loadLevel({
 			levelId: "endless_run",
 			category: "endless",
-			forecastMonths: 600,
+			forecastMonths: 60,
 			client: {
 				name: "You",
 				description: "Your entire financial lifetime.",

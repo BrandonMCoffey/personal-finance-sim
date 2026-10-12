@@ -267,13 +267,65 @@ export function generateForecast(
 					(r) => r.sourceId === rule.sourceId && !goals.some((g) => g.id === r.destinationId)
 				);
 				const isSingleRule = outgoingRules.length === 1;
+				const isLastRule = outgoingRules[outgoingRules.length - 1]?.id === rule.id;
+				const available = Math.max(0, sourceBal);
 
-				let transferAmount =
-					isSingleRule && rule.isAuto
-						? Math.max(0, sourceBal)
-						: rule.type === "fixed"
-						? rule.amount
-						: Math.max(0, sourceBal) * (rule.amount / 100);
+				let transferAmount = 0;
+
+				if (destCard && destCard.type === "credit") {
+					const currentOwed = Math.max(0, nextCardBalances[destCard.id]);
+					const method = rule.paymentMethod;
+
+					if (rule.isAuto || method === "statement") {
+						transferAmount = Math.min(available, currentOwed);
+					} else if (method === "minimum") {
+						const minPay = destCard.minimumPayment || Math.min(currentOwed, Math.max(25, currentOwed * 0.025));
+						transferAmount = Math.min(available, Math.min(currentOwed, minPay));
+					} else if (method === "custom") {
+						const intended =
+							rule.type === "fixed" ? rule.amount : available * (rule.amount / 100);
+						transferAmount = Math.min(available, Math.min(currentOwed, intended));
+					} else {
+						// Fallback if paymentMethod is undefined: respect explicit rule.amount if non-zero, otherwise statement
+						if (rule.amount !== undefined && rule.amount > 0) {
+							const intended =
+								rule.type === "fixed" ? rule.amount : available * (rule.amount / 100);
+							transferAmount = Math.min(available, Math.min(currentOwed, intended));
+						} else {
+							transferAmount = Math.min(available, currentOwed);
+						}
+					}
+				} else if (rule.isAuto) {
+					const destAcc = accounts.find((a) => a.id === rule.destinationId);
+					const destLoan = loans.find((l) => l.id === rule.destinationId);
+					const destExp = expenses.find((e) => e.id === rule.destinationId);
+
+					if (destLoan) {
+						const currentOwed = Math.max(0, nextLoanBalances[destLoan.id]);
+						transferAmount = Math.min(available, currentOwed);
+					} else if (destExp) {
+						const maxAllowed = effectiveExpenseMaxes[destExp.id] ?? effectiveExpenseTargets[destExp.id] ?? 0;
+						const needed = activeExpenses[destExp.id] ? Math.max(0, maxAllowed - (monthlyExpenseProgress[destExp.id] || 0)) : 0;
+						transferAmount = Math.min(available, needed);
+					} else if (destAcc) {
+						if (isSingleRule || isLastRule || destAcc.type === "savings" || destAcc.type === "brokerage") {
+							transferAmount = available;
+						} else {
+							const childSum = expenses
+								.filter((e) => transferRules.some((r) => r.sourceId === destAcc.id && r.destinationId === e.id))
+								.reduce((sum, e) => sum + (e.defaultAmount ?? e.amount), 0);
+							transferAmount = childSum > 0 ? Math.min(available, childSum) : available;
+						}
+					} else {
+						transferAmount = available;
+					}
+				} else {
+					transferAmount =
+						rule.type === "fixed"
+							? rule.amount
+							: available * (rule.amount / 100);
+				}
+
 				if (transferAmount > 0) {
 					if (destCard && destCard.type === "credit") {
 						const currentOwed = Math.max(0, nextCardBalances[destCard.id]);

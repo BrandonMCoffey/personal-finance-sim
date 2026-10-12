@@ -29,7 +29,7 @@ export function RetirementNode({ data }: RetirementNodeProps) {
 			sourceHandle={{ color: "bg-emerald-500", position: Position.Right }}
 			onRename={(newName) => renameAccount(data.id, newName)}
 			headerElement={<span className="text-[10px] font-bold text-emerald-600">~{data.expectedApy}% APY</span>}
-			className="w-[160px] h-[95px]"
+			className="w-[180px] h-[95px]"
 			isFlashing={data.isFlashing}
 		>
 			<div className="flex flex-col w-full mt-1">

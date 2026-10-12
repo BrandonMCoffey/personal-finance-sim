@@ -44,7 +44,7 @@ export function IncomeNode({ data }: IncomeNodeProps) {
 			sourceHandle={{ color: "bg-green-500" }}
 			isFlashing={data.isFlashing}
 			headerElement={headerElement}
-			className={data.taxAmount > 0 ? "w-[190px] h-[112px]" : "w-[185px] h-[98px]"}
+			className={data.taxAmount > 0 ? "w-[206px] h-[112px]" : "w-[200px] h-[98px]"}
 		>
 			<div className="flex flex-col w-full mt-1">
 				<div className="flex justify-between items-center text-[10px] text-gray-500">

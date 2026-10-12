@@ -54,10 +54,15 @@ export function AccountNode({ data }: AccountNodeProps) {
 		</div>
 	) : undefined;
 
+	const displayHistory = data.history && data.history.length > 12 ? data.history.slice(0, 12) : data.history || [];
+
 	const rightPanel =
-		data.forecastMonths > 1 && history.length > 0 && !isDeposited ? (
-			<div className="nodrag nopan flex flex-col justify-center h-full w-24 border-l border-black/10 px-1.5 gap-[2px] bg-gray-50/30 rounded-r-md pointer-events-auto">
-				{data.history.map((h) => {
+		data.forecastMonths > 1 && displayHistory.length > 0 && !isDeposited ? (
+			<div
+				className="nodrag nopan flex flex-col justify-center h-full w-24 border-l border-black/10 px-1.5 gap-[2px] bg-gray-50/30 rounded-r-md pointer-events-auto"
+				title={data.history.length > 12 ? `Showing first 12 of ${data.history.length} months forecast` : undefined}
+			>
+				{displayHistory.map((h) => {
 					const totalBalance = Math.max(0, h.balance);
 					const goalEarmark = Math.min(h.goal || 0, totalBalance);
 					const availableBal = totalBalance - goalEarmark;
@@ -111,7 +116,7 @@ export function AccountNode({ data }: AccountNodeProps) {
 			onRename={(newName) => renameAccount(data.id, newName)}
 			headerElement={headerElement}
 			rightPanel={rightPanel}
-			className={data.forecastMonths > 1 && !isDeposited ? "w-[260px] h-[95px]" : "w-[160px] h-[85px]"}
+			className={data.forecastMonths > 1 && !isDeposited ? "w-[280px] h-[95px]" : "w-[180px] h-[85px]"}
 		>
 			{isDeposited ? (
 				<div className="flex flex-col justify-center flex-1">
@@ -130,7 +135,7 @@ export function AccountNode({ data }: AccountNodeProps) {
 					</div>
 					{data.interestEarned > 0 && (
 						<div className="text-[9px] font-bold text-green-500 bg-green-50 px-1 py-0.5 rounded w-fit mt-1 border border-green-100">
-							Earned: +${data.interestEarned.toFixed(2)}
+							{data.forecastMonths > 12 ? "1yr Earned" : "Earned"}: +${data.interestEarned.toFixed(2)}
 						</div>
 					)}
 					{data.inflationDrag !== undefined && data.inflationDrag > 0 && (

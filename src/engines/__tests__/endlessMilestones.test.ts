@@ -90,4 +90,27 @@ describe("endless mode milestones data & engine", () => {
 		expect(useFinanceStore.getState().loans.length).toBe(initialLoanCount + 1);
 		expect(useFinanceStore.getState().flashingNodeId).toBe(nodeId);
 	});
+
+	it("creates a medical loan only if >= 10,000, otherwise creates a one-time expense", async () => {
+		const { createMedicalEmergencyEvent } = await import("../lifeEventEngine");
+		const store = useFinanceStore.getState();
+
+		// Case 1: Large medical emergency (>= 10,000)
+		const largeEvent = createMedicalEmergencyEvent(12000);
+		expect(largeEvent.type).toBe("debt");
+		const loanCountBefore = store.loans.length;
+		largeEvent.action(useFinanceStore.getState());
+		expect(useFinanceStore.getState().loans.length).toBe(loanCountBefore + 1);
+
+		// Case 2: Smaller medical emergency (< 10,000)
+		const smallEvent = createMedicalEmergencyEvent(3500);
+		expect(smallEvent.type).toBe("expense");
+		const expenseCountBefore = store.expenses.length;
+		smallEvent.action(useFinanceStore.getState());
+		expect(useFinanceStore.getState().expenses.length).toBe(expenseCountBefore + 1);
+		const createdExp = useFinanceStore.getState().expenses.find((e) => e.name === "Medical Emergency Bill");
+		expect(createdExp).toBeDefined();
+		expect(createdExp?.amount).toBe(3500);
+		expect(createdExp?.occurrenceMonth).toBe(1);
+	});
 });

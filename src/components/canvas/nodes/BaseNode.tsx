@@ -56,7 +56,7 @@ export function BaseNode({
 
 	const snappedStyle = isSnapped ? "rounded-t-none shadow-none z-0 border-t-0" : "rounded-md shadow-md z-10";
 	const flashStyle = isFlashing ? "animate-pulse ring-4 ring-amber-400 border-amber-500 shadow-xl shadow-amber-300" : "";
-	const containerClass = className || "w-[160px] h-[60px]";
+	const containerClass = className || "w-[180px] h-[60px]";
 
 	return (
 		<div className={`relative px-3 pt-2 pb-2.5 border-2 flex flex-col justify-between ${containerClass} ${bgColor} ${borderColor} ${snappedStyle} ${flashStyle} box-border`}>
@@ -68,7 +68,7 @@ export function BaseNode({
 				{isEditing && onRename ? (
 					<input
 						autoFocus
-						className="w-full text-sm font-bold text-gray-900 bg-white/80 border border-gray-300 rounded px-1 outline-none"
+						className="w-full text-[13px] font-bold text-gray-900 bg-white/80 border border-gray-300 rounded px-1 outline-none"
 						value={editName}
 						onChange={(e) => setEditName(e.target.value)}
 						onBlur={handleBlur}
@@ -76,9 +76,9 @@ export function BaseNode({
 					/>
 				) : (
 					<span
-						className={`text-sm font-bold truncate leading-tight ${titleColor} ${onRename ? "cursor-text hover:opacity-80" : ""}`}
+						className={`text-[13px] font-bold truncate leading-tight ${titleColor} ${onRename ? "cursor-text hover:opacity-80" : ""}`}
 						onDoubleClick={() => onRename && setIsEditing(true)}
-						title={onRename ? "Double click to rename" : ""}
+						title={onRename ? `${title} (Double-click to rename)` : title}
 					>
 						{title}
 					</span>

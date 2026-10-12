@@ -6,6 +6,26 @@ export interface LifeEvent {
 	action: (store: any) => string | void;
 }
 
+export function createMedicalEmergencyEvent(amount: number): LifeEvent {
+	if (amount >= 10000) {
+		const minPay = Math.round(amount * 0.02);
+		return {
+			id: "medical_emergency",
+			title: "Major Medical Emergency",
+			description: `A critical hospital stay left you with an out-of-pocket medical debt ($${amount.toLocaleString()} at 5% APR, $${minPay}/mo minimum).`,
+			type: "debt",
+			action: (s) => s.addLoan("Medical Emergency Debt", amount, 5.0, minPay)
+		};
+	}
+	return {
+		id: "medical_emergency",
+		title: "Medical Emergency",
+		description: `An unexpected hospital stay left you with a one-time out-of-pocket medical bill of $${amount.toLocaleString()} due this month.`,
+		type: "expense",
+		action: (s) => s.addExpense("Medical Emergency Bill", amount, true, { occurrenceMonth: 1 })
+	};
+}
+
 export function rollForLifeEvent(currentAge: number): LifeEvent | null {
 	const roll = Math.random();
 
@@ -13,13 +33,8 @@ export function rollForLifeEvent(currentAge: number): LifeEvent | null {
 
 	const possibleEvents: LifeEvent[] = [];
 
-	possibleEvents.push({
-		id: "medical_emergency",
-		title: "Medical Emergency",
-		description: "An unexpected hospital stay left you with an out-of-pocket medical debt ($3,500 at 5% APR, $100/mo minimum).",
-		type: "debt",
-		action: (s) => s.addLoan("Medical Emergency Debt", 3500, 5.0, 100)
-	});
+	const medicalAmount = Math.random() < 0.35 ? 12000 : 3500;
+	possibleEvents.push(createMedicalEmergencyEvent(medicalAmount));
 
 	possibleEvents.push({
 		id: "car_trouble",
