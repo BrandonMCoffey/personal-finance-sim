@@ -31,7 +31,8 @@ export default function App() {
 		retirements,
 		inflationRate,
 		winConditions,
-		forecastMonths
+		forecastMonths,
+		initialAccountTypes
 	} = useFinanceStore();
 
 	const { advanceRound, activeCharacterId, completeClientSession } = useStoryStore();
@@ -53,7 +54,8 @@ export default function App() {
 			winConditions,
 			insurances,
 			inflationRate,
-			forecastMonths
+			forecastMonths,
+			initialAccountTypes
 		);
 		setReport(results);
 		setIsModalOpen(true);

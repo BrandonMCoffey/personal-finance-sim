@@ -26,7 +26,6 @@ export const CATEGORIES: CategoryDef[] = [
 			"Emergency Funds",
 			"Short-Term Goals",
 			"Account Types",
-			"Automation",
 			"Exponential Growth"
 		]
 	},

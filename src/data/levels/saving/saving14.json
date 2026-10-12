@@ -2,7 +2,7 @@
   "title": "Doubling Pennies",
   "desc": "Use a high APY account to double your small savings.",
   "to-teach": "Utilize high APY to reach savings goals faster.",
-  "subCategoryIndex": 4,
+  "subCategoryIndex": 3,
   "forecastMonths": 12,
   "hints": [
     "The client starts with $4,000 in seed capital inside zero-yield cash.",

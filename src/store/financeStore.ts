@@ -264,6 +264,7 @@ interface FinanceState {
 	forecastMonths: number;
 	allowedActions: AllowedActions | null;
 	initialAccountCount: number;
+	initialAccountTypes: AccountType[];
 	flashingNodeId: string | null;
 	endlessAge: number;
 	endlessMilestoneIndex: number;
@@ -354,6 +355,7 @@ export const useFinanceStore = create<FinanceState>()((set) => ({
 	forecastMonths: 6,
 	allowedActions: null,
 	initialAccountCount: 0,
+	initialAccountTypes: [],
 	flashingNodeId: null,
 	endlessAge: 16,
 	endlessMilestoneIndex: 0,
@@ -481,6 +483,7 @@ export const useFinanceStore = create<FinanceState>()((set) => ({
 				forecastMonths: levelData.forecastMonths || 6,
 				allowedActions: levelData.allowedActions || null,
 				initialAccountCount: rawAccounts.length || 0,
+				initialAccountTypes: rawAccounts.map((a: any) => a.type as AccountType),
 				flashingNodeId: null,
 				endlessAge: levelData.category === "endless" ? 16 : 22,
 				endlessMilestoneIndex: 0,

@@ -17,8 +17,13 @@ export function LevelSelectMenu() {
 		category
 	} = useFinanceStore();
 
-	const initialCategory = selectedCategory || (CATEGORIES.some((c) => c.id === category) ? category : CATEGORIES[0].id);
-	const [activeCategory, setActiveCategory] = useState<string>(initialCategory);
+	const validInitialCategory =
+		(selectedCategory && CATEGORIES.some((c) => c.id === selectedCategory) ? selectedCategory : undefined) ||
+		(category && CATEGORIES.some((c) => c.id === category) ? category : undefined) ||
+		CATEGORIES[0].id;
+	const [activeCategory, setActiveCategory] = useState<string>(validInitialCategory);
+
+	const safeCategory = CATEGORIES.some((c) => c.id === activeCategory) ? activeCategory : validInitialCategory;
 
 	useEffect(() => {
 		const targetId = lastSelectedLevelId || levelId;
@@ -72,8 +77,8 @@ export function LevelSelectMenu() {
 		return maxIndex;
 	}, [levelScores, flatSubCategories]);
 
-	const activeCatDef = CATEGORIES.find((c) => c.id === activeCategory);
-	const activeLevels = levels.filter((lvl) => lvl.category === activeCategory);
+	const activeCatDef = CATEGORIES.find((c) => c.id === safeCategory);
+	const activeLevels = levels.filter((lvl) => lvl.category === safeCategory);
 
 	return (
 		<div className="w-full h-full bg-gray-50 flex flex-col overflow-hidden">
@@ -94,7 +99,7 @@ export function LevelSelectMenu() {
 					<h2 className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-4">Curriculum</h2>
 					<nav className="flex flex-col gap-2">
 						{CATEGORIES.map((category) => {
-							const isActive = activeCategory === category.id;
+							const isActive = safeCategory === category.id;
 							return (
 								<button
 									key={category.id}
@@ -132,22 +137,28 @@ export function LevelSelectMenu() {
 								{activeCatDef.subCategories.map((subCategoryName, subIdx) => {
 									const catLevels = activeLevels.filter((l) => l.subCategoryIndex === subIdx);
 
-									const flatIdx = flatSubCategories.findIndex((f) => f.categoryId === activeCategory && f.subCategoryIndex === subIdx);
+									const flatIdx = flatSubCategories.findIndex((f) => f.categoryId === safeCategory && f.subCategoryIndex === subIdx);
 									const isUnlocked = isAllUnlocked || flatIdx <= highestCompletedSubCatIndex + 1;
 
 									if (catLevels.length === 0) return null;
 
 									const completedCount = catLevels.filter((l) => (levelScores[l.id] || 0) >= 60).length;
+									const gridColsClass =
+										catLevels.length <= 1
+											? "grid-cols-1"
+											: catLevels.length === 2
+											? "grid-cols-1 md:grid-cols-2"
+											: "grid-cols-1 md:grid-cols-2 lg:grid-cols-3";
 
 									return (
-										<div key={subIdx}>
+										<div key={subIdx} className="w-full max-w-[1400px]">
 											<div className="flex items-center justify-between mb-4 border-b border-gray-200 pb-2">
 												<h3 className="text-lg font-bold text-gray-800">{subCategoryName}</h3>
 												<span className="text-xs font-semibold text-gray-400">
 													{completedCount}/{catLevels.length} Completed
 												</span>
 											</div>
-											<div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-4 sm:gap-5">
+											<div className={`grid gap-4 sm:gap-5 ${gridColsClass}`}>
 												{catLevels.map((level: LevelData) => {
 													const score = levelScores[level.id] || 0;
 													const isCompleted = score >= 60;

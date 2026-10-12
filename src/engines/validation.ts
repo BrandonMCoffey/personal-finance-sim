@@ -1,4 +1,4 @@
-import type { Account, Income, TransferRule, Goal, WinConditions, Expense, Card, Loan, Retirement, Insurance } from "../store/financeStore";
+import type { Account, AccountType, Income, TransferRule, Goal, WinConditions, Expense, Card, Loan, Retirement, Insurance } from "../store/financeStore";
 import { calculateIncomeTaxes } from "../store/financeStore";
 import { generateForecast } from "./forecast";
 
@@ -21,7 +21,8 @@ export function evaluatePlan(
 	winConditions: WinConditions | null,
 	insurances: Insurance[] = [],
 	inflationRate: number = 0,
-	forecastMonths: number = 6
+	forecastMonths: number = 6,
+	initialAccountTypes?: AccountType[]
 ): ValidationReport {
 	const feedback: string[] = [];
 	let score = 100;
@@ -33,11 +34,12 @@ export function evaluatePlan(
 	if (winConditions.requiredAccounts) {
 		const existingTypes = accounts.map((a) => a.type);
 		winConditions.requiredAccounts.forEach((reqType) => {
+			const wasPreOpened = initialAccountTypes ? initialAccountTypes.includes(reqType) : false;
 			if (!existingTypes.includes(reqType)) {
 				score -= 20;
 				feedback.push(`Missing account type: You need to open a ${reqType} account.`);
 				if (!contextualHint) contextualHint = `Open a ${reqType} account from the Actions menu.`;
-			} else {
+			} else if (!wasPreOpened) {
 				feedback.push(`Great job opening a ${reqType} account.`);
 			}
 		});

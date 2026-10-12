@@ -2,7 +2,21 @@ import { describe, it, expect } from "vitest";
 import { evaluatePlan } from "../validation";
 import type { Account, Income, TransferRule, Expense, Card, Loan, Retirement, WinConditions } from "../../store/financeStore";
 
+import { LevelRegistry, levels, CATEGORIES } from "../../data/levels/registry";
+
 describe("validation engine", () => {
+	it("verifies all 75 levels are registered", () => {
+		expect(levels.length).toBe(75);
+		expect(Object.keys(LevelRegistry).length).toBe(75);
+		for (const cat of CATEGORIES) {
+			const catLevels = levels.filter((l) => l.category === cat.id);
+			expect(catLevels.length).toBe(15);
+			for (let i = 0; i < cat.subCategories.length; i++) {
+				const subLevels = catLevels.filter((l) => l.subCategoryIndex === i);
+				expect(subLevels.length).toBe(3);
+			}
+		}
+	});
 	it("penalizes unfunded fixed expenses", () => {
 		const accounts: Account[] = [
 			{ id: "checking", name: "Checking", type: "checking", balance: 500, apy: 0 }
@@ -182,5 +196,70 @@ describe("validation engine", () => {
 		];
 		const passReport = evaluatePlan(accounts, [], sweepRules, [], [], [], [], [], winConditions);
 		expect(passReport.feedback.some((f) => f.includes("successfully deposited physical cash"))).toBe(true);
+	});
+
+	it("only congratulates opening required accounts if they were not pre-opened", () => {
+		const accounts: Account[] = [
+			{ id: "checking", name: "Checking", type: "checking", balance: 500, apy: 0 },
+			{ id: "savings", name: "Savings", type: "savings", balance: 100, apy: 2 }
+		];
+		const winConditions: WinConditions = { requiredAccounts: ["checking", "savings"] };
+
+		// Case 1: Checking was pre-opened, savings was newly opened
+		const reportPartialPreOpened = evaluatePlan(
+			accounts,
+			[],
+			[],
+			[],
+			[],
+			[],
+			[],
+			[],
+			winConditions,
+			[],
+			0,
+			6,
+			["checking"]
+		);
+		expect(reportPartialPreOpened.feedback).not.toContain("Great job opening a checking account.");
+		expect(reportPartialPreOpened.feedback).toContain("Great job opening a savings account.");
+
+		// Case 2: Neither was pre-opened (player opened both)
+		const reportNonePreOpened = evaluatePlan(
+			accounts,
+			[],
+			[],
+			[],
+			[],
+			[],
+			[],
+			[],
+			winConditions,
+			[],
+			0,
+			6,
+			[]
+		);
+		expect(reportNonePreOpened.feedback).toContain("Great job opening a checking account.");
+		expect(reportNonePreOpened.feedback).toContain("Great job opening a savings account.");
+
+		// Case 3: Both were pre-opened (level started with both)
+		const reportAllPreOpened = evaluatePlan(
+			accounts,
+			[],
+			[],
+			[],
+			[],
+			[],
+			[],
+			[],
+			winConditions,
+			[],
+			0,
+			6,
+			["checking", "savings"]
+		);
+		expect(reportAllPreOpened.feedback).not.toContain("Great job opening a checking account.");
+		expect(reportAllPreOpened.feedback).not.toContain("Great job opening a savings account.");
 	});
 });
