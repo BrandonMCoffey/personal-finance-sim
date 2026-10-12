@@ -1,545 +1,511 @@
 {
-  "id": "maya_patel",
-  "name": "Maya Patel",
-  "bio": "High-velocity Silicon Valley software engineer battling lifestyle creep and speculative stock bets, navigating tech layoffs, and building resilient family wealth.",
-  "avatarEmoji": "💻",
-  "portraitId": "portrait_maya",
-  "traits": [
-    "analytical",
-    "risk-seeking",
-    "status-conscious"
-  ],
-  "stages": [
-    {
-      "stageId": "maya_stage_1",
-      "stageTitle": "Golden Handcuffs & The Margin Call",
-      "age": 28,
-      "occupation": "Senior Software Engineer (FinTech)",
-      "yearsSinceLastStage": 0,
-      "cooldownRounds": 2,
-      "selectionSnippet": {
-        "firstTime": "Hi. Maya Patel here. I'm a Senior Software Engineer pulling in $9,500/mo gross, but I made a huge financial blunder. Last month I charged a lavish $4,200 Cabo luxury resort vacation onto my 24.99% travel rewards card. Between high-rise rent, my Tesla lease, and over $90/mo in pure interest compounding, I need a disciplined debt paydown plan to crush this vacation balance immediately.",
-        "returningHelped": "Maya Patel here! You helped me crush that Cabo vacation debt trap years ago. I'm hitting another tech career inflection point and need your analytical mind.",
-        "returningSkipped": "Maya Patel checking in again. I reached out when my vacation credit card debt was spiraling. I need real wealth architecture to stop leaking interest. Hoping for an opening."
-      },
-      "dialogue": {
-        "greeting": "Everyone in tech acts like paying $4,200 for a luxury resort vacation is no big deal, but charging it to a 24.99% credit card was reckless. The interest fees are compounding daily. Can we build a budget plan that wipes out this vacation debt without missing rent?",
-        "emotion": "Chagrined & Driven",
-        "planApproved": "Seeing the numbers laid out like a clean software system clicked for me. Capping variable dining out and funneling every surplus dollar into crushing that 24.99% vacation card wipes it out in months!",
-        "planNeedsWork": "Wait, our payments to the vacation card are barely above the minimum! At this rate, I'll be paying compound interest on Cabo margaritas for the next five years."
-      },
-      "lifeEvent": {
-        "title": "Luxury Vacation Debt Trap",
-        "description": "Maya put an extravagant $4,200 Cabo luxury resort vacation on her 24.99% rewards card, and compounding interest is draining her surplus.",
-        "type": "debt"
-      },
-      "financialState": {
-        "accounts": [
-          {
-            "id": "acc_maya_checking",
-            "name": "Tech Checking",
-            "type": "checking",
-            "balance": 1200,
-            "apy": 0.05
-          }
-        ],
-        "cards": [
-          {
-            "id": "card_maya_metal",
-            "name": "Cabo Vacation Rewards Card",
-            "type": "credit",
-            "linkedAccountId": "acc_maya_checking",
-            "balance": 4200,
-            "apr": 24.99,
-            "minimumPayment": 160
-          }
-        ],
-        "income": [
-          {
-            "id": "inc_maya_tech_salary",
-            "name": "Tech Engineering Salary",
-            "amount": 9500,
-            "taxRate": 24,
-            "frequency": "monthly",
-            "routings": [
-              {
-                "destinationId": "acc_maya_checking",
-                "amount": 100,
-                "type": "percentage"
-              }
-            ]
-          }
-        ],
-        "expenses": [
-          {
-            "id": "exp_maya_luxury_apt",
-            "name": "High-Rise Loft Rent",
-            "isFixed": true,
-            "defaultAmount": 2850
-          },
-          {
-            "id": "exp_maya_tesla_lease",
-            "name": "EV Lease & Supercharging",
-            "isFixed": true,
-            "defaultAmount": 750
-          },
-          {
-            "id": "exp_maya_dining_social",
-            "name": "Fine Dining & Tech Socials",
-            "isFixed": false,
-            "minValue": 600,
-            "defaultAmount": 1100
-          },
-          {
-            "id": "exp_maya_subscriptions",
-            "name": "High-End Gym & Cloud Tools",
-            "isFixed": true,
-            "defaultAmount": 320
-          }
-        ],
-        "goals": [
-          {
-            "id": "goal_maya_kill_card",
-            "name": "Pay Off Vacation Card Debt",
-            "targetAmount": 4200,
-            "targetMonths": 4
-          }
-        ],
-        "transferRules": [
-          {
-            "id": "rule_maya_apt",
-            "sourceId": "acc_maya_checking",
-            "destinationId": "exp_maya_luxury_apt",
-            "amount": 2850,
-            "type": "fixed"
-          },
-          {
-            "id": "rule_maya_tesla",
-            "sourceId": "acc_maya_checking",
-            "destinationId": "exp_maya_tesla_lease",
-            "amount": 750,
-            "type": "fixed"
-          },
-          {
-            "id": "rule_maya_dining",
-            "sourceId": "acc_maya_checking",
-            "destinationId": "exp_maya_dining_social",
-            "amount": 1100,
-            "type": "fixed"
-          },
-          {
-            "id": "rule_maya_subs",
-            "sourceId": "acc_maya_checking",
-            "destinationId": "exp_maya_subscriptions",
-            "amount": 320,
-            "type": "fixed"
-          },
-          {
-            "id": "rule_maya_card",
-            "sourceId": "acc_maya_checking",
-            "destinationId": "card_maya_metal",
-            "amount": 160,
-            "type": "fixed"
-          }
-        ]
-      },
-      "winConditions": {
-        "requiredAccounts": [
-          "savings"
-        ],
-        "goalsFundedWithinMonths": {
-          "goalId": "goal_maya_kill_card",
-          "months": 4
-        },
-        "optimalDebtRouting": "avalanche"
-      },
-      "allowedActions": {
-        "canCreateAccounts": true,
-        "canDeleteAccounts": true,
-        "allowedAccountTypes": [
-          "checking",
-          "savings",
-          "brokerage"
-        ],
-        "allowedCardTypes": [
-          "debit",
-          "credit"
-        ]
-      }
-    },
-    {
-      "stageId": "maya_stage_2",
-      "stageTitle": "The Tech Layoff & Burn Rate Triage",
-      "age": 32,
-      "occupation": "Engineering Consultant (Between Roles)",
-      "yearsSinceLastStage": 4,
-      "cooldownRounds": 2,
-      "selectionSnippet": {
-        "firstTime": "Maya Patel here. I'm 32. My tech startup just laid off 40% of its engineering org, including me. I received 8 weeks of severance, but the tech hiring market has frozen over. I need an emergency triage plan to cut my monthly burn rate until I secure consulting contracts.",
-        "returningHelped": "Maya Patel! Thank goodness you taught me how to save an actual emergency fund four years ago. My tech company just announced mass layoffs and eliminated my department. I have severance, but I need your help restructuring my budget for survival mode.",
-        "returningSkipped": "Maya Patel here again. I couldn't get on your calendar previously, but my tech startup just went through sudden layoffs. I'm in sudden transition and urgently need to trim expenses."
-      },
-      "dialogue": {
-        "greeting": "Logging on to Slack at 9 AM and seeing your account deactivated with a severance email is a gut punch. All the stock options in the world don't mean a thing when payroll stops.",
-        "emotion": "Shaken but Resilient",
-        "planApproved": "This burn-rate triage is airtight. Slashing discretionary subscriptions, switching to COBRA gap healthcare, and pacing the severance cushion gives me a 9-month runway to land the right role.",
-        "planNeedsWork": "Wait, our fixed expenses exceed our severance burn rate. We must trim variable spending or we will burn through our remaining liquid cash in 3 months."
-      },
-      "lifeEvent": {
-        "title": "Startup Tech Downsizing Layoff",
-        "description": "Maya was impacted by broad tech layoffs. She received an 8-week severance package and must minimize monthly outflows.",
-        "type": "expense"
-      },
-      "financialState": {
-        "accounts": [
-          {
-            "id": "acc_maya_checking",
-            "name": "Emergency Checking",
-            "type": "checking",
-            "balance": 4000,
-            "apy": 0.05
-          },
-          {
-            "id": "acc_maya_savings",
-            "name": "Severance Runway Fund",
-            "type": "savings",
-            "balance": 18000,
-            "apy": 4
-          }
-        ],
-        "income": [
-          {
-            "id": "inc_maya_consulting_interim",
-            "name": "Interim Tech Advisory",
-            "amount": 4500,
-            "taxRate": 15,
-            "frequency": "monthly",
-            "routings": [
-              {
-                "destinationId": "acc_maya_checking",
-                "amount": 100,
-                "type": "percentage"
-              }
-            ]
-          }
-        ],
-        "expenses": [
-          {
-            "id": "exp_maya_sublet_apt",
-            "name": "Sublet Apartment Rent",
-            "isFixed": true,
-            "defaultAmount": 2100
-          },
-          {
-            "id": "exp_maya_cobra_health",
-            "name": "Health Insurance COBRA",
-            "isFixed": true,
-            "defaultAmount": 550
-          },
-          {
-            "id": "exp_maya_triage_food",
-            "name": "Groceries & Essentials",
-            "isFixed": false,
-            "minValue": 350,
-            "defaultAmount": 480
-          },
-          {
-            "id": "exp_maya_lean_transit",
-            "name": "Transit & Utilities",
-            "isFixed": true,
-            "defaultAmount": 240
-          }
-        ],
-        "goals": [
-          {
-            "id": "goal_maya_runway_preserve",
-            "name": "Preserve 6-Month Runway",
-            "targetAmount": 3000,
-            "targetMonths": 6
-          }
-        ]
-      },
-      "winConditions": {
-        "goalsFundedWithinMonths": {
-          "goalId": "goal_maya_runway_preserve",
-          "months": 6
-        }
-      },
-      "allowedActions": {
-        "canCreateAccounts": true,
-        "canDeleteAccounts": true,
-        "allowedAccountTypes": [
-          "checking",
-          "savings",
-          "brokerage"
-        ],
-        "allowedCardTypes": [
-          "debit",
-          "credit"
-        ]
-      }
-    },
-    {
-      "stageId": "maya_stage_3",
-      "stageTitle": "Tech Lead Rebound & Suburban Home",
-      "age": 37,
-      "occupation": "Staff Engineering Tech Lead",
-      "yearsSinceLastStage": 5,
-      "cooldownRounds": 3,
-      "selectionSnippet": {
-        "firstTime": "Hello, Maya Patel here. At 37, I rebounded stronger than ever as a Staff Tech Lead at a public cloud company. I'm married with a 2-year-old toddler, and we just purchased a 4-bedroom home with an attached in-law suite. I need help managing a $4,000 mortgage while maximizing our Mega-Backdoor Roth IRA.",
-        "returningHelped": "Maya Patel! Your severance triage kept me calm, and that patience allowed me to negotiate a Staff Tech Lead position with equity that took off! Now we've bought a family home with an in-law suite for my parents. I want your strategic framework for our Mega-Backdoor Roth and toddler's 529.",
-        "returningSkipped": "Maya Patel here. I recovered from the layoff into a senior engineering leadership position. Looking for advanced wealth advisory for our high-income suburban family."
-      },
-      "dialogue": {
-        "greeting": "Going from the panic of a sudden layoff to closing on a home where my aging parents can live with us in comfort... it's the proudest feeling in the world. But with a $4,000 mortgage, there's zero room for sloppy habits.",
-        "emotion": "Proud & Disciplined",
-        "planApproved": "This architecture is pristine. Mega-Backdoor Roth maximized, property taxes escrowed, toddler 529 humming along, and our emergency safety buffer intact.",
-        "planNeedsWork": "Wait, our jumbo mortgage and escrow payments aren't properly secured. We cannot risk any late payments on the family home."
-      },
-      "lifeEvent": {
-        "title": "Family Home Closing & In-Law Suite",
-        "description": "Maya purchased a multi-generational home with an in-law suite for her aging parents, taking on a significant mortgage.",
-        "type": "expense"
-      },
-      "financialState": {
-        "accounts": [
-          {
-            "id": "acc_maya_checking",
-            "name": "Family Operating Checking",
-            "type": "checking",
-            "balance": 5000,
-            "apy": 0.05
-          },
-          {
-            "id": "acc_maya_savings",
-            "name": "Jumbo Reserve Treasury",
-            "type": "savings",
-            "balance": 28000,
-            "apy": 4.1
-          }
-        ],
-        "income": [
-          {
-            "id": "inc_maya_staff_salary",
-            "name": "Staff Tech Lead Salary",
-            "amount": 12500,
-            "taxRate": 26,
-            "frequency": "monthly",
-            "routings": [
-              {
-                "destinationId": "acc_maya_checking",
-                "amount": 100,
-                "type": "percentage"
-              }
-            ]
-          }
-        ],
-        "expenses": [
-          {
-            "id": "exp_maya_mortgage",
-            "name": "Home Mortgage Principal & Interest",
-            "isFixed": true,
-            "defaultAmount": 3400
-          },
-          {
-            "id": "exp_maya_property_tax",
-            "name": "Property Taxes & Escrow",
-            "isFixed": true,
-            "defaultAmount": 750
-          },
-          {
-            "id": "exp_maya_childcare_family",
-            "name": "Toddler Care & Household",
-            "isFixed": false,
-            "minValue": 1000,
-            "defaultAmount": 1400
-          },
-          {
-            "id": "exp_maya_utilities",
-            "name": "Multi-Gen Utilities & Ins",
-            "isFixed": true,
-            "defaultAmount": 550
-          }
-        ],
-        "insurances": [
-          {
-            "id": "ins_maya_umbrella",
-            "name": "Umbrella & Homeowners Policy",
-            "premium": 160,
-            "deductible": 1000
-          }
-        ],
-        "retirements": [
-          {
-            "id": "ret_maya_401k",
-            "name": "Corporate 401(k) & Match",
-            "type": "401k",
-            "balance": 140000,
-            "expectedApy": 8,
-            "employerMatchPercent": 6
-          }
-        ],
-        "goals": [
-          {
-            "id": "goal_maya_toddler_529",
-            "name": "Toddler College 529 Seed",
-            "targetAmount": 6000,
-            "targetMonths": 6
-          }
-        ]
-      },
-      "winConditions": {
-        "requireInsuranceCoverage": true,
-        "goalsFundedWithinMonths": {
-          "goalId": "goal_maya_toddler_529",
-          "months": 6
-        }
-      },
-      "allowedActions": {
-        "canCreateAccounts": true,
-        "canDeleteAccounts": true,
-        "allowedAccountTypes": [
-          "checking",
-          "savings",
-          "brokerage"
-        ],
-        "allowedCardTypes": [
-          "debit",
-          "credit"
-        ]
-      }
-    },
-    {
-      "stageId": "maya_stage_4",
-      "stageTitle": "Aging Parents Care & Dual College Funds",
-      "age": 44,
-      "occupation": "VP of Engineering & Angel Investor",
-      "yearsSinceLastStage": 7,
-      "cooldownRounds": 3,
-      "selectionSnippet": {
-        "firstTime": "Hello! Maya Patel here at 44. I'm now VP of Engineering. We're in the sandwich generation: supporting my father's memory care medical expenses while simultaneously funding college accounts for our two kids. We need a holistic wealth strategy.",
-        "returningHelped": "Maya Patel! From the margin call crisis in my late 20s to leading an entire engineering organization—your advice has been the anchor of my financial life. We are now navigating the sandwich generation: aging parents' healthcare and dual college funds. I need your steady hand.",
-        "returningSkipped": "Maya Patel here. I've advanced to VP of Engineering. We're managing multi-generational family commitments and want your firm's high-net-worth planning."
-      },
-      "dialogue": {
-        "greeting": "Being in your 40s means looking in two directions: helping your parents age with dignity and medical comfort, while giving your teenagers the freedom to pursue their passions without debt. It's an immense emotional responsibility.",
-        "emotion": "Deeply Caring & Executive",
-        "planApproved": "This gives me profound emotional peace. My dad's care facility copays are guaranteed, the kids' college funds are fully on track, and our portfolio is built to endure any market cycle.",
-        "planNeedsWork": "Wait, our healthcare reserve for parental eldercare is under-allocated. We need guaranteed liquidity for unexpected medical specialists."
-      },
-      "lifeEvent": {
-        "title": "Parental Healthcare & Memory Care Support",
-        "description": "Maya allocates $1,200/mo in dedicated medical and specialist assistance for her aging father.",
-        "type": "expense"
-      },
-      "financialState": {
-        "accounts": [
-          {
-            "id": "acc_maya_checking",
-            "name": "Executive Checking",
-            "type": "checking",
-            "balance": 6500,
-            "apy": 0.05
-          },
-          {
-            "id": "acc_maya_treasury",
-            "name": "Family High-Yield Treasury",
-            "type": "savings",
-            "balance": 45000,
-            "apy": 4.2
-          }
-        ],
-        "income": [
-          {
-            "id": "inc_maya_vp_comp",
-            "name": "VP Base Salary & Draw",
-            "amount": 16000,
-            "taxRate": 28,
-            "frequency": "monthly",
-            "routings": [
-              {
-                "destinationId": "acc_maya_checking",
-                "amount": 100,
-                "type": "percentage"
-              }
-            ]
-          }
-        ],
-        "expenses": [
-          {
-            "id": "exp_maya_mortgage",
-            "name": "Home Mortgage & Taxes",
-            "isFixed": true,
-            "defaultAmount": 4200
-          },
-          {
-            "id": "exp_maya_parent_care",
-            "name": "Parent Memory Care & Meds",
-            "isFixed": true,
-            "defaultAmount": 1200
-          },
-          {
-            "id": "exp_maya_teen_lifestyle",
-            "name": "Dual Teenagers & Household",
-            "isFixed": false,
-            "minValue": 1300,
-            "defaultAmount": 1800
-          },
-          {
-            "id": "exp_maya_utilities_cars",
-            "name": "Vehicles & Multi-Gen Power",
-            "isFixed": true,
-            "defaultAmount": 650
-          }
-        ],
-        "insurances": [
-          {
-            "id": "ins_maya_exec_umbrella",
-            "name": "Executive Umbrella & Long-Term Care",
-            "premium": 240,
-            "deductible": 1000
-          }
-        ],
-        "retirements": [
-          {
-            "id": "ret_maya_401k",
-            "name": "Executive 401(k) Nest Egg",
-            "type": "401k",
-            "balance": 320000,
-            "expectedApy": 8,
-            "employerMatchPercent": 6
-          }
-        ],
-        "goals": [
-          {
-            "id": "goal_maya_dual_529",
-            "name": "Dual Teen 529 Acceleration",
-            "targetAmount": 8000,
-            "targetMonths": 6
-          }
-        ]
-      },
-      "winConditions": {
-        "requireInsuranceCoverage": true,
-        "goalsFundedWithinMonths": {
-          "goalId": "goal_maya_dual_529",
-          "months": 6
-        }
-      },
-      "allowedActions": {
-        "canCreateAccounts": true,
-        "canDeleteAccounts": true,
-        "allowedAccountTypes": [
-          "checking",
-          "savings",
-          "brokerage"
-        ],
-        "allowedCardTypes": [
-          "debit",
-          "credit"
-        ]
-      }
-    }
-  ]
+	"id": "maya_patel",
+	"name": "Maya",
+	"bio": "High-velocity Silicon Valley software engineer battling lifestyle creep and speculative stock bets, navigating tech layoffs, and building resilient family wealth.",
+	"avatarEmoji": "💻",
+	"portraitId": "portrait_maya",
+	"traits": ["analytical", "risk-seeking", "status-conscious"],
+	"stages": [
+		{
+			"stageId": "maya_stage_1",
+			"stageTitle": "Golden Handcuffs & The Margin Call",
+			"age": 28,
+			"occupation": "Senior Software Engineer",
+			"yearsSinceLastStage": 0,
+			"cooldownRounds": 2,
+			"selectionSnippet": {
+				"firstTime": "Hi. Maya here. I'm a Senior Software Engineer pulling in $9,500/mo gross, but I made a huge financial blunder. Last month I charged a lavish $4,200 Cabo luxury resort vacation onto my 24.99% travel rewards card. Between high-rise rent, my Tesla lease, and over $90/mo in pure interest compounding, I need a disciplined debt paydown plan to crush this vacation balance immediately.",
+				"returningHelped": "Maya here! You helped me crush that Cabo vacation debt trap years ago. I'm hitting another tech career inflection point and need your analytical mind.",
+				"returningSkipped": "Maya checking in again. I reached out when my vacation credit card debt was spiraling. I need real wealth architecture to stop leaking interest. Hoping for an opening."
+			},
+			"dialogue": {
+				"greeting": "Everyone in tech acts like paying $4,200 for a luxury resort vacation is no big deal, but charging it to a 24.99% credit card was reckless. The interest fees are compounding daily. Can we build a budget plan that wipes out this vacation debt without missing rent?",
+				"emotion": "Chagrined & Driven",
+				"planApproved": "Seeing the numbers laid out like a clean software system clicked for me. Capping variable dining out and funneling every surplus dollar into crushing that 24.99% vacation card wipes it out in months!",
+				"planNeedsWork": "Wait, our payments to the vacation card are barely above the minimum! At this rate, I'll be paying compound interest on Cabo margaritas for the next five years."
+			},
+			"lifeEvent": {
+				"title": "Luxury Vacation Debt Trap",
+				"description": "Maya put an extravagant $4,200 Cabo luxury resort vacation on her 24.99% rewards card, and compounding interest is draining her surplus.",
+				"type": "debt"
+			},
+			"financialState": {
+				"accounts": [
+					{
+						"id": "acc_maya_checking",
+						"name": "Tech Checking",
+						"type": "checking",
+						"balance": 1200,
+						"apy": 0.05
+					}
+				],
+				"cards": [
+					{
+						"id": "card_maya_metal",
+						"name": "Cabo Vacation Rewards Card",
+						"type": "credit",
+						"linkedAccountId": "acc_maya_checking",
+						"balance": 4200,
+						"apr": 24.99,
+						"minimumPayment": 160
+					}
+				],
+				"income": [
+					{
+						"id": "inc_maya_tech_salary",
+						"name": "Tech Engineering Salary",
+						"amount": 9500,
+						"taxRate": 24,
+						"frequency": "monthly",
+						"routings": [
+							{
+								"destinationId": "acc_maya_checking",
+								"amount": 100,
+								"type": "percentage"
+							}
+						]
+					}
+				],
+				"expenses": [
+					{
+						"id": "exp_maya_luxury_apt",
+						"name": "High-Rise Loft Rent",
+						"isFixed": true,
+						"defaultAmount": 2850
+					},
+					{
+						"id": "exp_maya_tesla_lease",
+						"name": "EV Lease & Supercharging",
+						"isFixed": true,
+						"defaultAmount": 750
+					},
+					{
+						"id": "exp_maya_dining_social",
+						"name": "Fine Dining & Tech Socials",
+						"isFixed": false,
+						"minValue": 600,
+						"defaultAmount": 1100
+					},
+					{
+						"id": "exp_maya_subscriptions",
+						"name": "High-End Gym & Cloud Tools",
+						"isFixed": true,
+						"defaultAmount": 320
+					}
+				],
+				"goals": [
+					{
+						"id": "goal_maya_kill_card",
+						"name": "Pay Off Vacation Card Debt",
+						"targetAmount": 4200,
+						"targetMonths": 4
+					}
+				],
+				"transferRules": [
+					{
+						"id": "rule_maya_apt",
+						"sourceId": "acc_maya_checking",
+						"destinationId": "exp_maya_luxury_apt",
+						"amount": 2850,
+						"type": "fixed"
+					},
+					{
+						"id": "rule_maya_tesla",
+						"sourceId": "acc_maya_checking",
+						"destinationId": "exp_maya_tesla_lease",
+						"amount": 750,
+						"type": "fixed"
+					},
+					{
+						"id": "rule_maya_dining",
+						"sourceId": "acc_maya_checking",
+						"destinationId": "exp_maya_dining_social",
+						"amount": 1100,
+						"type": "fixed"
+					},
+					{
+						"id": "rule_maya_subs",
+						"sourceId": "acc_maya_checking",
+						"destinationId": "exp_maya_subscriptions",
+						"amount": 320,
+						"type": "fixed"
+					},
+					{
+						"id": "rule_maya_card",
+						"sourceId": "acc_maya_checking",
+						"destinationId": "card_maya_metal",
+						"amount": 160,
+						"type": "fixed"
+					}
+				]
+			},
+			"winConditions": {
+				"requiredAccounts": ["savings"],
+				"goalsFundedWithinMonths": {
+					"goalId": "goal_maya_kill_card",
+					"months": 4
+				},
+				"optimalDebtRouting": "avalanche"
+			},
+			"allowedActions": {
+				"canCreateAccounts": true,
+				"canDeleteAccounts": true,
+				"allowedAccountTypes": ["checking", "savings", "brokerage"],
+				"allowedCardTypes": ["debit", "credit"]
+			}
+		},
+		{
+			"stageId": "maya_stage_2",
+			"stageTitle": "The Tech Layoff & Burn Rate Triage",
+			"age": 32,
+			"occupation": "Engineering Consultant (Between Roles)",
+			"yearsSinceLastStage": 4,
+			"cooldownRounds": 2,
+			"selectionSnippet": {
+				"firstTime": "Maya here. I'm 32. My tech startup just laid off 40% of its engineering org, including me. I received 8 weeks of severance, but the tech hiring market has frozen over. I need an emergency triage plan to cut my monthly burn rate until I secure consulting contracts.",
+				"returningHelped": "Maya! Thank goodness you taught me how to save an actual emergency fund four years ago. My tech company just announced mass layoffs and eliminated my department. I have severance, but I need your help restructuring my budget for survival mode.",
+				"returningSkipped": "Maya here again. I couldn't get on your calendar previously, but my tech startup just went through sudden layoffs. I'm in sudden transition and urgently need to trim expenses."
+			},
+			"dialogue": {
+				"greeting": "Logging on to Slack at 9 AM and seeing your account deactivated with a severance email is a gut punch. All the stock options in the world don't mean a thing when payroll stops.",
+				"emotion": "Shaken but Resilient",
+				"planApproved": "This burn-rate triage is airtight. Slashing discretionary subscriptions, switching to COBRA gap healthcare, and pacing the severance cushion gives me a 9-month runway to land the right role.",
+				"planNeedsWork": "Wait, our fixed expenses exceed our severance burn rate. We must trim variable spending or we will burn through our remaining liquid cash in 3 months."
+			},
+			"lifeEvent": {
+				"title": "Startup Tech Downsizing Layoff",
+				"description": "Maya was impacted by broad tech layoffs. She received an 8-week severance package and must minimize monthly outflows.",
+				"type": "expense"
+			},
+			"financialState": {
+				"accounts": [
+					{
+						"id": "acc_maya_checking",
+						"name": "Emergency Checking",
+						"type": "checking",
+						"balance": 4000,
+						"apy": 0.05
+					},
+					{
+						"id": "acc_maya_savings",
+						"name": "Severance Runway Fund",
+						"type": "savings",
+						"balance": 18000,
+						"apy": 4
+					}
+				],
+				"income": [
+					{
+						"id": "inc_maya_consulting_interim",
+						"name": "Interim Tech Advisory",
+						"amount": 4500,
+						"taxRate": 15,
+						"frequency": "monthly",
+						"routings": [
+							{
+								"destinationId": "acc_maya_checking",
+								"amount": 100,
+								"type": "percentage"
+							}
+						]
+					}
+				],
+				"expenses": [
+					{
+						"id": "exp_maya_sublet_apt",
+						"name": "Sublet Apartment Rent",
+						"isFixed": true,
+						"defaultAmount": 2100
+					},
+					{
+						"id": "exp_maya_cobra_health",
+						"name": "Health Insurance COBRA",
+						"isFixed": true,
+						"defaultAmount": 550
+					},
+					{
+						"id": "exp_maya_triage_food",
+						"name": "Groceries & Essentials",
+						"isFixed": false,
+						"minValue": 350,
+						"defaultAmount": 480
+					},
+					{
+						"id": "exp_maya_lean_transit",
+						"name": "Transit & Utilities",
+						"isFixed": true,
+						"defaultAmount": 240
+					}
+				],
+				"goals": [
+					{
+						"id": "goal_maya_runway_preserve",
+						"name": "Preserve 6-Month Runway",
+						"targetAmount": 3000,
+						"targetMonths": 6
+					}
+				]
+			},
+			"winConditions": {
+				"goalsFundedWithinMonths": {
+					"goalId": "goal_maya_runway_preserve",
+					"months": 6
+				}
+			},
+			"allowedActions": {
+				"canCreateAccounts": true,
+				"canDeleteAccounts": true,
+				"allowedAccountTypes": ["checking", "savings", "brokerage"],
+				"allowedCardTypes": ["debit", "credit"]
+			}
+		},
+		{
+			"stageId": "maya_stage_3",
+			"stageTitle": "Tech Lead Rebound & Suburban Home",
+			"age": 37,
+			"occupation": "Staff Engineering Tech Lead",
+			"yearsSinceLastStage": 5,
+			"cooldownRounds": 3,
+			"selectionSnippet": {
+				"firstTime": "Hello, Maya here. At 37, I rebounded stronger than ever as a Staff Tech Lead at a public cloud company. I'm married with a 2-year-old toddler, and we just purchased a 4-bedroom home with an attached in-law suite. I need help managing a $4,000 mortgage while maximizing our Mega-Backdoor Roth IRA.",
+				"returningHelped": "Maya! Your severance triage kept me calm, and that patience allowed me to negotiate a Staff Tech Lead position with equity that took off! Now we've bought a family home with an in-law suite for my parents. I want your strategic framework for our Mega-Backdoor Roth and toddler's 529.",
+				"returningSkipped": "Maya here. I recovered from the layoff into a senior engineering leadership position. Looking for advanced wealth advisory for our high-income suburban family."
+			},
+			"dialogue": {
+				"greeting": "Going from the panic of a sudden layoff to closing on a home where my aging parents can live with us in comfort... it's the proudest feeling in the world. But with a $4,000 mortgage, there's zero room for sloppy habits.",
+				"emotion": "Proud & Disciplined",
+				"planApproved": "This architecture is pristine. Mega-Backdoor Roth maximized, property taxes escrowed, toddler 529 humming along, and our emergency safety buffer intact.",
+				"planNeedsWork": "Wait, our jumbo mortgage and escrow payments aren't properly secured. We cannot risk any late payments on the family home."
+			},
+			"lifeEvent": {
+				"title": "Family Home Closing & In-Law Suite",
+				"description": "Maya purchased a multi-generational home with an in-law suite for her aging parents, taking on a significant mortgage.",
+				"type": "expense"
+			},
+			"financialState": {
+				"accounts": [
+					{
+						"id": "acc_maya_checking",
+						"name": "Family Operating Checking",
+						"type": "checking",
+						"balance": 5000,
+						"apy": 0.05
+					},
+					{
+						"id": "acc_maya_savings",
+						"name": "Jumbo Reserve Treasury",
+						"type": "savings",
+						"balance": 28000,
+						"apy": 4.1
+					}
+				],
+				"income": [
+					{
+						"id": "inc_maya_staff_salary",
+						"name": "Staff Tech Lead Salary",
+						"amount": 12500,
+						"taxRate": 26,
+						"frequency": "monthly",
+						"routings": [
+							{
+								"destinationId": "acc_maya_checking",
+								"amount": 100,
+								"type": "percentage"
+							}
+						]
+					}
+				],
+				"expenses": [
+					{
+						"id": "exp_maya_mortgage",
+						"name": "Home Mortgage Principal & Interest",
+						"isFixed": true,
+						"defaultAmount": 3400
+					},
+					{
+						"id": "exp_maya_property_tax",
+						"name": "Property Taxes & Escrow",
+						"isFixed": true,
+						"defaultAmount": 750
+					},
+					{
+						"id": "exp_maya_childcare_family",
+						"name": "Toddler Care & Household",
+						"isFixed": false,
+						"minValue": 1000,
+						"defaultAmount": 1400
+					},
+					{
+						"id": "exp_maya_utilities",
+						"name": "Multi-Gen Utilities & Ins",
+						"isFixed": true,
+						"defaultAmount": 550
+					}
+				],
+				"insurances": [
+					{
+						"id": "ins_maya_umbrella",
+						"name": "Umbrella & Homeowners Policy",
+						"premium": 160,
+						"deductible": 1000
+					}
+				],
+				"retirements": [
+					{
+						"id": "ret_maya_401k",
+						"name": "Corporate 401(k) & Match",
+						"type": "401k",
+						"balance": 140000,
+						"expectedApy": 8,
+						"employerMatchPercent": 6
+					}
+				],
+				"goals": [
+					{
+						"id": "goal_maya_toddler_529",
+						"name": "Toddler College 529 Seed",
+						"targetAmount": 6000,
+						"targetMonths": 6
+					}
+				]
+			},
+			"winConditions": {
+				"requireInsuranceCoverage": true,
+				"goalsFundedWithinMonths": {
+					"goalId": "goal_maya_toddler_529",
+					"months": 6
+				}
+			},
+			"allowedActions": {
+				"canCreateAccounts": true,
+				"canDeleteAccounts": true,
+				"allowedAccountTypes": ["checking", "savings", "brokerage"],
+				"allowedCardTypes": ["debit", "credit"]
+			}
+		},
+		{
+			"stageId": "maya_stage_4",
+			"stageTitle": "Aging Parents Care & Dual College Funds",
+			"age": 44,
+			"occupation": "VP of Engineering & Angel Investor",
+			"yearsSinceLastStage": 7,
+			"cooldownRounds": 3,
+			"selectionSnippet": {
+				"firstTime": "Hello! Maya here at 44. I'm now VP of Engineering. We're in the sandwich generation: supporting my father's memory care medical expenses while simultaneously funding college accounts for our two kids. We need a holistic wealth strategy.",
+				"returningHelped": "Maya! From the margin call crisis in my late 20s to leading an entire engineering organization—your advice has been the anchor of my financial life. We are now navigating the sandwich generation: aging parents' healthcare and dual college funds. I need your steady hand.",
+				"returningSkipped": "Maya here. I've advanced to VP of Engineering. We're managing multi-generational family commitments and want your firm's high-net-worth planning."
+			},
+			"dialogue": {
+				"greeting": "Being in your 40s means looking in two directions: helping your parents age with dignity and medical comfort, while giving your teenagers the freedom to pursue their passions without debt. It's an immense emotional responsibility.",
+				"emotion": "Deeply Caring & Executive",
+				"planApproved": "This gives me profound emotional peace. My dad's care facility copays are guaranteed, the kids' college funds are fully on track, and our portfolio is built to endure any market cycle.",
+				"planNeedsWork": "Wait, our healthcare reserve for parental eldercare is under-allocated. We need guaranteed liquidity for unexpected medical specialists."
+			},
+			"lifeEvent": {
+				"title": "Parental Healthcare & Memory Care Support",
+				"description": "Maya allocates $1,200/mo in dedicated medical and specialist assistance for her aging father.",
+				"type": "expense"
+			},
+			"financialState": {
+				"accounts": [
+					{
+						"id": "acc_maya_checking",
+						"name": "Executive Checking",
+						"type": "checking",
+						"balance": 6500,
+						"apy": 0.05
+					},
+					{
+						"id": "acc_maya_treasury",
+						"name": "Family High-Yield Treasury",
+						"type": "savings",
+						"balance": 45000,
+						"apy": 4.2
+					}
+				],
+				"income": [
+					{
+						"id": "inc_maya_vp_comp",
+						"name": "VP Base Salary & Draw",
+						"amount": 16000,
+						"taxRate": 28,
+						"frequency": "monthly",
+						"routings": [
+							{
+								"destinationId": "acc_maya_checking",
+								"amount": 100,
+								"type": "percentage"
+							}
+						]
+					}
+				],
+				"expenses": [
+					{
+						"id": "exp_maya_mortgage",
+						"name": "Home Mortgage & Taxes",
+						"isFixed": true,
+						"defaultAmount": 4200
+					},
+					{
+						"id": "exp_maya_parent_care",
+						"name": "Parent Memory Care & Meds",
+						"isFixed": true,
+						"defaultAmount": 1200
+					},
+					{
+						"id": "exp_maya_teen_lifestyle",
+						"name": "Dual Teenagers & Household",
+						"isFixed": false,
+						"minValue": 1300,
+						"defaultAmount": 1800
+					},
+					{
+						"id": "exp_maya_utilities_cars",
+						"name": "Vehicles & Multi-Gen Power",
+						"isFixed": true,
+						"defaultAmount": 650
+					}
+				],
+				"insurances": [
+					{
+						"id": "ins_maya_exec_umbrella",
+						"name": "Executive Umbrella & Long-Term Care",
+						"premium": 240,
+						"deductible": 1000
+					}
+				],
+				"retirements": [
+					{
+						"id": "ret_maya_401k",
+						"name": "Executive 401(k) Nest Egg",
+						"type": "401k",
+						"balance": 320000,
+						"expectedApy": 8,
+						"employerMatchPercent": 6
+					}
+				],
+				"goals": [
+					{
+						"id": "goal_maya_dual_529",
+						"name": "Dual Teen 529 Acceleration",
+						"targetAmount": 8000,
+						"targetMonths": 6
+					}
+				]
+			},
+			"winConditions": {
+				"requireInsuranceCoverage": true,
+				"goalsFundedWithinMonths": {
+					"goalId": "goal_maya_dual_529",
+					"months": 6
+				}
+			},
+			"allowedActions": {
+				"canCreateAccounts": true,
+				"canDeleteAccounts": true,
+				"allowedAccountTypes": ["checking", "savings", "brokerage"],
+				"allowedCardTypes": ["debit", "credit"]
+			}
+		}
+	]
 }

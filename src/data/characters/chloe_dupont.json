@@ -1,516 +1,483 @@
 {
-  "id": "chloe_dupont",
-  "name": "Chloe Dupont",
-  "bio": "Culinary academy graduate with culinary artistry and infectious energy, rising from blistering line cook shifts to opening her own French-inspired neighborhood bistro.",
-  "avatarEmoji": "🥐",
-  "portraitId": "portrait_chloe",
-  "traits": [
-    "passionate",
-    "lifestyle-inflation",
-    "generous-host"
-  ],
-  "stages": [
-    {
-      "stageId": "chloe_stage_1",
-      "stageTitle": "Line Cook Shifts & Tip Out Cash",
-      "age": 21,
-      "occupation": "Line Cook & Pastry Assistant",
-      "yearsSinceLastStage": 0,
-      "cooldownRounds": 2,
-      "selectionSnippet": {
-        "firstTime": "Salut! Chloe Dupont here. I graduated from culinary school with $24k in private vocational loans, and now I'm working the sauté station 5 nights a week. I make okay cash tips, but restaurant culture means we blow $80 on late-night staff drinks and dining after midnight. My checking balance is literally $65.",
-        "returningHelped": "Chloe Dupont! You kept me from burning out and helped me rein in my post-shift bar tabs. I've got big culinary news and need my favorite advisor!",
-        "returningSkipped": "Coucou, Chloe Dupont again. You couldn't take my case back when I was a rookie line cook. I've survived the kitchen grind, but my money is still leaking out. Can we talk this round?"
-      },
-      "dialogue": {
-        "greeting": "When you spend 10 hours sweating in front of a 500-degree flat top getting yelled at by chef, the only thing you want at 1 AM is good wine, great cheese, and laughs with the crew. But my culinary loans don't care about my dopamine.",
-        "emotion": "Charismatic & Stressed",
-        "planApproved": "Merci mille fois! Giving myself an honest dining-out envelope while locking down automatic loan payments means I can still have fun with the kitchen crew without waking up with financial remorse.",
-        "planNeedsWork": "Wait, my culinary school loan payment wasn't covered here. Those private loan collectors call my cell phone three times a day!"
-      },
-      "lifeEvent": {
-        "title": "Private Culinary Loan Repayment",
-        "description": "Chloe's private culinary school loan grace period ended, demanding $280/mo fixed payments.",
-        "type": "debt"
-      },
-      "financialState": {
-        "accounts": [
-          {
-            "id": "acc_chloe_checking",
-            "name": "Bistro Checking",
-            "type": "checking",
-            "balance": 180,
-            "apy": 0.01
-          }
-        ],
-        "loans": [
-          {
-            "id": "loan_chloe_culinary",
-            "name": "Culinary Academy Loan",
-            "balance": 24000,
-            "apr": 8.5,
-            "minimumPayment": 280
-          }
-        ],
-        "income": [
-          {
-            "id": "inc_chloe_cook_wages",
-            "name": "Line Cook Wages & Tips",
-            "amount": 2600,
-            "taxRate": 12,
-            "frequency": "monthly",
-            "routings": [
-              {
-                "destinationId": "acc_chloe_checking",
-                "amount": 100,
-                "type": "percentage"
-              }
-            ]
-          }
-        ],
-        "expenses": [
-          {
-            "id": "exp_chloe_shared_rent",
-            "name": "Shared Apartment Rent",
-            "isFixed": true,
-            "defaultAmount": 850
-          },
-          {
-            "id": "exp_chloe_dining_crew",
-            "name": "Late-Night Dining & Drinks",
-            "isFixed": false,
-            "minValue": 220,
-            "defaultAmount": 420
-          },
-          {
-            "id": "exp_chloe_groceries_knives",
-            "name": "Food & Kitchen Gear",
-            "isFixed": false,
-            "minValue": 180,
-            "defaultAmount": 260
-          },
-          {
-            "id": "exp_chloe_transit",
-            "name": "Late Night Rides & Metro",
-            "isFixed": true,
-            "defaultAmount": 160
-          }
-        ],
-        "goals": [
-          {
-            "id": "goal_chloe_starter_safety",
-            "name": "Kitchen Rainy Day Stash",
-            "targetAmount": 1000,
-            "targetMonths": 5
-          }
-        ]
-      },
-      "winConditions": {
-        "requiredAccounts": [
-          "savings"
-        ],
-        "goalsFundedWithinMonths": {
-          "goalId": "goal_chloe_starter_safety",
-          "months": 5
-        },
-        "optimalDebtRouting": "avalanche"
-      },
-      "allowedActions": {
-        "canCreateAccounts": true,
-        "canDeleteAccounts": true,
-        "allowedAccountTypes": [
-          "checking",
-          "savings"
-        ],
-        "allowedCardTypes": [
-          "debit",
-          "credit"
-        ]
-      }
-    },
-    {
-      "stageId": "chloe_stage_2",
-      "stageTitle": "Sous Chef Promotion & Wrist Injury",
-      "age": 25,
-      "occupation": "Sous Chef & Kitchen Manager",
-      "yearsSinceLastStage": 4,
-      "cooldownRounds": 2,
-      "selectionSnippet": {
-        "firstTime": "Chloe Dupont here! At 25, I got promoted to Sous Chef. I'm salaried now at $4,200/mo, running the prep team. But last week I slipped on hot oil and strained my wrist—after the urgent care visit and physical therapy copays, I'm staring at an unexpected $1,400 medical bill.",
-        "returningHelped": "Chloe Dupont! You remember me? The starter safety fund we created literally kept me afloat when our restaurant closed for remodeling. Now I'm Sous Chef, but a wrist injury just slapped me with medical bills that need untangling.",
-        "returningSkipped": "Chloe Dupont here again. I wasn't able to work with you previously. I've advanced to Sous Chef, but unexpected medical bills from a kitchen accident have set me back."
-      },
-      "dialogue": {
-        "greeting": "In a professional kitchen, if your hands or wrists don't work, you're benched. The chef gave me a week of light duty doing inventory, but the hospital bills arrived fast.",
-        "emotion": "Determined & Vulnerable",
-        "planApproved": "You are a lifesaver. Clearing that medical debt without touching my emergency savings and finally securing disability insurance gives me so much peace of mind.",
-        "planNeedsWork": "Wait, our medical bill isn't being prioritized properly. If that goes to collections, it will ruin my credit score when I eventually want to apply for a restaurant lease!"
-      },
-      "lifeEvent": {
-        "title": "Workplace Wrist Strain & Urgent Care",
-        "description": "Chloe incurred $1,400 in out-of-pocket medical bills after a kitchen injury required imaging and physical therapy.",
-        "type": "debt"
-      },
-      "financialState": {
-        "accounts": [
-          {
-            "id": "acc_chloe_checking",
-            "name": "Main Checking",
-            "type": "checking",
-            "balance": 1500,
-            "apy": 0.05
-          },
-          {
-            "id": "acc_chloe_savings",
-            "name": "Kitchen Safety Fund",
-            "type": "savings",
-            "balance": 2800,
-            "apy": 3
-          }
-        ],
-        "cards": [
-          {
-            "id": "card_chloe_med",
-            "name": "Medical Urgent Care Card",
-            "type": "credit",
-            "linkedAccountId": "acc_chloe_checking",
-            "balance": 1400,
-            "apr": 19.9,
-            "minimumPayment": 70
-          }
-        ],
-        "loans": [
-          {
-            "id": "loan_chloe_culinary",
-            "name": "Culinary Academy Loan",
-            "balance": 16000,
-            "apr": 8.5,
-            "minimumPayment": 280
-          }
-        ],
-        "income": [
-          {
-            "id": "inc_chloe_sous_salary",
-            "name": "Sous Chef Salary",
-            "amount": 4200,
-            "taxRate": 16,
-            "frequency": "monthly",
-            "routings": [
-              {
-                "destinationId": "acc_chloe_checking",
-                "amount": 100,
-                "type": "percentage"
-              }
-            ]
-          }
-        ],
-        "expenses": [
-          {
-            "id": "exp_chloe_rent",
-            "name": "1-Bedroom Apartment",
-            "isFixed": true,
-            "defaultAmount": 1250
-          },
-          {
-            "id": "exp_chloe_groceries_dining",
-            "name": "Food & Industry Tastings",
-            "isFixed": false,
-            "minValue": 320,
-            "defaultAmount": 450
-          },
-          {
-            "id": "exp_chloe_utilities",
-            "name": "Utilities & Transit",
-            "isFixed": true,
-            "defaultAmount": 220
-          }
-        ],
-        "insurances": [
-          {
-            "id": "ins_chloe_health",
-            "name": "Restaurant Group Health",
-            "premium": 140,
-            "deductible": 1000
-          }
-        ],
-        "goals": [
-          {
-            "id": "goal_chloe_med_cleared",
-            "name": "Clear Medical Card",
-            "targetAmount": 1400,
-            "targetMonths": 5
-          }
-        ]
-      },
-      "winConditions": {
-        "requireInsuranceCoverage": true,
-        "goalsFundedWithinMonths": {
-          "goalId": "goal_chloe_med_cleared",
-          "months": 5
-        },
-        "optimalDebtRouting": "avalanche"
-      },
-      "allowedActions": {
-        "canCreateAccounts": true,
-        "canDeleteAccounts": true,
-        "allowedAccountTypes": [
-          "checking",
-          "savings",
-          "brokerage"
-        ],
-        "allowedCardTypes": [
-          "debit",
-          "credit"
-        ]
-      }
-    },
-    {
-      "stageId": "chloe_stage_3",
-      "stageTitle": "Bakery Pop-Up & Commercial Kitchen Deposit",
-      "age": 30,
-      "occupation": "Artisanal Bakery Pop-Up Founder",
-      "yearsSinceLastStage": 5,
-      "cooldownRounds": 3,
-      "selectionSnippet": {
-        "firstTime": "Bonjour! Chloe Dupont here. At 30, I launched my own weekend artisanal bakery pop-up, 'Maison Dupont'. The response has been overwhelming—lines around the block every Saturday! Now I need to put down a $6,000 commercial kitchen deposit to expand production while managing volatile ingredient costs.",
-        "returningHelped": "Chloe Dupont! You've been with me from a messy line cook to Sous Chef, and now 'Maison Dupont' is a runaway pop-up hit! We have lines around the corner. I need your strategic budgeting to fund our commercial kitchen expansion deposit.",
-        "returningSkipped": "Chloe Dupont here. I was unable to connect with your office earlier, but my bakery pop-up business is booming. Need professional guidance before signing commercial expansion contracts."
-      },
-      "dialogue": {
-        "greeting": "Waking up at 3:30 AM to laminate hundreds of layers of French butter into croissants is exhausting, but seeing the smile on customers' faces when they take their first bite is pure joy.",
-        "emotion": "Passionate & Overjoyed",
-        "planApproved": "This is flawless. We have the ingredient accounts segmented, our commercial kitchen deposit fully funded on schedule, and my personal living costs safe.",
-        "planNeedsWork": "Wait, our ingredient costs and commercial kitchen deposit are competing for the same checking funds. We need distinct accounts to avoid bouncing vendor supplies."
-      },
-      "lifeEvent": {
-        "title": "Bakery Commercial Expansion",
-        "description": "Chloe's pop-up demand requires leasing a dedicated commercial commissary kitchen space ($6,000 security deposit).",
-        "type": "goal"
-      },
-      "financialState": {
-        "accounts": [
-          {
-            "id": "acc_chloe_checking",
-            "name": "Bakery Operating Checking",
-            "type": "checking",
-            "balance": 3500,
-            "apy": 0.05
-          },
-          {
-            "id": "acc_chloe_savings",
-            "name": "Bakery Growth Reserve",
-            "type": "savings",
-            "balance": 7500,
-            "apy": 3.8
-          }
-        ],
-        "income": [
-          {
-            "id": "inc_chloe_popup_revenue",
-            "name": "Pop-Up Bakery Revenue",
-            "amount": 6200,
-            "taxRate": 18,
-            "frequency": "monthly",
-            "routings": [
-              {
-                "destinationId": "acc_chloe_checking",
-                "amount": 100,
-                "type": "percentage"
-              }
-            ]
-          }
-        ],
-        "expenses": [
-          {
-            "id": "exp_chloe_ingredients",
-            "name": "Butter, Flour & Organic Dairy",
-            "isFixed": false,
-            "minValue": 1000,
-            "defaultAmount": 1400
-          },
-          {
-            "id": "exp_chloe_rent",
-            "name": "Apartment Rent",
-            "isFixed": true,
-            "defaultAmount": 1450
-          },
-          {
-            "id": "exp_chloe_living",
-            "name": "Personal Groceries & Life",
-            "isFixed": false,
-            "minValue": 400,
-            "defaultAmount": 550
-          },
-          {
-            "id": "exp_chloe_insurance",
-            "name": "Culinary Liability & Health",
-            "isFixed": true,
-            "defaultAmount": 260
-          }
-        ],
-        "goals": [
-          {
-            "id": "goal_chloe_kitchen_deposit",
-            "name": "Commercial Kitchen Deposit",
-            "targetAmount": 6000,
-            "targetMonths": 6
-          }
-        ]
-      },
-      "winConditions": {
-        "goalsFundedWithinMonths": {
-          "goalId": "goal_chloe_kitchen_deposit",
-          "months": 6
-        }
-      },
-      "allowedActions": {
-        "canCreateAccounts": true,
-        "canDeleteAccounts": true,
-        "allowedAccountTypes": [
-          "checking",
-          "savings",
-          "brokerage"
-        ],
-        "allowedCardTypes": [
-          "debit",
-          "credit"
-        ]
-      }
-    },
-    {
-      "stageId": "chloe_stage_4",
-      "stageTitle": "Brick-and-Mortar Bistro Owner",
-      "age": 36,
-      "occupation": "Bistro & Patisserie Owner",
-      "yearsSinceLastStage": 6,
-      "cooldownRounds": 3,
-      "selectionSnippet": {
-        "firstTime": "Hello! Chloe Dupont here. At 36, I am officially the proud owner of Bistro Dupont, a 45-seat neighborhood cafe and bakery. We have 8 staff members, an espresso bar, and evening dinner service. I'm balancing business loan debt service with my own long-term wealth.",
-        "returningHelped": "Chloe Dupont! Can you believe it? From crying over my line cook paycheck at 21 to owning Bistro Dupont on the main avenue! You helped build the foundation for my dream. Now I want to ensure my personal retirement and staff retention benefits are world-class.",
-        "returningSkipped": "Chloe Dupont here. Over the years I navigated the expansion from pop-up to full brick-and-mortar bistro. I'd love your expertise on restaurant debt consolidation and owner retirement."
-      },
-      "dialogue": {
-        "greeting": "Standing behind the marble counter of my own bistro, smelling freshly baked baguettes and espresso... every burn, every double shift, every penny saved was worth it.",
-        "emotion": "Proud & Fulfilled",
-        "planApproved": "This brings tears to my eyes. The commercial deck oven loan is getting paid off ahead of schedule, our cash buffer is ironclad, and my SEP IRA is actively growing.",
-        "planNeedsWork": "Wait, our commercial loan debt payment is short of the contractual minimum. We can't jeopardize the restaurant's lease or credit standing."
-      },
-      "lifeEvent": {
-        "title": "Bistro Brick-and-Mortar Opening",
-        "description": "Chloe opened a full 45-seat cafe and bistro, carrying a $35,000 low-interest small business equipment loan.",
-        "type": "debt"
-      },
-      "financialState": {
-        "accounts": [
-          {
-            "id": "acc_chloe_checking",
-            "name": "Bistro Master Checking",
-            "type": "checking",
-            "balance": 6200,
-            "apy": 0.05
-          },
-          {
-            "id": "acc_chloe_treasury",
-            "name": "Bistro Emergency Treasury",
-            "type": "savings",
-            "balance": 24000,
-            "apy": 4
-          }
-        ],
-        "loans": [
-          {
-            "id": "loan_chloe_oven_equip",
-            "name": "Bistro Equipment Loan",
-            "balance": 22000,
-            "apr": 6.2,
-            "minimumPayment": 450
-          }
-        ],
-        "income": [
-          {
-            "id": "inc_chloe_owner_draw",
-            "name": "Bistro Owner Draw & Profits",
-            "amount": 8800,
-            "taxRate": 22,
-            "frequency": "monthly",
-            "routings": [
-              {
-                "destinationId": "acc_chloe_checking",
-                "amount": 100,
-                "type": "percentage"
-              }
-            ]
-          }
-        ],
-        "expenses": [
-          {
-            "id": "exp_chloe_mortgage",
-            "name": "Residential Home Mortgage",
-            "isFixed": true,
-            "defaultAmount": 2200
-          },
-          {
-            "id": "exp_chloe_personal_lifestyle",
-            "name": "Personal Living & Travel",
-            "isFixed": false,
-            "minValue": 800,
-            "defaultAmount": 1100
-          },
-          {
-            "id": "exp_chloe_auto_utilities",
-            "name": "Vehicle & Home Utilities",
-            "isFixed": true,
-            "defaultAmount": 480
-          }
-        ],
-        "insurances": [
-          {
-            "id": "ins_chloe_umbrella",
-            "name": "Commercial & Personal Umbrella",
-            "premium": 150,
-            "deductible": 1000
-          }
-        ],
-        "retirements": [
-          {
-            "id": "ret_chloe_sep_ira",
-            "name": "Owner SEP-IRA",
-            "type": "roth_ira",
-            "balance": 52000,
-            "expectedApy": 7.5,
-            "employerMatchPercent": 0
-          }
-        ],
-        "goals": [
-          {
-            "id": "goal_chloe_loan_paydown",
-            "name": "Accelerate Equipment Loan",
-            "targetAmount": 5000,
-            "targetMonths": 6
-          }
-        ]
-      },
-      "winConditions": {
-        "requireInsuranceCoverage": true,
-        "goalsFundedWithinMonths": {
-          "goalId": "goal_chloe_loan_paydown",
-          "months": 6
-        },
-        "optimalDebtRouting": "avalanche"
-      },
-      "allowedActions": {
-        "canCreateAccounts": true,
-        "canDeleteAccounts": true,
-        "allowedAccountTypes": [
-          "checking",
-          "savings",
-          "brokerage"
-        ],
-        "allowedCardTypes": [
-          "debit",
-          "credit"
-        ]
-      }
-    }
-  ]
+	"id": "chloe_dupont",
+	"name": "Chloe",
+	"bio": "Culinary academy graduate with culinary artistry, rising from line cook shifts to opening her own French-inspired neighborhood bistro.",
+	"avatarEmoji": "🥐",
+	"portraitId": "portrait_chloe",
+	"traits": ["passionate", "lifestyle-inflation", "generous-host"],
+	"stages": [
+		{
+			"stageId": "chloe_stage_1",
+			"stageTitle": "Line Cook Shifts & Tip Out Cash",
+			"age": 21,
+			"occupation": "Line Cook & Pastry Assistant",
+			"yearsSinceLastStage": 0,
+			"cooldownRounds": 2,
+			"selectionSnippet": {
+				"firstTime": "Salut! Chloe here. I graduated from culinary school with $24k in private vocational loans, and now I'm working the sauté station 5 nights a week. I make okay cash tips, but restaurant culture means we blow $80 on late-night staff drinks and dining after midnight. My checking balance is literally $65.",
+				"returningHelped": "Chloe! You kept me from burning out and helped me rein in my post-shift bar tabs. I've got big culinary news and need my favorite advisor!",
+				"returningSkipped": "Coucou, Chloe again. You couldn't take my case back when I was a rookie line cook. I've survived the kitchen grind, but my money is still leaking out. Can we talk this round?"
+			},
+			"dialogue": {
+				"greeting": "When you spend 10 hours sweating in front of a 500-degree flat top getting yelled at by chef, the only thing you want at 1 AM is good wine, great cheese, and laughs with the crew. But my culinary loans don't care about my dopamine.",
+				"emotion": "Charismatic & Stressed",
+				"planApproved": "Merci mille fois! Giving myself an honest dining-out envelope while locking down automatic loan payments means I can still have fun with the kitchen crew without waking up with financial remorse.",
+				"planNeedsWork": "Wait, my culinary school loan payment wasn't covered here. Those private loan collectors call my cell phone three times a day!"
+			},
+			"lifeEvent": {
+				"title": "Private Culinary Loan Repayment",
+				"description": "Chloe's private culinary school loan grace period ended, demanding $280/mo fixed payments.",
+				"type": "debt"
+			},
+			"financialState": {
+				"accounts": [
+					{
+						"id": "acc_chloe_checking",
+						"name": "Bistro Checking",
+						"type": "checking",
+						"balance": 180,
+						"apy": 0.01
+					}
+				],
+				"loans": [
+					{
+						"id": "loan_chloe_culinary",
+						"name": "Culinary Academy Loan",
+						"balance": 24000,
+						"apr": 8.5,
+						"minimumPayment": 280
+					}
+				],
+				"income": [
+					{
+						"id": "inc_chloe_cook_wages",
+						"name": "Line Cook Wages & Tips",
+						"amount": 2600,
+						"taxRate": 12,
+						"frequency": "monthly",
+						"routings": [
+							{
+								"destinationId": "acc_chloe_checking",
+								"amount": 100,
+								"type": "percentage"
+							}
+						]
+					}
+				],
+				"expenses": [
+					{
+						"id": "exp_chloe_shared_rent",
+						"name": "Shared Apartment Rent",
+						"isFixed": true,
+						"defaultAmount": 850
+					},
+					{
+						"id": "exp_chloe_dining_crew",
+						"name": "Late-Night Dining & Drinks",
+						"isFixed": false,
+						"minValue": 220,
+						"defaultAmount": 420
+					},
+					{
+						"id": "exp_chloe_groceries_knives",
+						"name": "Food & Kitchen Gear",
+						"isFixed": false,
+						"minValue": 180,
+						"defaultAmount": 260
+					},
+					{
+						"id": "exp_chloe_transit",
+						"name": "Late Night Rides & Metro",
+						"isFixed": true,
+						"defaultAmount": 160
+					}
+				],
+				"goals": [
+					{
+						"id": "goal_chloe_starter_safety",
+						"name": "Kitchen Rainy Day Stash",
+						"targetAmount": 1000,
+						"targetMonths": 5
+					}
+				]
+			},
+			"winConditions": {
+				"requiredAccounts": ["savings"],
+				"goalsFundedWithinMonths": {
+					"goalId": "goal_chloe_starter_safety",
+					"months": 5
+				},
+				"optimalDebtRouting": "avalanche"
+			},
+			"allowedActions": {
+				"canCreateAccounts": true,
+				"canDeleteAccounts": true,
+				"allowedAccountTypes": ["checking", "savings"],
+				"allowedCardTypes": ["debit", "credit"]
+			}
+		},
+		{
+			"stageId": "chloe_stage_2",
+			"stageTitle": "Sous Chef Promotion & Wrist Injury",
+			"age": 25,
+			"occupation": "Sous Chef & Kitchen Manager",
+			"yearsSinceLastStage": 4,
+			"cooldownRounds": 2,
+			"selectionSnippet": {
+				"firstTime": "Chloe here! At 25, I got promoted to Sous Chef. I'm salaried now at $4,200/mo, running the prep team. But last week I slipped on hot oil and strained my wrist—after the urgent care visit and physical therapy copays, I'm staring at an unexpected $1,400 medical bill.",
+				"returningHelped": "Chloe! You remember me? The starter safety fund we created literally kept me afloat when our restaurant closed for remodeling. Now I'm Sous Chef, but a wrist injury just slapped me with medical bills that need untangling.",
+				"returningSkipped": "Chloe here again. I wasn't able to work with you previously. I've advanced to Sous Chef, but unexpected medical bills from a kitchen accident have set me back."
+			},
+			"dialogue": {
+				"greeting": "In a professional kitchen, if your hands or wrists don't work, you're benched. The chef gave me a week of light duty doing inventory, but the hospital bills arrived fast.",
+				"emotion": "Determined & Vulnerable",
+				"planApproved": "You are a lifesaver. Clearing that medical debt without touching my emergency savings and finally securing disability insurance gives me so much peace of mind.",
+				"planNeedsWork": "Wait, our medical bill isn't being prioritized properly. If that goes to collections, it will ruin my credit score when I eventually want to apply for a restaurant lease!"
+			},
+			"lifeEvent": {
+				"title": "Workplace Wrist Strain & Urgent Care",
+				"description": "Chloe incurred $1,400 in out-of-pocket medical bills after a kitchen injury required imaging and physical therapy.",
+				"type": "debt"
+			},
+			"financialState": {
+				"accounts": [
+					{
+						"id": "acc_chloe_checking",
+						"name": "Main Checking",
+						"type": "checking",
+						"balance": 1500,
+						"apy": 0.05
+					},
+					{
+						"id": "acc_chloe_savings",
+						"name": "Kitchen Safety Fund",
+						"type": "savings",
+						"balance": 2800,
+						"apy": 3
+					}
+				],
+				"cards": [
+					{
+						"id": "card_chloe_med",
+						"name": "Medical Urgent Care Card",
+						"type": "credit",
+						"linkedAccountId": "acc_chloe_checking",
+						"balance": 1400,
+						"apr": 19.9,
+						"minimumPayment": 70
+					}
+				],
+				"loans": [
+					{
+						"id": "loan_chloe_culinary",
+						"name": "Culinary Academy Loan",
+						"balance": 16000,
+						"apr": 8.5,
+						"minimumPayment": 280
+					}
+				],
+				"income": [
+					{
+						"id": "inc_chloe_sous_salary",
+						"name": "Sous Chef Salary",
+						"amount": 4200,
+						"taxRate": 16,
+						"frequency": "monthly",
+						"routings": [
+							{
+								"destinationId": "acc_chloe_checking",
+								"amount": 100,
+								"type": "percentage"
+							}
+						]
+					}
+				],
+				"expenses": [
+					{
+						"id": "exp_chloe_rent",
+						"name": "1-Bedroom Apartment",
+						"isFixed": true,
+						"defaultAmount": 1250
+					},
+					{
+						"id": "exp_chloe_groceries_dining",
+						"name": "Food & Industry Tastings",
+						"isFixed": false,
+						"minValue": 320,
+						"defaultAmount": 450
+					},
+					{
+						"id": "exp_chloe_utilities",
+						"name": "Utilities & Transit",
+						"isFixed": true,
+						"defaultAmount": 220
+					}
+				],
+				"insurances": [
+					{
+						"id": "ins_chloe_health",
+						"name": "Restaurant Group Health",
+						"premium": 140,
+						"deductible": 1000
+					}
+				],
+				"goals": [
+					{
+						"id": "goal_chloe_med_cleared",
+						"name": "Clear Medical Card",
+						"targetAmount": 1400,
+						"targetMonths": 5
+					}
+				]
+			},
+			"winConditions": {
+				"requireInsuranceCoverage": true,
+				"goalsFundedWithinMonths": {
+					"goalId": "goal_chloe_med_cleared",
+					"months": 5
+				},
+				"optimalDebtRouting": "avalanche"
+			},
+			"allowedActions": {
+				"canCreateAccounts": true,
+				"canDeleteAccounts": true,
+				"allowedAccountTypes": ["checking", "savings", "brokerage"],
+				"allowedCardTypes": ["debit", "credit"]
+			}
+		},
+		{
+			"stageId": "chloe_stage_3",
+			"stageTitle": "Bakery Pop-Up & Commercial Kitchen Deposit",
+			"age": 30,
+			"occupation": "Artisanal Bakery Pop-Up Founder",
+			"yearsSinceLastStage": 5,
+			"cooldownRounds": 3,
+			"selectionSnippet": {
+				"firstTime": "Bonjour! Chloe here. At 30, I launched my own weekend artisanal bakery pop-up, 'Maison Dupont'. The response has been overwhelming—lines around the block every Saturday! Now I need to put down a $6,000 commercial kitchen deposit to expand production while managing volatile ingredient costs.",
+				"returningHelped": "Chloe! You've been with me from a messy line cook to Sous Chef, and now 'Maison Dupont' is a runaway pop-up hit! We have lines around the corner. I need your strategic budgeting to fund our commercial kitchen expansion deposit.",
+				"returningSkipped": "Chloe here. I was unable to connect with your office earlier, but my bakery pop-up business is booming. Need professional guidance before signing commercial expansion contracts."
+			},
+			"dialogue": {
+				"greeting": "Waking up at 3:30 AM to laminate hundreds of layers of French butter into croissants is exhausting, but seeing the smile on customers' faces when they take their first bite is pure joy.",
+				"emotion": "Passionate & Overjoyed",
+				"planApproved": "This is flawless. We have the ingredient accounts segmented, our commercial kitchen deposit fully funded on schedule, and my personal living costs safe.",
+				"planNeedsWork": "Wait, our ingredient costs and commercial kitchen deposit are competing for the same checking funds. We need distinct accounts to avoid bouncing vendor supplies."
+			},
+			"lifeEvent": {
+				"title": "Bakery Commercial Expansion",
+				"description": "Chloe's pop-up demand requires leasing a dedicated commercial commissary kitchen space ($6,000 security deposit).",
+				"type": "goal"
+			},
+			"financialState": {
+				"accounts": [
+					{
+						"id": "acc_chloe_checking",
+						"name": "Bakery Operating Checking",
+						"type": "checking",
+						"balance": 3500,
+						"apy": 0.05
+					},
+					{
+						"id": "acc_chloe_savings",
+						"name": "Bakery Growth Reserve",
+						"type": "savings",
+						"balance": 7500,
+						"apy": 3.8
+					}
+				],
+				"income": [
+					{
+						"id": "inc_chloe_popup_revenue",
+						"name": "Pop-Up Bakery Revenue",
+						"amount": 6200,
+						"taxRate": 18,
+						"frequency": "monthly",
+						"routings": [
+							{
+								"destinationId": "acc_chloe_checking",
+								"amount": 100,
+								"type": "percentage"
+							}
+						]
+					}
+				],
+				"expenses": [
+					{
+						"id": "exp_chloe_ingredients",
+						"name": "Butter, Flour & Organic Dairy",
+						"isFixed": false,
+						"minValue": 1000,
+						"defaultAmount": 1400
+					},
+					{
+						"id": "exp_chloe_rent",
+						"name": "Apartment Rent",
+						"isFixed": true,
+						"defaultAmount": 1450
+					},
+					{
+						"id": "exp_chloe_living",
+						"name": "Personal Groceries & Life",
+						"isFixed": false,
+						"minValue": 400,
+						"defaultAmount": 550
+					},
+					{
+						"id": "exp_chloe_insurance",
+						"name": "Culinary Liability & Health",
+						"isFixed": true,
+						"defaultAmount": 260
+					}
+				],
+				"goals": [
+					{
+						"id": "goal_chloe_kitchen_deposit",
+						"name": "Commercial Kitchen Deposit",
+						"targetAmount": 6000,
+						"targetMonths": 6
+					}
+				]
+			},
+			"winConditions": {
+				"goalsFundedWithinMonths": {
+					"goalId": "goal_chloe_kitchen_deposit",
+					"months": 6
+				}
+			},
+			"allowedActions": {
+				"canCreateAccounts": true,
+				"canDeleteAccounts": true,
+				"allowedAccountTypes": ["checking", "savings", "brokerage"],
+				"allowedCardTypes": ["debit", "credit"]
+			}
+		},
+		{
+			"stageId": "chloe_stage_4",
+			"stageTitle": "Brick-and-Mortar Bistro Owner",
+			"age": 36,
+			"occupation": "Bistro & Patisserie Owner",
+			"yearsSinceLastStage": 6,
+			"cooldownRounds": 3,
+			"selectionSnippet": {
+				"firstTime": "Hello! Chloe here. At 36, I am officially the proud owner of Bistro Dupont, a 45-seat neighborhood cafe and bakery. We have 8 staff members, an espresso bar, and evening dinner service. I'm balancing business loan debt service with my own long-term wealth.",
+				"returningHelped": "Chloe! Can you believe it? From crying over my line cook paycheck at 21 to owning Bistro Dupont on the main avenue! You helped build the foundation for my dream. Now I want to ensure my personal retirement and staff retention benefits are world-class.",
+				"returningSkipped": "Chloe here. Over the years I navigated the expansion from pop-up to full brick-and-mortar bistro. I'd love your expertise on restaurant debt consolidation and owner retirement."
+			},
+			"dialogue": {
+				"greeting": "Standing behind the marble counter of my own bistro, smelling freshly baked baguettes and espresso... every burn, every double shift, every penny saved was worth it.",
+				"emotion": "Proud & Fulfilled",
+				"planApproved": "This brings tears to my eyes. The commercial deck oven loan is getting paid off ahead of schedule, our cash buffer is ironclad, and my SEP IRA is actively growing.",
+				"planNeedsWork": "Wait, our commercial loan debt payment is short of the contractual minimum. We can't jeopardize the restaurant's lease or credit standing."
+			},
+			"lifeEvent": {
+				"title": "Bistro Brick-and-Mortar Opening",
+				"description": "Chloe opened a full 45-seat cafe and bistro, carrying a $35,000 low-interest small business equipment loan.",
+				"type": "debt"
+			},
+			"financialState": {
+				"accounts": [
+					{
+						"id": "acc_chloe_checking",
+						"name": "Bistro Master Checking",
+						"type": "checking",
+						"balance": 6200,
+						"apy": 0.05
+					},
+					{
+						"id": "acc_chloe_treasury",
+						"name": "Bistro Emergency Treasury",
+						"type": "savings",
+						"balance": 24000,
+						"apy": 4
+					}
+				],
+				"loans": [
+					{
+						"id": "loan_chloe_oven_equip",
+						"name": "Bistro Equipment Loan",
+						"balance": 22000,
+						"apr": 6.2,
+						"minimumPayment": 450
+					}
+				],
+				"income": [
+					{
+						"id": "inc_chloe_owner_draw",
+						"name": "Bistro Owner Draw & Profits",
+						"amount": 8800,
+						"taxRate": 22,
+						"frequency": "monthly",
+						"routings": [
+							{
+								"destinationId": "acc_chloe_checking",
+								"amount": 100,
+								"type": "percentage"
+							}
+						]
+					}
+				],
+				"expenses": [
+					{
+						"id": "exp_chloe_mortgage",
+						"name": "Residential Home Mortgage",
+						"isFixed": true,
+						"defaultAmount": 2200
+					},
+					{
+						"id": "exp_chloe_personal_lifestyle",
+						"name": "Personal Living & Travel",
+						"isFixed": false,
+						"minValue": 800,
+						"defaultAmount": 1100
+					},
+					{
+						"id": "exp_chloe_auto_utilities",
+						"name": "Vehicle & Home Utilities",
+						"isFixed": true,
+						"defaultAmount": 480
+					}
+				],
+				"insurances": [
+					{
+						"id": "ins_chloe_umbrella",
+						"name": "Commercial & Personal Umbrella",
+						"premium": 150,
+						"deductible": 1000
+					}
+				],
+				"retirements": [
+					{
+						"id": "ret_chloe_sep_ira",
+						"name": "Owner SEP-IRA",
+						"type": "roth_ira",
+						"balance": 52000,
+						"expectedApy": 7.5,
+						"employerMatchPercent": 0
+					}
+				],
+				"goals": [
+					{
+						"id": "goal_chloe_loan_paydown",
+						"name": "Accelerate Equipment Loan",
+						"targetAmount": 5000,
+						"targetMonths": 6
+					}
+				]
+			},
+			"winConditions": {
+				"requireInsuranceCoverage": true,
+				"goalsFundedWithinMonths": {
+					"goalId": "goal_chloe_loan_paydown",
+					"months": 6
+				},
+				"optimalDebtRouting": "avalanche"
+			},
+			"allowedActions": {
+				"canCreateAccounts": true,
+				"canDeleteAccounts": true,
+				"allowedAccountTypes": ["checking", "savings", "brokerage"],
+				"allowedCardTypes": ["debit", "credit"]
+			}
+		}
+	]
 }

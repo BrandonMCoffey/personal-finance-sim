@@ -1,525 +1,492 @@
 {
-  "id": "andre_jackson",
-  "name": "Andre Jackson",
-  "bio": "Former collegiate sprinter turned elite fitness trainer and boutique gym entrepreneur, learning to master money psychology, curb impulse spending, and build generational wealth.",
-  "avatarEmoji": "⚡",
-  "portraitId": "portrait_andre",
-  "traits": [
-    "charismatic",
-    "ambitious",
-    "impulsive-spending"
-  ],
-  "stages": [
-    {
-      "stageId": "andre_stage_1",
-      "stageTitle": "Commission Rollercoaster & Designer Athleisure",
-      "age": 22,
-      "occupation": "Personal Trainer & Class Instructor",
-      "yearsSinceLastStage": 0,
-      "cooldownRounds": 2,
-      "selectionSnippet": {
-        "firstTime": "What's good! Andre Jackson here. I ran Division 1 track and now I'm training private clients at a downtown gym. When clients buy 10-packs of sessions, I feel like a king, but then I drop $400 on custom sneakers, take friends out to sushi, and suddenly my checking account has $42 left when rent is due on the 1st.",
-        "returningHelped": "Andre Jackson here! You taught me that looking wealthy isn't the same as actually being wealthy. I'm taking the next big step in gym management and need my favorite financial coach!",
-        "returningSkipped": "Andre Jackson checking in again. I wasn't able to get on your books previously, but my commissions are still swinging wildly. Really hoping we can sit down and get my cash locked in."
-      },
-      "dialogue": {
-        "greeting": "In the fitness world, everybody judges your gear, your watch, and your image. If you look successful, clients book you. But my credit card balance was quietly choking me while I was smiling for social media.",
-        "emotion": "Energetic but Overextended",
-        "planApproved": "Let's go! Giving myself an automated sneaker and lifestyle budget while routing client commissions straight to pay off that credit card balance feels like setting a new personal record.",
-        "planNeedsWork": "Hold up, our credit card payment didn't clear the minimum payment. That 25% APR is burning money on the side."
-      },
-      "lifeEvent": {
-        "title": "High-APR Athleisure Credit Card Debt",
-        "description": "Andre accumulated $2,200 on a high-interest store card buying high-end athletic apparel and client demonstration gear.",
-        "type": "debt"
-      },
-      "financialState": {
-        "accounts": [
-          {
-            "id": "acc_andre_checking",
-            "name": "Trainer Checking",
-            "type": "checking",
-            "balance": 350,
-            "apy": 0.01
-          }
-        ],
-        "cards": [
-          {
-            "id": "card_andre_retail",
-            "name": "Athleisure Rewards Card",
-            "type": "credit",
-            "linkedAccountId": "acc_andre_checking",
-            "balance": 2200,
-            "apr": 25.4,
-            "minimumPayment": 90
-          }
-        ],
-        "income": [
-          {
-            "id": "inc_andre_trainer_pay",
-            "name": "Training Sessions & Tips",
-            "amount": 2900,
-            "taxRate": 12,
-            "frequency": "monthly",
-            "routings": [
-              {
-                "destinationId": "acc_andre_checking",
-                "amount": 100,
-                "type": "percentage"
-              }
-            ]
-          }
-        ],
-        "expenses": [
-          {
-            "id": "exp_andre_shared_loft",
-            "name": "Shared Loft Rent",
-            "isFixed": true,
-            "defaultAmount": 900
-          },
-          {
-            "id": "exp_andre_supplements_gear",
-            "name": "Nutrition & Fitness Gear",
-            "isFixed": false,
-            "minValue": 220,
-            "defaultAmount": 380
-          },
-          {
-            "id": "exp_andre_dining_social",
-            "name": "Dining & Nightlife",
-            "isFixed": false,
-            "minValue": 250,
-            "defaultAmount": 450
-          },
-          {
-            "id": "exp_andre_transit",
-            "name": "Rideshare & Scooter",
-            "isFixed": true,
-            "defaultAmount": 160
-          }
-        ],
-        "goals": [
-          {
-            "id": "goal_andre_kill_card",
-            "name": "Crush Athleisure Card Debt",
-            "targetAmount": 2200,
-            "targetMonths": 5
-          }
-        ]
-      },
-      "winConditions": {
-        "requiredAccounts": [
-          "savings"
-        ],
-        "goalsFundedWithinMonths": {
-          "goalId": "goal_andre_kill_card",
-          "months": 5
-        },
-        "optimalDebtRouting": "avalanche"
-      },
-      "allowedActions": {
-        "canCreateAccounts": true,
-        "canDeleteAccounts": true,
-        "allowedAccountTypes": [
-          "checking",
-          "savings"
-        ],
-        "allowedCardTypes": [
-          "debit",
-          "credit"
-        ]
-      }
-    },
-    {
-      "stageId": "andre_stage_2",
-      "stageTitle": "Head Coach & General Manager Promotion",
-      "age": 27,
-      "occupation": "General Manager & Head Trainer",
-      "yearsSinceLastStage": 5,
-      "cooldownRounds": 2,
-      "selectionSnippet": {
-        "firstTime": "Andre Jackson here! At 27, I worked my way up to General Manager of a premier fitness facility. I have a steady base salary of $4,500/mo plus bonus distributions. I want to build a pristine credit score and save $15k to qualify for a boutique gym franchise down payment.",
-        "returningHelped": "Andre Jackson! Remember that sneaker card debt I was sweating over at 22? Completely gone! Now I'm General Manager of the whole gym. I want your game plan to build our down payment fund for our own boutique facility.",
-        "returningSkipped": "Andre Jackson here again. Missed connecting with you back when I was a freelance trainer. I've risen to Gym GM and need professional guidance to prepare for business ownership."
-      },
-      "dialogue": {
-        "greeting": "Managing 15 trainers and running a 15,000-square-foot gym taught me that discipline in the gym means nothing if you don't have discipline in your bank accounts. I want to be an owner.",
-        "emotion": "Laser-Focused & Ambitious",
-        "planApproved": "This game plan is elite. High-yield business seed fund locked down, automated Roth IRA compounding, and clean living expenses. We are on schedule to own our own facility.",
-        "planNeedsWork": "Wait, our franchise savings timeline is slipping behind schedule. We need to channel more surplus into the goal account."
-      },
-      "lifeEvent": {
-        "title": "Gym General Manager Promotion",
-        "description": "Andre transitioned to a salaried General Manager role with quarterly membership retention bonuses.",
-        "type": "income"
-      },
-      "financialState": {
-        "accounts": [
-          {
-            "id": "acc_andre_checking",
-            "name": "Operating Checking",
-            "type": "checking",
-            "balance": 2100,
-            "apy": 0.05
-          },
-          {
-            "id": "acc_andre_savings",
-            "name": "Franchise Seed Fund",
-            "type": "savings",
-            "balance": 6500,
-            "apy": 3.8
-          }
-        ],
-        "income": [
-          {
-            "id": "inc_andre_gm_salary",
-            "name": "General Manager Salary & Bonus",
-            "amount": 4800,
-            "taxRate": 16,
-            "frequency": "monthly",
-            "routings": [
-              {
-                "destinationId": "acc_andre_checking",
-                "amount": 100,
-                "type": "percentage"
-              }
-            ]
-          }
-        ],
-        "expenses": [
-          {
-            "id": "exp_andre_apartment",
-            "name": "1-Bedroom Apartment",
-            "isFixed": true,
-            "defaultAmount": 1350
-          },
-          {
-            "id": "exp_andre_nutrition_food",
-            "name": "Meal Prep & Dining",
-            "isFixed": false,
-            "minValue": 380,
-            "defaultAmount": 550
-          },
-          {
-            "id": "exp_andre_car_lease",
-            "name": "Vehicle Lease & Ins",
-            "isFixed": true,
-            "defaultAmount": 390
-          },
-          {
-            "id": "exp_andre_utilities",
-            "name": "Utilities & Phone",
-            "isFixed": true,
-            "defaultAmount": 160
-          }
-        ],
-        "insurances": [
-          {
-            "id": "ins_andre_trainer_liability",
-            "name": "Professional Fitness Liability",
-            "premium": 65,
-            "deductible": 500
-          }
-        ],
-        "retirements": [
-          {
-            "id": "ret_andre_roth",
-            "name": "Roth IRA",
-            "type": "roth_ira",
-            "balance": 8500,
-            "expectedApy": 7.5,
-            "employerMatchPercent": 0
-          }
-        ],
-        "goals": [
-          {
-            "id": "goal_andre_franchise_seed",
-            "name": "Franchise Downpayment Fund",
-            "targetAmount": 4500,
-            "targetMonths": 6
-          }
-        ]
-      },
-      "winConditions": {
-        "requireInsuranceCoverage": true,
-        "goalsFundedWithinMonths": {
-          "goalId": "goal_andre_franchise_seed",
-          "months": 6
-        }
-      },
-      "allowedActions": {
-        "canCreateAccounts": true,
-        "canDeleteAccounts": true,
-        "allowedAccountTypes": [
-          "checking",
-          "savings",
-          "brokerage"
-        ],
-        "allowedCardTypes": [
-          "debit",
-          "credit"
-        ]
-      }
-    },
-    {
-      "stageId": "andre_stage_3",
-      "stageTitle": "Boutique Studio Co-Owner & Equipment Leasing",
-      "age": 32,
-      "occupation": "Boutique Fitness Studio Managing Partner",
-      "yearsSinceLastStage": 5,
-      "cooldownRounds": 3,
-      "selectionSnippet": {
-        "firstTime": "Andre Jackson here! At 32, my dream came true: I partnered with an investor to open 'Velocity Performance Studio'! We have 250 members on recurring monthly memberships. We have a commercial equipment lease on 20 treadmills and racks ($1,400/mo), and I need to manage partner profit splits while keeping our cash buffer deep.",
-        "returningHelped": "Andre Jackson! We did it! 'Velocity Performance Studio' opened its doors last month and we already hit 250 recurring members! The discipline you taught me made this possible. Now I need your advisory on our commercial equipment lease and partner distributions.",
-        "returningSkipped": "Andre Jackson here. Over the years I saved up and opened my own boutique fitness facility. Need an advisor to audit our partner distributions and commercial lease obligations."
-      },
-      "dialogue": {
-        "greeting": "Seeing our neon logo glowing on the brick wall of my own gym at 5:30 AM before the first class walks in... man, I got chills. This isn't just about fitness; it's about building an institution in our community.",
-        "emotion": "Proud & Fired Up",
-        "planApproved": "This is champion-level execution. The commercial equipment lease is seamlessly automated, the business safety reserve is deep, and my personal retirement is accelerating.",
-        "planNeedsWork": "Wait, our commercial equipment lease payment was left unfunded. If the equipment leasing company repossesses the sprint tracks, our studio closes tomorrow."
-      },
-      "lifeEvent": {
-        "title": "Boutique Studio Grand Opening",
-        "description": "Andre opened Velocity Performance Studio, carrying an ongoing commercial fitness equipment lease ($1,400/mo).",
-        "type": "debt"
-      },
-      "financialState": {
-        "accounts": [
-          {
-            "id": "acc_andre_checking",
-            "name": "Studio Operating Checking",
-            "type": "checking",
-            "balance": 4500,
-            "apy": 0.05
-          },
-          {
-            "id": "acc_andre_savings",
-            "name": "Studio Emergency Treasury",
-            "type": "savings",
-            "balance": 16000,
-            "apy": 3.9
-          }
-        ],
-        "loans": [
-          {
-            "id": "loan_andre_equip_lease",
-            "name": "Commercial Gym Equipment Lease",
-            "balance": 24000,
-            "apr": 7,
-            "minimumPayment": 480
-          }
-        ],
-        "income": [
-          {
-            "id": "inc_andre_partner_draw",
-            "name": "Managing Partner Draw & Profit",
-            "amount": 7200,
-            "taxRate": 20,
-            "frequency": "monthly",
-            "routings": [
-              {
-                "destinationId": "acc_andre_checking",
-                "amount": 100,
-                "type": "percentage"
-              }
-            ]
-          }
-        ],
-        "expenses": [
-          {
-            "id": "exp_andre_home_rent",
-            "name": "Condo Rental & Parking",
-            "isFixed": true,
-            "defaultAmount": 1800
-          },
-          {
-            "id": "exp_andre_lifestyle",
-            "name": "Nutrition & Lifestyle",
-            "isFixed": false,
-            "minValue": 550,
-            "defaultAmount": 750
-          },
-          {
-            "id": "exp_andre_auto_transit",
-            "name": "Truck Lease & Ins",
-            "isFixed": true,
-            "defaultAmount": 480
-          }
-        ],
-        "insurances": [
-          {
-            "id": "ins_andre_commercial_liability",
-            "name": "Commercial Studio Liability",
-            "premium": 140,
-            "deductible": 1000
-          }
-        ],
-        "retirements": [
-          {
-            "id": "ret_andre_solo401k",
-            "name": "Owner Solo 401(k)",
-            "type": "401k",
-            "balance": 35000,
-            "expectedApy": 7.5,
-            "employerMatchPercent": 0
-          }
-        ],
-        "goals": [
-          {
-            "id": "goal_andre_equip_payoff",
-            "name": "Pay Down Equipment Note",
-            "targetAmount": 4500,
-            "targetMonths": 6
-          }
-        ]
-      },
-      "winConditions": {
-        "requireInsuranceCoverage": true,
-        "goalsFundedWithinMonths": {
-          "goalId": "goal_andre_equip_payoff",
-          "months": 6
-        },
-        "optimalDebtRouting": "avalanche"
-      },
-      "allowedActions": {
-        "canCreateAccounts": true,
-        "canDeleteAccounts": true,
-        "allowedAccountTypes": [
-          "checking",
-          "savings",
-          "brokerage"
-        ],
-        "allowedCardTypes": [
-          "debit",
-          "credit"
-        ]
-      }
-    },
-    {
-      "stageId": "andre_stage_4",
-      "stageTitle": "Multi-Location Scaling & Wealth Diversification",
-      "age": 38,
-      "occupation": "Multi-Unit Fitness Franchise Owner",
-      "yearsSinceLastStage": 6,
-      "cooldownRounds": 3,
-      "selectionSnippet": {
-        "firstTime": "Andre Jackson here at 38. Velocity Performance is now a 3-location franchise across the metro area. We generate over $1.5M in annual network sales. I'm taking significant distributions, and I want to diversify outside the fitness industry into long-term commercial real estate and index funds.",
-        "returningHelped": "Andre Jackson! Look at this journey! From sweating over $40 sneakers at 22 to owning three thriving fitness franchises at 38! You helped me turn athletic discipline into real financial mastery. Now let's diversify our family portfolio so our wealth is bulletproof.",
-        "returningSkipped": "Andre Jackson here. Over the years I scaled my fitness studios to 3 locations. I need top-tier advisory to diversify business earnings into personal generational wealth."
-      },
-      "dialogue": {
-        "greeting": "My grandmother worked two jobs cleaning office buildings so I could have track spikes in high school. Today, she came to the ribbon cutting of our third gym. Nothing in this world feels better than honoring that sacrifice with generational security.",
-        "emotion": "Deeply Grateful & Victorious",
-        "planApproved": "This wealth architecture is undefeated. Equipment notes are extinguished, high-yield business liquidity is untouchable, and taxable index investments are compounding every month.",
-        "planNeedsWork": "Wait, our taxable index fund allocation was neglected. Leaving large cash balances sitting in low-yield checking leaves our business vulnerable to inflation."
-      },
-      "lifeEvent": {
-        "title": "3rd Franchise Location Expansion",
-        "description": "Andre launched his third franchise location, significantly multiplying monthly owner distributions and cash flows.",
-        "type": "income"
-      },
-      "financialState": {
-        "accounts": [
-          {
-            "id": "acc_andre_checking",
-            "name": "Executive Checking",
-            "type": "checking",
-            "balance": 6000,
-            "apy": 0.05
-          },
-          {
-            "id": "acc_andre_treasury",
-            "name": "Franchise High-Yield Reserve",
-            "type": "savings",
-            "balance": 38000,
-            "apy": 4.1
-          }
-        ],
-        "income": [
-          {
-            "id": "inc_andre_franchise_profits",
-            "name": "3-Unit Franchise Owner Distributions",
-            "amount": 10500,
-            "taxRate": 24,
-            "frequency": "monthly",
-            "routings": [
-              {
-                "destinationId": "acc_andre_checking",
-                "amount": 100,
-                "type": "percentage"
-              }
-            ]
-          }
-        ],
-        "expenses": [
-          {
-            "id": "exp_andre_home_mortgage",
-            "name": "Home Mortgage & Taxes",
-            "isFixed": true,
-            "defaultAmount": 2600
-          },
-          {
-            "id": "exp_andre_lifestyle",
-            "name": "Family Living & Travel",
-            "isFixed": false,
-            "minValue": 900,
-            "defaultAmount": 1300
-          },
-          {
-            "id": "exp_andre_vehicles",
-            "name": "Family Vehicles & Ins",
-            "isFixed": true,
-            "defaultAmount": 550
-          }
-        ],
-        "insurances": [
-          {
-            "id": "ins_andre_umbrella",
-            "name": "Commercial & Personal Umbrella",
-            "premium": 180,
-            "deductible": 1000
-          }
-        ],
-        "retirements": [
-          {
-            "id": "ret_andre_solo401k",
-            "name": "Executive Solo 401(k)",
-            "type": "401k",
-            "balance": 88000,
-            "expectedApy": 8,
-            "employerMatchPercent": 0
-          }
-        ],
-        "goals": [
-          {
-            "id": "goal_andre_index_brokerage",
-            "name": "Commercial Index Brokerage",
-            "targetAmount": 7500,
-            "targetMonths": 6
-          }
-        ]
-      },
-      "winConditions": {
-        "requireInsuranceCoverage": true,
-        "goalsFundedWithinMonths": {
-          "goalId": "goal_andre_index_brokerage",
-          "months": 6
-        }
-      },
-      "allowedActions": {
-        "canCreateAccounts": true,
-        "canDeleteAccounts": true,
-        "allowedAccountTypes": [
-          "checking",
-          "savings",
-          "brokerage"
-        ],
-        "allowedCardTypes": [
-          "debit",
-          "credit"
-        ]
-      }
-    }
-  ]
+	"id": "andre_jackson",
+	"name": "Andrew",
+	"bio": "Former collegiate sprinter turned fitness trainer and gym entrepreneur, learning to master money psychology, curb impulse spending, and build generational wealth.",
+	"avatarEmoji": "⚡",
+	"portraitId": "portrait_andre",
+	"traits": ["charismatic", "ambitious", "impulsive-spending"],
+	"stages": [
+		{
+			"stageId": "andre_stage_1",
+			"stageTitle": "Commission Rollercoaster & Designer Athleisure",
+			"age": 22,
+			"occupation": "Personal Trainer & Class Instructor",
+			"yearsSinceLastStage": 0,
+			"cooldownRounds": 2,
+			"selectionSnippet": {
+				"firstTime": "What's good! Andrew here. I ran Division 1 track and now I'm training private clients at a downtown gym. When clients buy 10-packs of sessions, I feel like a king, but then I drop $400 on custom sneakers, take friends out to sushi, and suddenly my checking account has $42 left when rent is due on the 1st.",
+				"returningHelped": "Andrew here! You taught me that looking wealthy isn't the same as actually being wealthy. I'm taking the next big step in gym management and need my favorite financial coach!",
+				"returningSkipped": "Andrew checking in again. I wasn't able to get on your books previously, but my commissions are still swinging wildly. Really hoping we can sit down and get my cash locked in."
+			},
+			"dialogue": {
+				"greeting": "In the fitness world, everybody judges your gear, your watch, and your image. If you look successful, clients book you. But my credit card balance was quietly choking me while I was smiling for social media.",
+				"emotion": "Energetic but Overextended",
+				"planApproved": "Let's go! Giving myself an automated sneaker and lifestyle budget while routing client commissions straight to pay off that credit card balance feels like setting a new personal record.",
+				"planNeedsWork": "Hold up, our credit card payment didn't clear the minimum payment. That 25% APR is burning money on the side."
+			},
+			"lifeEvent": {
+				"title": "High-APR Athleisure Credit Card Debt",
+				"description": "Andrew accumulated $2,200 on a high-interest store card buying high-end athletic apparel and client demonstration gear.",
+				"type": "debt"
+			},
+			"financialState": {
+				"accounts": [
+					{
+						"id": "acc_andre_checking",
+						"name": "Trainer Checking",
+						"type": "checking",
+						"balance": 350,
+						"apy": 0.01
+					}
+				],
+				"cards": [
+					{
+						"id": "card_andre_retail",
+						"name": "Athleisure Rewards Card",
+						"type": "credit",
+						"linkedAccountId": "acc_andre_checking",
+						"balance": 2200,
+						"apr": 25.4,
+						"minimumPayment": 90
+					}
+				],
+				"income": [
+					{
+						"id": "inc_andre_trainer_pay",
+						"name": "Training Sessions & Tips",
+						"amount": 2900,
+						"taxRate": 12,
+						"frequency": "monthly",
+						"routings": [
+							{
+								"destinationId": "acc_andre_checking",
+								"amount": 100,
+								"type": "percentage"
+							}
+						]
+					}
+				],
+				"expenses": [
+					{
+						"id": "exp_andre_shared_loft",
+						"name": "Shared Loft Rent",
+						"isFixed": true,
+						"defaultAmount": 900
+					},
+					{
+						"id": "exp_andre_supplements_gear",
+						"name": "Nutrition & Fitness Gear",
+						"isFixed": false,
+						"minValue": 220,
+						"defaultAmount": 380
+					},
+					{
+						"id": "exp_andre_dining_social",
+						"name": "Dining & Nightlife",
+						"isFixed": false,
+						"minValue": 250,
+						"defaultAmount": 450
+					},
+					{
+						"id": "exp_andre_transit",
+						"name": "Rideshare & Scooter",
+						"isFixed": true,
+						"defaultAmount": 160
+					}
+				],
+				"goals": [
+					{
+						"id": "goal_andre_kill_card",
+						"name": "Crush Athleisure Card Debt",
+						"targetAmount": 2200,
+						"targetMonths": 5
+					}
+				]
+			},
+			"winConditions": {
+				"requiredAccounts": ["savings"],
+				"goalsFundedWithinMonths": {
+					"goalId": "goal_andre_kill_card",
+					"months": 5
+				},
+				"optimalDebtRouting": "avalanche"
+			},
+			"allowedActions": {
+				"canCreateAccounts": true,
+				"canDeleteAccounts": true,
+				"allowedAccountTypes": ["checking", "savings"],
+				"allowedCardTypes": ["debit", "credit"]
+			}
+		},
+		{
+			"stageId": "andre_stage_2",
+			"stageTitle": "Head Coach & General Manager Promotion",
+			"age": 27,
+			"occupation": "General Manager & Head Trainer",
+			"yearsSinceLastStage": 5,
+			"cooldownRounds": 2,
+			"selectionSnippet": {
+				"firstTime": "Andrew here! At 27, I worked my way up to General Manager of a premier fitness facility. I have a steady base salary of $4,500/mo plus bonus distributions. I want to build a pristine credit score and save $15k to qualify for a boutique gym franchise down payment.",
+				"returningHelped": "Andrew! Remember that sneaker card debt I was sweating over at 22? Completely gone! Now I'm General Manager of the whole gym. I want your game plan to build our down payment fund for our own boutique facility.",
+				"returningSkipped": "Andrew here again. Missed connecting with you back when I was a freelance trainer. I've risen to Gym GM and need professional guidance to prepare for business ownership."
+			},
+			"dialogue": {
+				"greeting": "Managing 15 trainers and running a 15,000-square-foot gym taught me that discipline in the gym means nothing if you don't have discipline in your bank accounts. I want to be an owner.",
+				"emotion": "Laser-Focused & Ambitious",
+				"planApproved": "This game plan is elite. High-yield business seed fund locked down, automated Roth IRA compounding, and clean living expenses. We are on schedule to own our own facility.",
+				"planNeedsWork": "Wait, our franchise savings timeline is slipping behind schedule. We need to channel more surplus into the goal account."
+			},
+			"lifeEvent": {
+				"title": "Gym General Manager Promotion",
+				"description": "Andrew transitioned to a salaried General Manager role with quarterly membership retention bonuses.",
+				"type": "income"
+			},
+			"financialState": {
+				"accounts": [
+					{
+						"id": "acc_andre_checking",
+						"name": "Operating Checking",
+						"type": "checking",
+						"balance": 2100,
+						"apy": 0.05
+					},
+					{
+						"id": "acc_andre_savings",
+						"name": "Franchise Seed Fund",
+						"type": "savings",
+						"balance": 6500,
+						"apy": 3.8
+					}
+				],
+				"income": [
+					{
+						"id": "inc_andre_gm_salary",
+						"name": "General Manager Salary & Bonus",
+						"amount": 4800,
+						"taxRate": 16,
+						"frequency": "monthly",
+						"routings": [
+							{
+								"destinationId": "acc_andre_checking",
+								"amount": 100,
+								"type": "percentage"
+							}
+						]
+					}
+				],
+				"expenses": [
+					{
+						"id": "exp_andre_apartment",
+						"name": "1-Bedroom Apartment",
+						"isFixed": true,
+						"defaultAmount": 1350
+					},
+					{
+						"id": "exp_andre_nutrition_food",
+						"name": "Meal Prep & Dining",
+						"isFixed": false,
+						"minValue": 380,
+						"defaultAmount": 550
+					},
+					{
+						"id": "exp_andre_car_lease",
+						"name": "Vehicle Lease & Ins",
+						"isFixed": true,
+						"defaultAmount": 390
+					},
+					{
+						"id": "exp_andre_utilities",
+						"name": "Utilities & Phone",
+						"isFixed": true,
+						"defaultAmount": 160
+					}
+				],
+				"insurances": [
+					{
+						"id": "ins_andre_trainer_liability",
+						"name": "Professional Fitness Liability",
+						"premium": 65,
+						"deductible": 500
+					}
+				],
+				"retirements": [
+					{
+						"id": "ret_andre_roth",
+						"name": "Roth IRA",
+						"type": "roth_ira",
+						"balance": 8500,
+						"expectedApy": 7.5,
+						"employerMatchPercent": 0
+					}
+				],
+				"goals": [
+					{
+						"id": "goal_andre_franchise_seed",
+						"name": "Franchise Downpayment Fund",
+						"targetAmount": 4500,
+						"targetMonths": 6
+					}
+				]
+			},
+			"winConditions": {
+				"requireInsuranceCoverage": true,
+				"goalsFundedWithinMonths": {
+					"goalId": "goal_andre_franchise_seed",
+					"months": 6
+				}
+			},
+			"allowedActions": {
+				"canCreateAccounts": true,
+				"canDeleteAccounts": true,
+				"allowedAccountTypes": ["checking", "savings", "brokerage"],
+				"allowedCardTypes": ["debit", "credit"]
+			}
+		},
+		{
+			"stageId": "andre_stage_3",
+			"stageTitle": "Boutique Studio Co-Owner & Equipment Leasing",
+			"age": 32,
+			"occupation": "Boutique Fitness Studio Managing Partner",
+			"yearsSinceLastStage": 5,
+			"cooldownRounds": 3,
+			"selectionSnippet": {
+				"firstTime": "Andrew here! At 32, my dream came true: I partnered with an investor to open 'Velocity Performance Studio'! We have 250 members on recurring monthly memberships. We have a commercial equipment lease on 20 treadmills and racks ($1,400/mo), and I need to manage partner profit splits while keeping our cash buffer deep.",
+				"returningHelped": "Andrew! We did it! 'Velocity Performance Studio' opened its doors last month and we already hit 250 recurring members! The discipline you taught me made this possible. Now I need your advisory on our commercial equipment lease and partner distributions.",
+				"returningSkipped": "Andrew here. Over the years I saved up and opened my own boutique fitness facility. Need an advisor to audit our partner distributions and commercial lease obligations."
+			},
+			"dialogue": {
+				"greeting": "Seeing our neon logo glowing on the brick wall of my own gym at 5:30 AM before the first class walks in... man, I got chills. This isn't just about fitness; it's about building an institution in our community.",
+				"emotion": "Proud & Fired Up",
+				"planApproved": "This is champion-level execution. The commercial equipment lease is seamlessly automated, the business safety reserve is deep, and my personal retirement is accelerating.",
+				"planNeedsWork": "Wait, our commercial equipment lease payment was left unfunded. If the equipment leasing company repossesses the sprint tracks, our studio closes tomorrow."
+			},
+			"lifeEvent": {
+				"title": "Boutique Studio Grand Opening",
+				"description": "Andrew opened Velocity Performance Studio, carrying an ongoing commercial fitness equipment lease ($1,400/mo).",
+				"type": "debt"
+			},
+			"financialState": {
+				"accounts": [
+					{
+						"id": "acc_andre_checking",
+						"name": "Studio Operating Checking",
+						"type": "checking",
+						"balance": 4500,
+						"apy": 0.05
+					},
+					{
+						"id": "acc_andre_savings",
+						"name": "Studio Emergency Treasury",
+						"type": "savings",
+						"balance": 16000,
+						"apy": 3.9
+					}
+				],
+				"loans": [
+					{
+						"id": "loan_andre_equip_lease",
+						"name": "Commercial Gym Equipment Lease",
+						"balance": 24000,
+						"apr": 7,
+						"minimumPayment": 480
+					}
+				],
+				"income": [
+					{
+						"id": "inc_andre_partner_draw",
+						"name": "Managing Partner Draw & Profit",
+						"amount": 7200,
+						"taxRate": 20,
+						"frequency": "monthly",
+						"routings": [
+							{
+								"destinationId": "acc_andre_checking",
+								"amount": 100,
+								"type": "percentage"
+							}
+						]
+					}
+				],
+				"expenses": [
+					{
+						"id": "exp_andre_home_rent",
+						"name": "Condo Rental & Parking",
+						"isFixed": true,
+						"defaultAmount": 1800
+					},
+					{
+						"id": "exp_andre_lifestyle",
+						"name": "Nutrition & Lifestyle",
+						"isFixed": false,
+						"minValue": 550,
+						"defaultAmount": 750
+					},
+					{
+						"id": "exp_andre_auto_transit",
+						"name": "Truck Lease & Ins",
+						"isFixed": true,
+						"defaultAmount": 480
+					}
+				],
+				"insurances": [
+					{
+						"id": "ins_andre_commercial_liability",
+						"name": "Commercial Studio Liability",
+						"premium": 140,
+						"deductible": 1000
+					}
+				],
+				"retirements": [
+					{
+						"id": "ret_andre_solo401k",
+						"name": "Owner Solo 401(k)",
+						"type": "401k",
+						"balance": 35000,
+						"expectedApy": 7.5,
+						"employerMatchPercent": 0
+					}
+				],
+				"goals": [
+					{
+						"id": "goal_andre_equip_payoff",
+						"name": "Pay Down Equipment Note",
+						"targetAmount": 4500,
+						"targetMonths": 6
+					}
+				]
+			},
+			"winConditions": {
+				"requireInsuranceCoverage": true,
+				"goalsFundedWithinMonths": {
+					"goalId": "goal_andre_equip_payoff",
+					"months": 6
+				},
+				"optimalDebtRouting": "avalanche"
+			},
+			"allowedActions": {
+				"canCreateAccounts": true,
+				"canDeleteAccounts": true,
+				"allowedAccountTypes": ["checking", "savings", "brokerage"],
+				"allowedCardTypes": ["debit", "credit"]
+			}
+		},
+		{
+			"stageId": "andre_stage_4",
+			"stageTitle": "Multi-Location Scaling & Wealth Diversification",
+			"age": 38,
+			"occupation": "Multi-Unit Fitness Franchise Owner",
+			"yearsSinceLastStage": 6,
+			"cooldownRounds": 3,
+			"selectionSnippet": {
+				"firstTime": "Andrew here at 38. Velocity Performance is now a 3-location franchise across the metro area. We generate over $1.5M in annual network sales. I'm taking significant distributions, and I want to diversify outside the fitness industry into long-term commercial real estate and index funds.",
+				"returningHelped": "Andrew! Look at this journey! From sweating over $40 sneakers at 22 to owning three thriving fitness franchises at 38! You helped me turn athletic discipline into real financial mastery. Now let's diversify our family portfolio so our wealth is bulletproof.",
+				"returningSkipped": "Andrew here. Over the years I scaled my fitness studios to 3 locations. I need top-tier advisory to diversify business earnings into personal generational wealth."
+			},
+			"dialogue": {
+				"greeting": "My grandmother worked two jobs cleaning office buildings so I could have track spikes in high school. Today, she came to the ribbon cutting of our third gym. Nothing in this world feels better than honoring that sacrifice with generational security.",
+				"emotion": "Deeply Grateful & Victorious",
+				"planApproved": "This wealth architecture is undefeated. Equipment notes are extinguished, high-yield business liquidity is untouchable, and taxable index investments are compounding every month.",
+				"planNeedsWork": "Wait, our taxable index fund allocation was neglected. Leaving large cash balances sitting in low-yield checking leaves our business vulnerable to inflation."
+			},
+			"lifeEvent": {
+				"title": "3rd Franchise Location Expansion",
+				"description": "Andrew launched his third franchise location, significantly multiplying monthly owner distributions and cash flows.",
+				"type": "income"
+			},
+			"financialState": {
+				"accounts": [
+					{
+						"id": "acc_andre_checking",
+						"name": "Executive Checking",
+						"type": "checking",
+						"balance": 6000,
+						"apy": 0.05
+					},
+					{
+						"id": "acc_andre_treasury",
+						"name": "Franchise High-Yield Reserve",
+						"type": "savings",
+						"balance": 38000,
+						"apy": 4.1
+					}
+				],
+				"income": [
+					{
+						"id": "inc_andre_franchise_profits",
+						"name": "3-Unit Franchise Owner Distributions",
+						"amount": 10500,
+						"taxRate": 24,
+						"frequency": "monthly",
+						"routings": [
+							{
+								"destinationId": "acc_andre_checking",
+								"amount": 100,
+								"type": "percentage"
+							}
+						]
+					}
+				],
+				"expenses": [
+					{
+						"id": "exp_andre_home_mortgage",
+						"name": "Home Mortgage & Taxes",
+						"isFixed": true,
+						"defaultAmount": 2600
+					},
+					{
+						"id": "exp_andre_lifestyle",
+						"name": "Family Living & Travel",
+						"isFixed": false,
+						"minValue": 900,
+						"defaultAmount": 1300
+					},
+					{
+						"id": "exp_andre_vehicles",
+						"name": "Family Vehicles & Ins",
+						"isFixed": true,
+						"defaultAmount": 550
+					}
+				],
+				"insurances": [
+					{
+						"id": "ins_andre_umbrella",
+						"name": "Commercial & Personal Umbrella",
+						"premium": 180,
+						"deductible": 1000
+					}
+				],
+				"retirements": [
+					{
+						"id": "ret_andre_solo401k",
+						"name": "Executive Solo 401(k)",
+						"type": "401k",
+						"balance": 88000,
+						"expectedApy": 8,
+						"employerMatchPercent": 0
+					}
+				],
+				"goals": [
+					{
+						"id": "goal_andre_index_brokerage",
+						"name": "Commercial Index Brokerage",
+						"targetAmount": 7500,
+						"targetMonths": 6
+					}
+				]
+			},
+			"winConditions": {
+				"requireInsuranceCoverage": true,
+				"goalsFundedWithinMonths": {
+					"goalId": "goal_andre_index_brokerage",
+					"months": 6
+				}
+			},
+			"allowedActions": {
+				"canCreateAccounts": true,
+				"canDeleteAccounts": true,
+				"allowedAccountTypes": ["checking", "savings", "brokerage"],
+				"allowedCardTypes": ["debit", "credit"]
+			}
+		}
+	]
 }

@@ -1,511 +1,478 @@
 {
-  "id": "jordan_taylor",
-  "name": "Jordan Taylor",
-  "bio": "High school biology teacher and track coach, deeply committed to youth development, mastering the cyclical cash-flow realities of 10-month educator contracts and growing a family through adoption.",
-  "avatarEmoji": "🔬",
-  "portraitId": "portrait_jordan",
-  "traits": [
-    "patient",
-    "disciplined",
-    "family-oriented"
-  ],
-  "stages": [
-    {
-      "stageId": "jordan_stage_1",
-      "stageTitle": "The Summer Paycheck Drought",
-      "age": 26,
-      "occupation": "High School Science Teacher & Coach",
-      "yearsSinceLastStage": 0,
-      "cooldownRounds": 2,
-      "selectionSnippet": {
-        "firstTime": "Hello. Jordan Taylor here. I teach 10th-grade biology and coach varsity track. My district pays me on a 10-month schedule from September through June. When July and August hit, my paychecks stop completely. Last summer I ended up putting $1,800 of groceries and rent on a credit card just to survive until school started.",
-        "returningHelped": "Jordan Taylor here! You helped me conquer the summer paycheck drought years ago. I'm reaching another major crossroad in my career and need your advice.",
-        "returningSkipped": "Hello, Jordan Taylor again. I reached out previously when my summer pay gap caused credit card debt. I'm still teaching and really hope you have availability to look at my budget."
-      },
-      "dialogue": {
-        "greeting": "I love teaching science and coaching our kids on the track, but people forget teachers don't get paid during summer break unless we deliberately stretch our checks. Going two months without an income deposit is terrifying.",
-        "emotion": "Disciplined but Stressed",
-        "planApproved": "This makes so much sense. Setting up an automatic 9-month sinking fund that pays out during July and August completely eliminates the need to touch credit cards in the summer.",
-        "planNeedsWork": "Wait, looking at this plan, we haven't allocated enough to bridge the two unpaid summer months. I'll run out of money by mid-July!"
-      },
-      "lifeEvent": {
-        "title": "Unpaid Summer Contract Gap",
-        "description": "Jordan faces 2 full summer months with zero district salary deposits, requiring a dedicated sinking fund reserve.",
-        "type": "goal"
-      },
-      "financialState": {
-        "accounts": [
-          {
-            "id": "acc_jordan_checking",
-            "name": "Teacher Checking",
-            "type": "checking",
-            "balance": 450,
-            "apy": 0.01
-          }
-        ],
-        "cards": [
-          {
-            "id": "card_jordan_summer",
-            "name": "Summer Bridge Card",
-            "type": "credit",
-            "linkedAccountId": "acc_jordan_checking",
-            "balance": 1800,
-            "apr": 21.5,
-            "minimumPayment": 65
-          }
-        ],
-        "income": [
-          {
-            "id": "inc_jordan_district",
-            "name": "District Teaching Contract",
-            "amount": 3400,
-            "taxRate": 14,
-            "frequency": "monthly",
-            "routings": [
-              {
-                "destinationId": "acc_jordan_checking",
-                "amount": 100,
-                "type": "percentage"
-              }
-            ]
-          }
-        ],
-        "expenses": [
-          {
-            "id": "exp_jordan_rent",
-            "name": "1-Bedroom Apartment Rent",
-            "isFixed": true,
-            "defaultAmount": 1050
-          },
-          {
-            "id": "exp_jordan_groceries",
-            "name": "Groceries & Classroom Supplies",
-            "isFixed": false,
-            "minValue": 240,
-            "defaultAmount": 360
-          },
-          {
-            "id": "exp_jordan_car",
-            "name": "Used Sedan Payment & Ins",
-            "isFixed": true,
-            "defaultAmount": 280
-          },
-          {
-            "id": "exp_jordan_utilities",
-            "name": "Utilities & Wifi",
-            "isFixed": true,
-            "defaultAmount": 140
-          }
-        ],
-        "goals": [
-          {
-            "id": "goal_jordan_summer_reserve",
-            "name": "Summer Paycheck Reserve",
-            "targetAmount": 2400,
-            "targetMonths": 6
-          }
-        ]
-      },
-      "winConditions": {
-        "requiredAccounts": [
-          "savings"
-        ],
-        "goalsFundedWithinMonths": {
-          "goalId": "goal_jordan_summer_reserve",
-          "months": 6
-        },
-        "optimalDebtRouting": "avalanche"
-      },
-      "allowedActions": {
-        "canCreateAccounts": true,
-        "canDeleteAccounts": true,
-        "allowedAccountTypes": [
-          "checking",
-          "savings"
-        ],
-        "allowedCardTypes": [
-          "debit",
-          "credit"
-        ]
-      }
-    },
-    {
-      "stageId": "jordan_stage_2",
-      "stageTitle": "Tenure & Summer Track Camp",
-      "age": 31,
-      "occupation": "Tenured Teacher & Camp Director",
-      "yearsSinceLastStage": 5,
-      "cooldownRounds": 2,
-      "selectionSnippet": {
-        "firstTime": "Jordan Taylor here! At 31, I achieved tenure in our public school district, and during the summer I now direct a youth track & field clinic that brings in $1,800/mo extra. I want to build out our supplemental 403(b) retirement alongside our state pension.",
-        "returningHelped": "Jordan Taylor! The summer bridge account we established completely cured my summer anxiety! I've now received tenure, and my summer track camp brings in great seasonal cash flow. I'm ready to optimize my teacher retirement accounts.",
-        "returningSkipped": "Jordan Taylor here. Missed getting onto your schedule a few years back. I've gained tenure and started a summer youth track program. Looking for guidance on maximizing my teacher pension and savings."
-      },
-      "dialogue": {
-        "greeting": "Tenure is an incredible blessing—it gives me permanent job security. But relying strictly on a state pension without personal retirement accounts feels like leaving our future to chance.",
-        "emotion": "Optimistic & Purposeful",
-        "planApproved": "This is a masterclass in educator planning. Sinking funds are automated, my camp earnings are deployed cleanly, and my 403(b) and Roth IRA are growing in parallel with my pension.",
-        "planNeedsWork": "Wait, we left our summer camp tax withholding unallocated. Self-employment tax on youth clinics still needs to be accounted for."
-      },
-      "lifeEvent": {
-        "title": "Tenure & Summer Sports Camp Income",
-        "description": "Jordan achieved tenure salary advancement and operates a successful summer youth clinic, boosting annual cash flow.",
-        "type": "income"
-      },
-      "financialState": {
-        "accounts": [
-          {
-            "id": "acc_jordan_checking",
-            "name": "Operating Checking",
-            "type": "checking",
-            "balance": 1800,
-            "apy": 0.05
-          },
-          {
-            "id": "acc_jordan_savings",
-            "name": "Summer Bridge Buffer",
-            "type": "savings",
-            "balance": 4500,
-            "apy": 3.2
-          }
-        ],
-        "income": [
-          {
-            "id": "inc_jordan_tenure_pay",
-            "name": "Tenured Teaching Salary",
-            "amount": 4200,
-            "taxRate": 16,
-            "frequency": "monthly",
-            "routings": [
-              {
-                "destinationId": "acc_jordan_checking",
-                "amount": 100,
-                "type": "percentage"
-              }
-            ]
-          }
-        ],
-        "expenses": [
-          {
-            "id": "exp_jordan_rent",
-            "name": "2-Bedroom Apartment",
-            "isFixed": true,
-            "defaultAmount": 1300
-          },
-          {
-            "id": "exp_jordan_groceries",
-            "name": "Groceries & Coaching Fuel",
-            "isFixed": false,
-            "minValue": 300,
-            "defaultAmount": 420
-          },
-          {
-            "id": "exp_jordan_car_transit",
-            "name": "Commuter Car & Transit",
-            "isFixed": true,
-            "defaultAmount": 260
-          },
-          {
-            "id": "exp_jordan_utilities",
-            "name": "Utilities & Wifi",
-            "isFixed": true,
-            "defaultAmount": 150
-          }
-        ],
-        "retirements": [
-          {
-            "id": "ret_jordan_403b",
-            "name": "District 403(b)",
-            "type": "401k",
-            "balance": 12000,
-            "expectedApy": 7,
-            "employerMatchPercent": 3
-          }
-        ],
-        "goals": [
-          {
-            "id": "goal_jordan_roth_fund",
-            "name": "Roth IRA Maximum Contribution",
-            "targetAmount": 3000,
-            "targetMonths": 6
-          }
-        ]
-      },
-      "winConditions": {
-        "goalsFundedWithinMonths": {
-          "goalId": "goal_jordan_roth_fund",
-          "months": 6
-        }
-      },
-      "allowedActions": {
-        "canCreateAccounts": true,
-        "canDeleteAccounts": true,
-        "allowedAccountTypes": [
-          "checking",
-          "savings",
-          "brokerage"
-        ],
-        "allowedCardTypes": [
-          "debit",
-          "credit"
-        ]
-      }
-    },
-    {
-      "stageId": "jordan_stage_3",
-      "stageTitle": "Growing Our Family Through Adoption",
-      "age": 36,
-      "occupation": "High School Science Dept Chair & Coach",
-      "yearsSinceLastStage": 5,
-      "cooldownRounds": 3,
-      "selectionSnippet": {
-        "firstTime": "Hello, Jordan Taylor here. My partner and I have been approved to adopt a 4-year-old boy! We are overjoyed, but the home study, agency fees, and legal placement costs total $18,000. We need to budget these milestone costs without derailing our monthly living.",
-        "returningHelped": "Jordan Taylor! We have the most joyful news: our adoption application went through, and we're welcoming our son next spring! The financial foundation you helped us build is why we're eligible. Now we need to fund the legal placement expenses.",
-        "returningSkipped": "Jordan Taylor here again. We weren't able to connect before, but we're in the final stages of adopting a child. We need an advisor's sharp plan to navigate agency and legal expenses."
-      },
-      "dialogue": {
-        "greeting": "Walking into his prospective nursery with painted dinosaur walls... I can't even describe the feeling. Every dollar we save now is directly paving the way for our little boy to have a loving, permanent home.",
-        "emotion": "Overjoyed & Tender",
-        "planApproved": "You don't know what this means to us. Knowing the adoption agency milestones are completely funded while our emergency buffer stays intact lets us focus 100% on parenting our new son.",
-        "planNeedsWork": "Wait, if we don't route enough to the legal adoption fund, we could face delays with court certification."
-      },
-      "lifeEvent": {
-        "title": "Adoption Agency & Legal Placement",
-        "description": "Jordan and partner are completing the adoption of their son, requiring an $18,000 legal, travel, and agency placement fund.",
-        "type": "goal"
-      },
-      "financialState": {
-        "accounts": [
-          {
-            "id": "acc_jordan_checking",
-            "name": "Family Checking",
-            "type": "checking",
-            "balance": 2800,
-            "apy": 0.05
-          },
-          {
-            "id": "acc_jordan_savings",
-            "name": "Adoption & Family Fund",
-            "type": "savings",
-            "balance": 12000,
-            "apy": 3.8
-          }
-        ],
-        "income": [
-          {
-            "id": "inc_jordan_chair_salary",
-            "name": "Dept Chair & Coaching Stipend",
-            "amount": 5400,
-            "taxRate": 18,
-            "frequency": "monthly",
-            "routings": [
-              {
-                "destinationId": "acc_jordan_checking",
-                "amount": 100,
-                "type": "percentage"
-              }
-            ]
-          }
-        ],
-        "expenses": [
-          {
-            "id": "exp_jordan_home_rent",
-            "name": "Family Home Rent",
-            "isFixed": true,
-            "defaultAmount": 1650
-          },
-          {
-            "id": "exp_jordan_groceries_kid",
-            "name": "Family Groceries & Supplies",
-            "isFixed": false,
-            "minValue": 450,
-            "defaultAmount": 620
-          },
-          {
-            "id": "exp_jordan_family_transit",
-            "name": "Family Vehicle & Ins",
-            "isFixed": true,
-            "defaultAmount": 340
-          },
-          {
-            "id": "exp_jordan_utilities",
-            "name": "Home Utilities",
-            "isFixed": true,
-            "defaultAmount": 200
-          }
-        ],
-        "insurances": [
-          {
-            "id": "ins_jordan_life",
-            "name": "Term Life Insurance",
-            "premium": 50,
-            "deductible": 0
-          }
-        ],
-        "retirements": [
-          {
-            "id": "ret_jordan_403b",
-            "name": "District 403(b)",
-            "type": "401k",
-            "balance": 38000,
-            "expectedApy": 7.5,
-            "employerMatchPercent": 4
-          }
-        ],
-        "goals": [
-          {
-            "id": "goal_jordan_adoption_milestone",
-            "name": "Final Adoption Placement Fund",
-            "targetAmount": 4000,
-            "targetMonths": 6
-          }
-        ]
-      },
-      "winConditions": {
-        "requireInsuranceCoverage": true,
-        "goalsFundedWithinMonths": {
-          "goalId": "goal_jordan_adoption_milestone",
-          "months": 6
-        }
-      },
-      "allowedActions": {
-        "canCreateAccounts": true,
-        "canDeleteAccounts": true,
-        "allowedAccountTypes": [
-          "checking",
-          "savings",
-          "brokerage"
-        ],
-        "allowedCardTypes": [
-          "debit",
-          "credit"
-        ]
-      }
-    },
-    {
-      "stageId": "jordan_stage_4",
-      "stageTitle": "Sabbatical, Master's Degree & College Funding",
-      "age": 43,
-      "occupation": "District STEM Curriculum Director",
-      "yearsSinceLastStage": 7,
-      "cooldownRounds": 3,
-      "selectionSnippet": {
-        "firstTime": "Hello! Jordan Taylor here at 43. Our son is now in middle school, and I've been promoted to District STEM Curriculum Director. I'm balancing funding his college 529 account with finalizing our teacher retirement pension options.",
-        "returningHelped": "Jordan Taylor! From coaching track on summer break to seeing our adopted son thriving in 7th grade—you have been a pillar of our family's security. Now I need to finalize our college 529 strategy and long-term pension planning.",
-        "returningSkipped": "Jordan Taylor here. We've reached the stage where our son is preparing for high school and college. Looking for your strategic review of our college and retirement allocation."
-      },
-      "dialogue": {
-        "greeting": "Watching my son win his first 400-meter dash in middle school track wearing my old spikes brought tears to my eyes. Now my goal is to ensure he can go to whatever college he dreams of without carrying student debt.",
-        "emotion": "Deeply Grateful & Reflective",
-        "planApproved": "This brings complete calm to our family. The 529 college account is fully funded on schedule, our term life is rock solid, and our pension plus 403(b) ensures we will retire comfortably.",
-        "planNeedsWork": "Wait, our 529 college goal allocation is falling behind the targeted timeline. We need to boost monthly contributions."
-      },
-      "lifeEvent": {
-        "title": "College 529 Acceleration",
-        "description": "Jordan accelerates college funding for their 12-year-old son while stepping into district-wide leadership.",
-        "type": "goal"
-      },
-      "financialState": {
-        "accounts": [
-          {
-            "id": "acc_jordan_checking",
-            "name": "Family Checking",
-            "type": "checking",
-            "balance": 3500,
-            "apy": 0.05
-          },
-          {
-            "id": "acc_jordan_savings",
-            "name": "Household Safety Reserve",
-            "type": "savings",
-            "balance": 18000,
-            "apy": 4
-          }
-        ],
-        "income": [
-          {
-            "id": "inc_jordan_director_pay",
-            "name": "STEM Curriculum Director Pay",
-            "amount": 6800,
-            "taxRate": 20,
-            "frequency": "monthly",
-            "routings": [
-              {
-                "destinationId": "acc_jordan_checking",
-                "amount": 100,
-                "type": "percentage"
-              }
-            ]
-          }
-        ],
-        "expenses": [
-          {
-            "id": "exp_jordan_mortgage",
-            "name": "Home Mortgage & Escrow",
-            "isFixed": true,
-            "defaultAmount": 1850
-          },
-          {
-            "id": "exp_jordan_groceries_lifestyle",
-            "name": "Family Groceries & Youth Sports",
-            "isFixed": false,
-            "minValue": 600,
-            "defaultAmount": 800
-          },
-          {
-            "id": "exp_jordan_auto",
-            "name": "Vehicle & Home Maintenance",
-            "isFixed": true,
-            "defaultAmount": 380
-          }
-        ],
-        "insurances": [
-          {
-            "id": "ins_jordan_umbrella",
-            "name": "Family Umbrella Policy",
-            "premium": 80,
-            "deductible": 500
-          }
-        ],
-        "retirements": [
-          {
-            "id": "ret_jordan_403b",
-            "name": "District 403(b) & Pension",
-            "type": "401k",
-            "balance": 95000,
-            "expectedApy": 7.5,
-            "employerMatchPercent": 5
-          }
-        ],
-        "goals": [
-          {
-            "id": "goal_jordan_son_529",
-            "name": "Son's College 529 Plan",
-            "targetAmount": 5000,
-            "targetMonths": 6
-          }
-        ]
-      },
-      "winConditions": {
-        "requireInsuranceCoverage": true,
-        "goalsFundedWithinMonths": {
-          "goalId": "goal_jordan_son_529",
-          "months": 6
-        }
-      },
-      "allowedActions": {
-        "canCreateAccounts": true,
-        "canDeleteAccounts": true,
-        "allowedAccountTypes": [
-          "checking",
-          "savings",
-          "brokerage"
-        ],
-        "allowedCardTypes": [
-          "debit",
-          "credit"
-        ]
-      }
-    }
-  ]
+	"id": "jordan_taylor",
+	"name": "Jordan",
+	"bio": "High school biology teacher and track coach, deeply committed to youth development, mastering the cyclical cash-flow realities of 10-month educator contracts and growing a family through adoption.",
+	"avatarEmoji": "🔬",
+	"portraitId": "portrait_jordan",
+	"traits": ["patient", "disciplined", "family-oriented"],
+	"stages": [
+		{
+			"stageId": "jordan_stage_1",
+			"stageTitle": "The Summer Paycheck Drought",
+			"age": 26,
+			"occupation": "High School Science Teacher & Coach",
+			"yearsSinceLastStage": 0,
+			"cooldownRounds": 2,
+			"selectionSnippet": {
+				"firstTime": "Hello. Jordan here. I teach 10th-grade biology and coach varsity track. My district pays me on a 10-month schedule from September through June. When July and August hit, my paychecks stop completely. Last summer I ended up putting $1,800 of groceries and rent on a credit card just to survive until school started.",
+				"returningHelped": "Jordan here! You helped me conquer the summer paycheck drought years ago. I'm reaching another major crossroad in my career and need your advice.",
+				"returningSkipped": "Hello, Jordan again. I reached out previously when my summer pay gap caused credit card debt. I'm still teaching and really hope you have availability to look at my budget."
+			},
+			"dialogue": {
+				"greeting": "I love teaching science and coaching our kids on the track, but people forget teachers don't get paid during summer break unless we deliberately stretch our checks. Going two months without an income deposit is terrifying.",
+				"emotion": "Disciplined but Stressed",
+				"planApproved": "This makes so much sense. Setting up an automatic 9-month sinking fund that pays out during July and August completely eliminates the need to touch credit cards in the summer.",
+				"planNeedsWork": "Wait, looking at this plan, we haven't allocated enough to bridge the two unpaid summer months. I'll run out of money by mid-July!"
+			},
+			"lifeEvent": {
+				"title": "Unpaid Summer Contract Gap",
+				"description": "Jordan faces 2 full summer months with zero district salary deposits, requiring a dedicated sinking fund reserve.",
+				"type": "goal"
+			},
+			"financialState": {
+				"accounts": [
+					{
+						"id": "acc_jordan_checking",
+						"name": "Teacher Checking",
+						"type": "checking",
+						"balance": 450,
+						"apy": 0.01
+					}
+				],
+				"cards": [
+					{
+						"id": "card_jordan_summer",
+						"name": "Summer Bridge Card",
+						"type": "credit",
+						"linkedAccountId": "acc_jordan_checking",
+						"balance": 1800,
+						"apr": 21.5,
+						"minimumPayment": 65
+					}
+				],
+				"income": [
+					{
+						"id": "inc_jordan_district",
+						"name": "District Teaching Contract",
+						"amount": 3400,
+						"taxRate": 14,
+						"frequency": "monthly",
+						"routings": [
+							{
+								"destinationId": "acc_jordan_checking",
+								"amount": 100,
+								"type": "percentage"
+							}
+						]
+					}
+				],
+				"expenses": [
+					{
+						"id": "exp_jordan_rent",
+						"name": "1-Bedroom Apartment Rent",
+						"isFixed": true,
+						"defaultAmount": 1050
+					},
+					{
+						"id": "exp_jordan_groceries",
+						"name": "Groceries & Classroom Supplies",
+						"isFixed": false,
+						"minValue": 240,
+						"defaultAmount": 360
+					},
+					{
+						"id": "exp_jordan_car",
+						"name": "Used Sedan Payment & Ins",
+						"isFixed": true,
+						"defaultAmount": 280
+					},
+					{
+						"id": "exp_jordan_utilities",
+						"name": "Utilities & Wifi",
+						"isFixed": true,
+						"defaultAmount": 140
+					}
+				],
+				"goals": [
+					{
+						"id": "goal_jordan_summer_reserve",
+						"name": "Summer Paycheck Reserve",
+						"targetAmount": 2400,
+						"targetMonths": 6
+					}
+				]
+			},
+			"winConditions": {
+				"requiredAccounts": ["savings"],
+				"goalsFundedWithinMonths": {
+					"goalId": "goal_jordan_summer_reserve",
+					"months": 6
+				},
+				"optimalDebtRouting": "avalanche"
+			},
+			"allowedActions": {
+				"canCreateAccounts": true,
+				"canDeleteAccounts": true,
+				"allowedAccountTypes": ["checking", "savings"],
+				"allowedCardTypes": ["debit", "credit"]
+			}
+		},
+		{
+			"stageId": "jordan_stage_2",
+			"stageTitle": "Tenure & Summer Track Camp",
+			"age": 31,
+			"occupation": "Tenured Teacher & Camp Director",
+			"yearsSinceLastStage": 5,
+			"cooldownRounds": 2,
+			"selectionSnippet": {
+				"firstTime": "Jordan here! At 31, I achieved tenure in our public school district, and during the summer I now direct a youth track & field clinic that brings in $1,800/mo extra. I want to build out our supplemental 403(b) retirement alongside our state pension.",
+				"returningHelped": "Jordan! The summer bridge account we established completely cured my summer anxiety! I've now received tenure, and my summer track camp brings in great seasonal cash flow. I'm ready to optimize my teacher retirement accounts.",
+				"returningSkipped": "Jordan here. Missed getting onto your schedule a few years back. I've gained tenure and started a summer youth track program. Looking for guidance on maximizing my teacher pension and savings."
+			},
+			"dialogue": {
+				"greeting": "Tenure is an incredible blessing—it gives me permanent job security. But relying strictly on a state pension without personal retirement accounts feels like leaving our future to chance.",
+				"emotion": "Optimistic & Purposeful",
+				"planApproved": "This is a masterclass in educator planning. Sinking funds are automated, my camp earnings are deployed cleanly, and my 403(b) and Roth IRA are growing in parallel with my pension.",
+				"planNeedsWork": "Wait, we left our summer camp tax withholding unallocated. Self-employment tax on youth clinics still needs to be accounted for."
+			},
+			"lifeEvent": {
+				"title": "Tenure & Summer Sports Camp Income",
+				"description": "Jordan achieved tenure salary advancement and operates a successful summer youth clinic, boosting annual cash flow.",
+				"type": "income"
+			},
+			"financialState": {
+				"accounts": [
+					{
+						"id": "acc_jordan_checking",
+						"name": "Operating Checking",
+						"type": "checking",
+						"balance": 1800,
+						"apy": 0.05
+					},
+					{
+						"id": "acc_jordan_savings",
+						"name": "Summer Bridge Buffer",
+						"type": "savings",
+						"balance": 4500,
+						"apy": 3.2
+					}
+				],
+				"income": [
+					{
+						"id": "inc_jordan_tenure_pay",
+						"name": "Tenured Teaching Salary",
+						"amount": 4200,
+						"taxRate": 16,
+						"frequency": "monthly",
+						"routings": [
+							{
+								"destinationId": "acc_jordan_checking",
+								"amount": 100,
+								"type": "percentage"
+							}
+						]
+					}
+				],
+				"expenses": [
+					{
+						"id": "exp_jordan_rent",
+						"name": "2-Bedroom Apartment",
+						"isFixed": true,
+						"defaultAmount": 1300
+					},
+					{
+						"id": "exp_jordan_groceries",
+						"name": "Groceries & Coaching Fuel",
+						"isFixed": false,
+						"minValue": 300,
+						"defaultAmount": 420
+					},
+					{
+						"id": "exp_jordan_car_transit",
+						"name": "Commuter Car & Transit",
+						"isFixed": true,
+						"defaultAmount": 260
+					},
+					{
+						"id": "exp_jordan_utilities",
+						"name": "Utilities & Wifi",
+						"isFixed": true,
+						"defaultAmount": 150
+					}
+				],
+				"retirements": [
+					{
+						"id": "ret_jordan_403b",
+						"name": "District 403(b)",
+						"type": "401k",
+						"balance": 12000,
+						"expectedApy": 7,
+						"employerMatchPercent": 3
+					}
+				],
+				"goals": [
+					{
+						"id": "goal_jordan_roth_fund",
+						"name": "Roth IRA Maximum Contribution",
+						"targetAmount": 3000,
+						"targetMonths": 6
+					}
+				]
+			},
+			"winConditions": {
+				"goalsFundedWithinMonths": {
+					"goalId": "goal_jordan_roth_fund",
+					"months": 6
+				}
+			},
+			"allowedActions": {
+				"canCreateAccounts": true,
+				"canDeleteAccounts": true,
+				"allowedAccountTypes": ["checking", "savings", "brokerage"],
+				"allowedCardTypes": ["debit", "credit"]
+			}
+		},
+		{
+			"stageId": "jordan_stage_3",
+			"stageTitle": "Growing Our Family Through Adoption",
+			"age": 36,
+			"occupation": "High School Science Dept Chair & Coach",
+			"yearsSinceLastStage": 5,
+			"cooldownRounds": 3,
+			"selectionSnippet": {
+				"firstTime": "Hello, Jordan here. My partner and I have been approved to adopt a 4-year-old boy! We are overjoyed, but the home study, agency fees, and legal placement costs total $18,000. We need to budget these milestone costs without derailing our monthly living.",
+				"returningHelped": "Jordan! We have the most joyful news: our adoption application went through, and we're welcoming our son next spring! The financial foundation you helped us build is why we're eligible. Now we need to fund the legal placement expenses.",
+				"returningSkipped": "Jordan here again. We weren't able to connect before, but we're in the final stages of adopting a child. We need an advisor's sharp plan to navigate agency and legal expenses."
+			},
+			"dialogue": {
+				"greeting": "Walking into his prospective nursery with painted dinosaur walls... I can't even describe the feeling. Every dollar we save now is directly paving the way for our little boy to have a loving, permanent home.",
+				"emotion": "Overjoyed & Tender",
+				"planApproved": "You don't know what this means to us. Knowing the adoption agency milestones are completely funded while our emergency buffer stays intact lets us focus 100% on parenting our new son.",
+				"planNeedsWork": "Wait, if we don't route enough to the legal adoption fund, we could face delays with court certification."
+			},
+			"lifeEvent": {
+				"title": "Adoption Agency & Legal Placement",
+				"description": "Jordan and partner are completing the adoption of their son, requiring an $18,000 legal, travel, and agency placement fund.",
+				"type": "goal"
+			},
+			"financialState": {
+				"accounts": [
+					{
+						"id": "acc_jordan_checking",
+						"name": "Family Checking",
+						"type": "checking",
+						"balance": 2800,
+						"apy": 0.05
+					},
+					{
+						"id": "acc_jordan_savings",
+						"name": "Adoption & Family Fund",
+						"type": "savings",
+						"balance": 12000,
+						"apy": 3.8
+					}
+				],
+				"income": [
+					{
+						"id": "inc_jordan_chair_salary",
+						"name": "Dept Chair & Coaching Stipend",
+						"amount": 5400,
+						"taxRate": 18,
+						"frequency": "monthly",
+						"routings": [
+							{
+								"destinationId": "acc_jordan_checking",
+								"amount": 100,
+								"type": "percentage"
+							}
+						]
+					}
+				],
+				"expenses": [
+					{
+						"id": "exp_jordan_home_rent",
+						"name": "Family Home Rent",
+						"isFixed": true,
+						"defaultAmount": 1650
+					},
+					{
+						"id": "exp_jordan_groceries_kid",
+						"name": "Family Groceries & Supplies",
+						"isFixed": false,
+						"minValue": 450,
+						"defaultAmount": 620
+					},
+					{
+						"id": "exp_jordan_family_transit",
+						"name": "Family Vehicle & Ins",
+						"isFixed": true,
+						"defaultAmount": 340
+					},
+					{
+						"id": "exp_jordan_utilities",
+						"name": "Home Utilities",
+						"isFixed": true,
+						"defaultAmount": 200
+					}
+				],
+				"insurances": [
+					{
+						"id": "ins_jordan_life",
+						"name": "Term Life Insurance",
+						"premium": 50,
+						"deductible": 0
+					}
+				],
+				"retirements": [
+					{
+						"id": "ret_jordan_403b",
+						"name": "District 403(b)",
+						"type": "401k",
+						"balance": 38000,
+						"expectedApy": 7.5,
+						"employerMatchPercent": 4
+					}
+				],
+				"goals": [
+					{
+						"id": "goal_jordan_adoption_milestone",
+						"name": "Final Adoption Placement Fund",
+						"targetAmount": 4000,
+						"targetMonths": 6
+					}
+				]
+			},
+			"winConditions": {
+				"requireInsuranceCoverage": true,
+				"goalsFundedWithinMonths": {
+					"goalId": "goal_jordan_adoption_milestone",
+					"months": 6
+				}
+			},
+			"allowedActions": {
+				"canCreateAccounts": true,
+				"canDeleteAccounts": true,
+				"allowedAccountTypes": ["checking", "savings", "brokerage"],
+				"allowedCardTypes": ["debit", "credit"]
+			}
+		},
+		{
+			"stageId": "jordan_stage_4",
+			"stageTitle": "Sabbatical, Master's Degree & College Funding",
+			"age": 43,
+			"occupation": "District STEM Curriculum Director",
+			"yearsSinceLastStage": 7,
+			"cooldownRounds": 3,
+			"selectionSnippet": {
+				"firstTime": "Hello! Jordan here at 43. Our son is now in middle school, and I've been promoted to District STEM Curriculum Director. I'm balancing funding his college 529 account with finalizing our teacher retirement pension options.",
+				"returningHelped": "Jordan! From coaching track on summer break to seeing our adopted son thriving in 7th grade—you have been a pillar of our family's security. Now I need to finalize our college 529 strategy and long-term pension planning.",
+				"returningSkipped": "Jordan here. We've reached the stage where our son is preparing for high school and college. Looking for your strategic review of our college and retirement allocation."
+			},
+			"dialogue": {
+				"greeting": "Watching my son win his first 400-meter dash in middle school track wearing my old spikes brought tears to my eyes. Now my goal is to ensure he can go to whatever college he dreams of without carrying student debt.",
+				"emotion": "Deeply Grateful & Reflective",
+				"planApproved": "This brings complete calm to our family. The 529 college account is fully funded on schedule, our term life is rock solid, and our pension plus 403(b) ensures we will retire comfortably.",
+				"planNeedsWork": "Wait, our 529 college goal allocation is falling behind the targeted timeline. We need to boost monthly contributions."
+			},
+			"lifeEvent": {
+				"title": "College 529 Acceleration",
+				"description": "Jordan accelerates college funding for their 12-year-old son while stepping into district-wide leadership.",
+				"type": "goal"
+			},
+			"financialState": {
+				"accounts": [
+					{
+						"id": "acc_jordan_checking",
+						"name": "Family Checking",
+						"type": "checking",
+						"balance": 3500,
+						"apy": 0.05
+					},
+					{
+						"id": "acc_jordan_savings",
+						"name": "Household Safety Reserve",
+						"type": "savings",
+						"balance": 18000,
+						"apy": 4
+					}
+				],
+				"income": [
+					{
+						"id": "inc_jordan_director_pay",
+						"name": "STEM Curriculum Director Pay",
+						"amount": 6800,
+						"taxRate": 20,
+						"frequency": "monthly",
+						"routings": [
+							{
+								"destinationId": "acc_jordan_checking",
+								"amount": 100,
+								"type": "percentage"
+							}
+						]
+					}
+				],
+				"expenses": [
+					{
+						"id": "exp_jordan_mortgage",
+						"name": "Home Mortgage & Escrow",
+						"isFixed": true,
+						"defaultAmount": 1850
+					},
+					{
+						"id": "exp_jordan_groceries_lifestyle",
+						"name": "Family Groceries & Youth Sports",
+						"isFixed": false,
+						"minValue": 600,
+						"defaultAmount": 800
+					},
+					{
+						"id": "exp_jordan_auto",
+						"name": "Vehicle & Home Maintenance",
+						"isFixed": true,
+						"defaultAmount": 380
+					}
+				],
+				"insurances": [
+					{
+						"id": "ins_jordan_umbrella",
+						"name": "Family Umbrella Policy",
+						"premium": 80,
+						"deductible": 500
+					}
+				],
+				"retirements": [
+					{
+						"id": "ret_jordan_403b",
+						"name": "District 403(b) & Pension",
+						"type": "401k",
+						"balance": 95000,
+						"expectedApy": 7.5,
+						"employerMatchPercent": 5
+					}
+				],
+				"goals": [
+					{
+						"id": "goal_jordan_son_529",
+						"name": "Son's College 529 Plan",
+						"targetAmount": 5000,
+						"targetMonths": 6
+					}
+				]
+			},
+			"winConditions": {
+				"requireInsuranceCoverage": true,
+				"goalsFundedWithinMonths": {
+					"goalId": "goal_jordan_son_529",
+					"months": 6
+				}
+			},
+			"allowedActions": {
+				"canCreateAccounts": true,
+				"canDeleteAccounts": true,
+				"allowedAccountTypes": ["checking", "savings", "brokerage"],
+				"allowedCardTypes": ["debit", "credit"]
+			}
+		}
+	]
 }
