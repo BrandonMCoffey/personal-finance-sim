@@ -55,7 +55,7 @@ export function BaseNode({
 	};
 
 	const snappedStyle = isSnapped ? "rounded-t-none shadow-none z-0 border-t-0" : "rounded-md shadow-md z-10";
-	const flashStyle = isFlashing ? "animate-pulse ring-4 ring-amber-400 border-amber-500 shadow-xl shadow-amber-300" : "";
+	const flashStyle = isFlashing ? "animate-pulse ring-4 ring-amber-400 border-amber-500" : "";
 	const containerClass = className || "w-[180px] h-[60px]";
 
 	return (
