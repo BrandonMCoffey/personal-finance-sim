@@ -92,7 +92,7 @@ export function ExpenseNode({ data }: ExpenseNodeProps) {
 	return (
 		<BaseNode
 			title={data.name}
-			subtitle={data.isFixed ? "FIXED" : data.isLocked ? "LOCKED" : undefined}
+			subtitle={data.isFixed ? "FIXED" : undefined}
 			bgColor={data.isActiveThisMonth ? "bg-white" : "bg-gray-50"}
 			borderColor={`border-[rgba(${currentRgb},0.5)]`}
 			titleColor={`text-[rgb(${currentRgb})]`}
@@ -112,7 +112,7 @@ export function ExpenseNode({ data }: ExpenseNodeProps) {
 						min="0"
 						max={sliderMax}
 						value={incomingRule.amount}
-						disabled={isLocked || data.isFixed}
+						disabled={data.isFixed}
 						onChange={(e) => {
 							if (data.isFixed) return;
 							if (isIncomeRule) updateIncomeRoute(sourceId, data.id, Number(e.target.value), "fixed");
@@ -122,7 +122,7 @@ export function ExpenseNode({ data }: ExpenseNodeProps) {
 							background: `linear-gradient(to right, rgb(${currentRgb}) ${fillPercentage}%, rgba(0,0,0,0.1) ${fillPercentage}%)`
 						}}
 						className={`nodrag nopan expense-slider w-full h-1.5 rounded-full appearance-none outline-none ${
-							isLocked || data.isFixed ? "cursor-default opacity-90" : "cursor-pointer"
+							data.isFixed ? "cursor-default opacity-90" : "cursor-pointer"
 						}`}
 					/>
 				) : (

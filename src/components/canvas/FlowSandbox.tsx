@@ -156,6 +156,7 @@ function FlowSandboxInner() {
 
 		const snappedMap: Record<string, { parentId: string; stackIndex: number; zIndex: number }> = {};
 		const childSortRank = (id: string) => {
+			if (cards.some((c) => c.id === id)) return 400;
 			if (expenses.find((e) => e.id === id && e.isFixed)) return 300;
 			if (expenses.find((e) => e.id === id)) return 200;
 			if (goals.find((g) => g.id === id)) return 100;
@@ -183,23 +184,62 @@ function FlowSandboxInner() {
 			}
 		});
 
-		const accountHeight = 95;
-		const childHeight = 60;
+		// Calculate exact per-node rendered heights to prevent overlaps
+		const getNodeHeight = (nodeId: string, isSnapped: boolean = false): number => {
+			const card = cards.find((c) => c.id === nodeId);
+			if (card) return isSnapped ? 78 : 95;
+
+			const exp = expenses.find((e) => e.id === nodeId);
+			if (exp) return 74;
+
+			const goal = goals.find((g) => g.id === nodeId);
+			if (goal) return 66;
+
+			const acc = accounts.find((a) => a.id === nodeId);
+			if (acc) {
+				const isDepositedRule = transferRules.find((r) => r.sourceId === acc.id && accounts.some((a) => a.id === r.destinationId));
+				return forecastMonths > 1 && !isDepositedRule ? 95 : 85;
+			}
+
+			return 95;
+		};
+
+		const snappedYMap: Record<string, number> = {};
+		const parentStackHeights: Record<string, number> = {};
+
+		// Sort each parent's snapped children strictly by hierarchy rank (cards -> fixed expenses -> variable expenses -> goals)
+		Object.keys(childrenMap).forEach((pId) => {
+			childrenMap[pId].sort((a, b) => childSortRank(b) - childSortRank(a));
+		});
+
+		// Accumulate accurate Y offsets for each stacked child node
+		Object.entries(childrenMap).forEach(([pId, childIds]) => {
+			const parentHeight = getNodeHeight(pId, Boolean(snappedMap[pId]));
+			let currentY = parentHeight;
+
+			childIds.forEach((childId) => {
+				snappedYMap[childId] = currentY;
+				const h = getNodeHeight(childId, true);
+				currentY += h;
+			});
+
+			parentStackHeights[pId] = currentY;
+		});
 
 		let currentMainY = 50;
 		const mainNodesY: Record<string, number> = {};
 
 		[...accounts, ...loans, ...retirements, ...insurances].forEach((item) => {
 			mainNodesY[item.id] = currentMainY;
-			const childCount = childrenMap[item.id]?.length || 0;
-			currentMainY += accountHeight + childCount * childHeight + 30; // Reduced bottom padding
+			const stackHeight = parentStackHeights[item.id] || getNodeHeight(item.id);
+			currentMainY += stackHeight + 35; // clean 35px spacing between main stacks
 		});
 
 		cards.forEach((card) => {
 			if (!snappedMap[card.id]) {
 				mainNodesY[card.id] = currentMainY;
-				const childCount = childrenMap[card.id]?.length || 0;
-				currentMainY += accountHeight + childCount * childHeight + 30;
+				const stackHeight = parentStackHeights[card.id] || getNodeHeight(card.id);
+				currentMainY += stackHeight + 35;
 			}
 		});
 
@@ -319,7 +359,7 @@ function FlowSandboxInner() {
 					type: "card",
 					parentId: snap?.parentId,
 					zIndex: snap?.zIndex,
-					position: snap ? { x: 0, y: accountHeight + snap.stackIndex * childHeight } : { x: 350, y: mainNodesY[card.id] },
+					position: snap ? { x: 0, y: snappedYMap[card.id] ?? 95 } : { x: 350, y: mainNodesY[card.id] },
 					data: {
 						id: card.id,
 						name: card.name,
@@ -369,7 +409,7 @@ function FlowSandboxInner() {
 					type: "goal",
 					parentId: snap?.parentId,
 					zIndex: snap?.zIndex,
-					position: snap ? { x: 0, y: accountHeight + snap.stackIndex * childHeight } : { x: 650, y: 50 + i * 100 },
+					position: snap ? { x: 0, y: snappedYMap[goal.id] ?? 95 } : { x: 650, y: 50 + i * 100 },
 					data: {
 						id: goal.id,
 						name: goal.name,
@@ -391,7 +431,7 @@ function FlowSandboxInner() {
 					parentId: snap?.parentId,
 					zIndex: snap?.zIndex,
 					draggable: !isLockedExpense(exp.id, !!snap),
-					position: snap ? { x: 0, y: accountHeight + snap.stackIndex * childHeight } : { x: 650, y: 50 + (goals.length + i) * 100 },
+					position: snap ? { x: 0, y: snappedYMap[exp.id] ?? 95 } : { x: 650, y: 50 + (goals.length + i) * 100 },
 					data: {
 						id: exp.id,
 						name: exp.name,
