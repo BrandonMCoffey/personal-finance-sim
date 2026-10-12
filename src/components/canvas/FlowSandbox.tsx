@@ -570,10 +570,15 @@ function FlowSandboxInner() {
 				}
 				if (destCard && destCard.type === "credit") {
 					const method = rule.paymentMethod || "statement";
+					const m1Payment = forecasts[0]?.debtPayments?.[destCard.id] || 0;
+					const formattedAmt = m1Payment.toLocaleString(undefined, { maximumFractionDigits: 2 });
+
 					if (method === "statement") {
-						edgeLabel = rule.isAuto ? "Auto (Statement)" : "Statement";
+						edgeLabel = m1Payment > 0 ? `Statement ($${formattedAmt})` : "Statement";
 					} else if (method === "minimum") {
-						edgeLabel = rule.isAuto ? "Auto (Min)" : "Minimum";
+						edgeLabel = m1Payment > 0 ? `Minimum ($${formattedAmt})` : "Minimum";
+					} else if (method === "surplus") {
+						edgeLabel = m1Payment > 0 ? `Surplus ($${formattedAmt})` : "Surplus";
 					} else {
 						edgeLabel = rule.type === "percentage" ? `${rule.amount}%` : `$${rule.amount}`;
 					}
