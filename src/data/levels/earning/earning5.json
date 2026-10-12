@@ -1,0 +1,72 @@
+{
+  "title": "Multiple Incomes",
+  "desc": "Manage cash flow from a main job and a side-hustle.",
+  "to-teach": "Combine multiple income sources into checking.",
+  "subCategoryIndex": 1,
+  "forecastMonths": 3,
+  "hints": [
+    "You have two separate income streams: Primary Salary and Freelance.",
+    "Route both income streams to Main Checking so all bills are covered."
+  ],
+  "client": {
+    "name": "Riley",
+    "description": "Riley works full-time and does freelance design on weekends, but only routed one income stream.",
+    "prompt": "My bills total $2,500, but only $1,800 from my day job is flowing to my checking account. My freelance money is just sitting loose!",
+    "portraitId": "riley_01"
+  },
+  "startingState": {
+    "accounts": [
+      {
+        "id": "acc_01",
+        "name": "Main Checking",
+        "type": "checking",
+        "balance": 100,
+        "apy": 0
+      }
+    ],
+    "income": [
+      {
+        "id": "inc_01",
+        "name": "Day Job",
+        "amount": 1800,
+        "taxRate": 0,
+        "frequency": "monthly",
+        "routings": [
+          {
+            "destinationId": "acc_01",
+            "amount": 100,
+            "type": "percentage"
+          }
+        ]
+      },
+      {
+        "id": "inc_02",
+        "name": "Freelance",
+        "amount": 1000,
+        "taxRate": 0,
+        "frequency": "monthly",
+        "routings": []
+      }
+    ],
+    "expenses": [
+      {
+        "id": "exp_01",
+        "name": "Rent & Utilities",
+        "isFixed": true,
+        "defaultAmount": 2500
+      }
+    ],
+    "transferRules": []
+  },
+  "allowedActions": {
+    "canCreateAccounts": false,
+    "canDeleteAccounts": false,
+    "allowedAccountTypes": [],
+    "allowedCardTypes": []
+  },
+  "winConditions": {
+    "requiredAccounts": [
+      "checking"
+    ]
+  }
+}

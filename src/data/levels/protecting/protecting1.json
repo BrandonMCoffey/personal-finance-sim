@@ -1,0 +1,99 @@
+{
+  "title": "Health Crisis",
+  "desc": "Survive a sudden medical expense without draining all your checking.",
+  "to-teach": "Use savings to cover medical emergencies.",
+  "subCategoryIndex": 0,
+  "forecastMonths": 6,
+  "hints": [
+    "An out-of-pocket medical copay/deductible of $800 strikes in Month 3.",
+    "Route $300 monthly from Checking to Emergency Savings so the reserve covers the bill when it hits."
+  ],
+  "client": {
+    "name": "Sarah",
+    "description": "Sarah has health insurance, but her policy requires meeting an out-of-pocket deductible for specialized treatment.",
+    "prompt": "I have an upcoming minor medical procedure with an $800 deductible in Month 3. How do I build my savings buffer to absorb it?",
+    "portraitId": "sarah_01"
+  },
+  "startingState": {
+    "accounts": [
+      {
+        "id": "acc_01",
+        "name": "Main Checking",
+        "type": "checking",
+        "balance": 500,
+        "apy": 0
+      },
+      {
+        "id": "acc_02",
+        "name": "Health Reserve Savings",
+        "type": "savings",
+        "balance": 200,
+        "apy": 4
+      }
+    ],
+    "income": [
+      {
+        "id": "inc_01",
+        "name": "Net Wages",
+        "amount": 2800,
+        "taxRate": 0,
+        "frequency": "monthly",
+        "routings": [
+          {
+            "destinationId": "acc_01",
+            "amount": 100,
+            "type": "percentage"
+          }
+        ]
+      }
+    ],
+    "expenses": [
+      {
+        "id": "exp_01",
+        "name": "Monthly Living",
+        "isFixed": true,
+        "defaultAmount": 2100
+      },
+      {
+        "id": "exp_02",
+        "name": "Medical Out-of-Pocket",
+        "isFixed": true,
+        "occurrenceMonth": 3,
+        "defaultAmount": 800
+      }
+    ],
+    "goals": [
+      {
+        "id": "goal_01",
+        "name": "Deductible Fund",
+        "targetAmount": 800,
+        "targetMonths": 3
+      }
+    ],
+    "transferRules": [
+      {
+        "id": "rule_01",
+        "sourceId": "acc_01",
+        "destinationId": "exp_01",
+        "amount": 2100,
+        "type": "fixed"
+      }
+    ]
+  },
+  "allowedActions": {
+    "canCreateAccounts": false,
+    "canDeleteAccounts": false,
+    "allowedAccountTypes": [],
+    "allowedCardTypes": []
+  },
+  "winConditions": {
+    "requiredAccounts": [
+      "checking",
+      "savings"
+    ],
+    "goalsFundedWithinMonths": {
+      "goalId": "goal_01",
+      "months": 3
+    }
+  }
+}

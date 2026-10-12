@@ -1,0 +1,90 @@
+{
+  "title": "Avalanche Basics",
+  "desc": "Pay the minimum on everything, attack the highest APR first.",
+  "to-teach": "Target the highest interest debt first.",
+  "subCategoryIndex": 2,
+  "forecastMonths": 6,
+  "hints": [
+    "You have a Store Card at 15% APR and a Visa at 26% APR.",
+    "Pay the minimum on the Store Card and throw all remaining surplus at the Visa."
+  ],
+  "client": {
+    "name": "Sarah",
+    "description": "Sarah has $1,200 of monthly surplus to attack two credit cards and wants to minimize total interest paid.",
+    "prompt": "I have two cards with balances. How do I route my extra money to pay the least interest possible?",
+    "portraitId": "sarah_01"
+  },
+  "startingState": {
+    "accounts": [
+      {
+        "id": "acc_01",
+        "name": "Checking",
+        "type": "checking",
+        "balance": 500,
+        "apy": 0
+      }
+    ],
+    "cards": [
+      {
+        "id": "card_01",
+        "name": "Retail Store Card",
+        "type": "credit",
+        "linkedAccountId": "",
+        "balance": 800,
+        "limit": 2000,
+        "apr": 15
+      },
+      {
+        "id": "card_02",
+        "name": "High-Interest Visa",
+        "type": "credit",
+        "linkedAccountId": "",
+        "balance": 2500,
+        "limit": 4000,
+        "apr": 25.99
+      }
+    ],
+    "income": [
+      {
+        "id": "inc_01",
+        "name": "Monthly Salary",
+        "amount": 3200,
+        "taxRate": 0,
+        "frequency": "monthly",
+        "routings": [
+          {
+            "destinationId": "acc_01",
+            "amount": 100,
+            "type": "percentage"
+          }
+        ]
+      }
+    ],
+    "expenses": [
+      {
+        "id": "exp_01",
+        "name": "Living Expenses",
+        "isFixed": true,
+        "defaultAmount": 2000
+      }
+    ],
+    "transferRules": [
+      {
+        "id": "rule_01",
+        "sourceId": "acc_01",
+        "destinationId": "exp_01",
+        "amount": 2000,
+        "type": "fixed"
+      }
+    ]
+  },
+  "allowedActions": {
+    "canCreateAccounts": false,
+    "canDeleteAccounts": false,
+    "allowedAccountTypes": [],
+    "allowedCardTypes": []
+  },
+  "winConditions": {
+    "optimalDebtRouting": "avalanche"
+  }
+}

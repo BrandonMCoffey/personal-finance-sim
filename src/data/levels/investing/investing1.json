@@ -1,0 +1,81 @@
+{
+  "title": "Free Money",
+  "desc": "Contribute enough to your 401k to get the employer match.",
+  "to-teach": "Maximize the employer retirement match percentage.",
+  "subCategoryIndex": 0,
+  "forecastMonths": 6,
+  "hints": [
+    "Your company provides a 1-to-1 match up to 5% of your gross pay.",
+    "Route 5% ($250) directly from Salary to the 401k to secure the full match."
+  ],
+  "client": {
+    "name": "Marcus",
+    "description": "Marcus has a corporate job with a 5% 401k match but is sending 100% of his pay to checking.",
+    "prompt": "My HR manager said our company gives a 5% 401k match. How do I route my paycheck to capture all of it?",
+    "portraitId": "marcus_01"
+  },
+  "startingState": {
+    "accounts": [
+      {
+        "id": "acc_01",
+        "name": "Checking",
+        "type": "checking",
+        "balance": 1000,
+        "apy": 0
+      }
+    ],
+    "retirements": [
+      {
+        "id": "ret_01",
+        "name": "Company 401k",
+        "type": "401k",
+        "balance": 0,
+        "expectedApy": 7,
+        "employerMatchPercent": 5
+      }
+    ],
+    "income": [
+      {
+        "id": "inc_01",
+        "name": "Corporate Salary",
+        "amount": 5000,
+        "taxRate": 20,
+        "frequency": "monthly",
+        "routings": [
+          {
+            "destinationId": "acc_01",
+            "amount": 100,
+            "type": "percentage"
+          }
+        ]
+      }
+    ],
+    "expenses": [
+      {
+        "id": "exp_01",
+        "name": "Living Expenses",
+        "isFixed": true,
+        "defaultAmount": 3200
+      }
+    ],
+    "transferRules": [
+      {
+        "id": "rule_01",
+        "sourceId": "acc_01",
+        "destinationId": "exp_01",
+        "amount": 3200,
+        "type": "fixed"
+      }
+    ]
+  },
+  "allowedActions": {
+    "canCreateAccounts": false,
+    "canDeleteAccounts": false,
+    "allowedAccountTypes": [],
+    "allowedCardTypes": []
+  },
+  "winConditions": {
+    "requiredAccounts": [],
+    "requireRetirementMatch": true
+  }
+}

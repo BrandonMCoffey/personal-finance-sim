@@ -1,0 +1,520 @@
+{
+  "id": "hannah_schmidt",
+  "name": "Hannah Schmidt",
+  "bio": "Starting over at 45 following a difficult divorce after 22 years of marriage, rebuilding personal credit and autonomy from scratch, and executing a disciplined retirement catch-up strategy.",
+  "avatarEmoji": "🕊️",
+  "portraitId": "portrait_hannah",
+  "traits": [
+    "cautious",
+    "resilient",
+    "future-focused"
+  ],
+  "stages": [
+    {
+      "stageId": "hannah_stage_1",
+      "stageTitle": "Starting From Scratch at 45",
+      "age": 45,
+      "occupation": "Office & Logistics Administrator",
+      "yearsSinceLastStage": 0,
+      "cooldownRounds": 2,
+      "selectionSnippet": {
+        "firstTime": "Hello. Hannah Schmidt here. After 22 years of marriage, my divorce was finalized last month. I haven't worked full-time outside the home in almost two decades. I took an office administration job at $3,200/mo, rented a modest 1-bedroom apartment, and discovered that because everything was in my ex-husband's name, I have almost zero credit score history of my own. I'm terrified of ending up broke.",
+        "returningHelped": "Hannah Schmidt here! You gave me courage and stability when I felt completely broken at 45. I've rebuilt my independent life and need your advice for my next chapter.",
+        "returningSkipped": "Hello, Hannah Schmidt again. I reached out right after my divorce. It was a terrifying transition, but I'm standing on my own two feet now. I really hope you have room to look at my finances this round."
+      },
+      "dialogue": {
+        "greeting": "Sitting on an air mattress in an empty apartment at 45 years old, looking at a checking account with only my name on it for the first time in my adult life... I was paralyzed. I don't need luxury; I just need to know I will be safe when I'm older.",
+        "emotion": "Vulnerable & Resolute",
+        "planApproved": "You brought tears to my eyes. Having my own secured credit card to rebuild my credit score, and knowing every dollar of rent and groceries is accounted for, gives me my dignity back.",
+        "planNeedsWork": "Wait, our emergency buffer isn't funded properly. Living alone without a spouse means an unexpected car or medical bill could wipe out my checking account."
+      },
+      "lifeEvent": {
+        "title": "Post-Divorce Household Transition",
+        "description": "Hannah established an independent household, renting a 1-bedroom apartment and opening individual accounts.",
+        "type": "general"
+      },
+      "financialState": {
+        "accounts": [
+          {
+            "id": "acc_hannah_checking",
+            "name": "Hannah Independent Checking",
+            "type": "checking",
+            "balance": 1100,
+            "apy": 0.01
+          }
+        ],
+        "cards": [
+          {
+            "id": "card_hannah_secured",
+            "name": "Credit Builder Secured Card",
+            "type": "credit",
+            "linkedAccountId": "acc_hannah_checking",
+            "balance": 350,
+            "apr": 18,
+            "minimumPayment": 35
+          }
+        ],
+        "income": [
+          {
+            "id": "inc_hannah_admin_pay",
+            "name": "Office Administrator Pay",
+            "amount": 3200,
+            "taxRate": 13,
+            "frequency": "monthly",
+            "routings": [
+              {
+                "destinationId": "acc_hannah_checking",
+                "amount": 100,
+                "type": "percentage"
+              }
+            ]
+          }
+        ],
+        "expenses": [
+          {
+            "id": "exp_hannah_rent",
+            "name": "1-Bedroom Apartment Rent",
+            "isFixed": true,
+            "defaultAmount": 1150
+          },
+          {
+            "id": "exp_hannah_groceries",
+            "name": "Groceries & Household Goods",
+            "isFixed": false,
+            "minValue": 240,
+            "defaultAmount": 340
+          },
+          {
+            "id": "exp_hannah_commuter_car",
+            "name": "Used Car Note & Insurance",
+            "isFixed": true,
+            "defaultAmount": 310
+          },
+          {
+            "id": "exp_hannah_utilities",
+            "name": "Electric & Internet",
+            "isFixed": true,
+            "defaultAmount": 130
+          }
+        ],
+        "goals": [
+          {
+            "id": "goal_hannah_independence_fund",
+            "name": "Independence Safety Fund",
+            "targetAmount": 1500,
+            "targetMonths": 5
+          }
+        ]
+      },
+      "winConditions": {
+        "requiredAccounts": [
+          "savings"
+        ],
+        "goalsFundedWithinMonths": {
+          "goalId": "goal_hannah_independence_fund",
+          "months": 5
+        },
+        "optimalDebtRouting": "avalanche"
+      },
+      "allowedActions": {
+        "canCreateAccounts": true,
+        "canDeleteAccounts": true,
+        "allowedAccountTypes": [
+          "checking",
+          "savings"
+        ],
+        "allowedCardTypes": [
+          "debit",
+          "credit"
+        ]
+      }
+    },
+    {
+      "stageId": "hannah_stage_2",
+      "stageTitle": "Retirement Catch-Up Alarm",
+      "age": 49,
+      "occupation": "Corporate Operations Coordinator",
+      "yearsSinceLastStage": 4,
+      "cooldownRounds": 2,
+      "selectionSnippet": {
+        "firstTime": "Hannah Schmidt here. I'm 49. I've advanced to Operations Coordinator making $4,600 a month, and my credit score is back in the 700s. But looking at the calendar, 65 is only 16 years away! I feel a wave of panic about catching up on retirement contributions after years out of the workforce.",
+        "returningHelped": "Hannah Schmidt! Rebuilding my credit and safety fund with you gave me back my independence. I got promoted to Operations Coordinator, but the retirement countdown is loud in my head. I need to maximize 401(k) catch-up contributions immediately.",
+        "returningSkipped": "Hannah Schmidt here again. I couldn't get on your schedule a few years back. I've stabilized my income, but I'm terrified about my small retirement balance as I approach 50."
+      },
+      "dialogue": {
+        "greeting": "When you're 25, retirement feels like a myth. When you're knocking on the door of 50, every birthday candle reminds you that compounding interest takes time you can't afford to waste.",
+        "emotion": "Urgent & Focused",
+        "planApproved": "This gives me profound relief. Maximizing my employer 401(k) match and starting catch-up Roth IRA contributions shows me a real, mathematical path to retiring with dignity.",
+        "planNeedsWork": "Wait, our 401(k) match or catch-up savings fell behind in the budget. At 49, catching up on retirement is non-negotiable."
+      },
+      "lifeEvent": {
+        "title": "Corporate Promotion & 401(k) Match",
+        "description": "Hannah was promoted to Operations Coordinator, unlocking a 5% 401(k) company match and higher earnings.",
+        "type": "income"
+      },
+      "financialState": {
+        "accounts": [
+          {
+            "id": "acc_hannah_checking",
+            "name": "Operating Checking",
+            "type": "checking",
+            "balance": 2200,
+            "apy": 0.05
+          },
+          {
+            "id": "acc_hannah_savings",
+            "name": "High-Yield Independence Fund",
+            "type": "savings",
+            "balance": 8500,
+            "apy": 3.8
+          }
+        ],
+        "income": [
+          {
+            "id": "inc_hannah_coord_salary",
+            "name": "Operations Coordinator Salary",
+            "amount": 4600,
+            "taxRate": 16,
+            "frequency": "monthly",
+            "routings": [
+              {
+                "destinationId": "acc_hannah_checking",
+                "amount": 100,
+                "type": "percentage"
+              }
+            ]
+          }
+        ],
+        "expenses": [
+          {
+            "id": "exp_hannah_rent",
+            "name": "Apartment Rent",
+            "isFixed": true,
+            "defaultAmount": 1300
+          },
+          {
+            "id": "exp_hannah_groceries",
+            "name": "Groceries & Personal Care",
+            "isFixed": false,
+            "minValue": 280,
+            "defaultAmount": 380
+          },
+          {
+            "id": "exp_hannah_car",
+            "name": "Car Payment & Ins",
+            "isFixed": true,
+            "defaultAmount": 290
+          },
+          {
+            "id": "exp_hannah_utilities",
+            "name": "Utilities & Wifi",
+            "isFixed": true,
+            "defaultAmount": 140
+          }
+        ],
+        "insurances": [
+          {
+            "id": "ins_hannah_health",
+            "name": "Corporate Comprehensive Health",
+            "premium": 150,
+            "deductible": 1000
+          }
+        ],
+        "retirements": [
+          {
+            "id": "ret_hannah_401k",
+            "name": "Company 401(k)",
+            "type": "401k",
+            "balance": 18000,
+            "expectedApy": 7,
+            "employerMatchPercent": 5
+          }
+        ],
+        "goals": [
+          {
+            "id": "goal_hannah_catchup_fund",
+            "name": "Roth IRA Catch-Up Fund",
+            "targetAmount": 3500,
+            "targetMonths": 6
+          }
+        ]
+      },
+      "winConditions": {
+        "requireInsuranceCoverage": true,
+        "goalsFundedWithinMonths": {
+          "goalId": "goal_hannah_catchup_fund",
+          "months": 6
+        }
+      },
+      "allowedActions": {
+        "canCreateAccounts": true,
+        "canDeleteAccounts": true,
+        "allowedAccountTypes": [
+          "checking",
+          "savings",
+          "brokerage"
+        ],
+        "allowedCardTypes": [
+          "debit",
+          "credit"
+        ]
+      }
+    },
+    {
+      "stageId": "hannah_stage_3",
+      "stageTitle": "Senior Operations Manager & Downsizing",
+      "age": 55,
+      "occupation": "Senior Operations Manager",
+      "yearsSinceLastStage": 6,
+      "cooldownRounds": 3,
+      "selectionSnippet": {
+        "firstTime": "Hannah Schmidt here at 55. I've risen to Senior Operations Manager earning $5,800/mo. My car is 100% paid off, and I've downsized into a quiet, energy-efficient garden apartment. I'm aggressive about funneling 30% of my income into retirement and conservative index funds.",
+        "returningHelped": "Hannah Schmidt! Ten years ago I walked into your office trembling with fear after my divorce. Today, I'm Senior Operations Manager, debt-free, and saving aggressively! At 55, I want to optimize my catch-up contributions and long-term care planning.",
+        "returningSkipped": "Hannah Schmidt here. Over the years I climbed the operational management ladder. At 55, I want expert verification that my accelerated catch-up strategy is mathematically on track for retirement at 65."
+      },
+      "dialogue": {
+        "greeting": "Looking at my 401(k) balance crossing six figures made me smile. People told me that starting over at 45 meant I'd never catch up. Discipline and clear financial boundaries proved them wrong.",
+        "emotion": "Proud & Serene",
+        "planApproved": "This plan is pure gold. My 401(k) and Roth IRA are absorbing the maximum allowable IRS catch-up limit, and my cash reserve is completely insulated.",
+        "planNeedsWork": "Wait, our retirement catch-up allocations fell short. With 10 years until retirement, every monthly contribution is critical."
+      },
+      "lifeEvent": {
+        "title": "Debt-Free Vehicle Milestone",
+        "description": "Hannah paid off her vehicle completely, freeing up $290/mo to funnel into catch-up retirement accounts.",
+        "type": "general"
+      },
+      "financialState": {
+        "accounts": [
+          {
+            "id": "acc_hannah_checking",
+            "name": "Operating Checking",
+            "type": "checking",
+            "balance": 2800,
+            "apy": 0.05
+          },
+          {
+            "id": "acc_hannah_savings",
+            "name": "High-Yield Independence Reserve",
+            "type": "savings",
+            "balance": 18000,
+            "apy": 4
+          }
+        ],
+        "income": [
+          {
+            "id": "inc_hannah_senior_salary",
+            "name": "Senior Operations Salary",
+            "amount": 5800,
+            "taxRate": 18,
+            "frequency": "monthly",
+            "routings": [
+              {
+                "destinationId": "acc_hannah_checking",
+                "amount": 100,
+                "type": "percentage"
+              }
+            ]
+          }
+        ],
+        "expenses": [
+          {
+            "id": "exp_hannah_downsized_rent",
+            "name": "Garden Apartment Rent",
+            "isFixed": true,
+            "defaultAmount": 1250
+          },
+          {
+            "id": "exp_hannah_groceries_wellness",
+            "name": "Groceries, Organic Food & Health",
+            "isFixed": false,
+            "minValue": 320,
+            "defaultAmount": 450
+          },
+          {
+            "id": "exp_hannah_car_gas_ins",
+            "name": "Car Insurance & Fuel",
+            "isFixed": true,
+            "defaultAmount": 160
+          },
+          {
+            "id": "exp_hannah_utilities",
+            "name": "Utilities & Wifi",
+            "isFixed": true,
+            "defaultAmount": 130
+          }
+        ],
+        "insurances": [
+          {
+            "id": "ins_hannah_longterm_care",
+            "name": "Long-Term Care & Health Policy",
+            "premium": 140,
+            "deductible": 500
+          }
+        ],
+        "retirements": [
+          {
+            "id": "ret_hannah_401k",
+            "name": "Company 401(k) Master",
+            "type": "401k",
+            "balance": 85000,
+            "expectedApy": 7.5,
+            "employerMatchPercent": 6
+          }
+        ],
+        "goals": [
+          {
+            "id": "goal_hannah_catchup_max",
+            "name": "Accelerated Catch-Up Fund",
+            "targetAmount": 4500,
+            "targetMonths": 6
+          }
+        ]
+      },
+      "winConditions": {
+        "requireInsuranceCoverage": true,
+        "goalsFundedWithinMonths": {
+          "goalId": "goal_hannah_catchup_max",
+          "months": 6
+        }
+      },
+      "allowedActions": {
+        "canCreateAccounts": true,
+        "canDeleteAccounts": true,
+        "allowedAccountTypes": [
+          "checking",
+          "savings",
+          "brokerage"
+        ],
+        "allowedCardTypes": [
+          "debit",
+          "credit"
+        ]
+      }
+    },
+    {
+      "stageId": "hannah_stage_4",
+      "stageTitle": "The Retirement Runway at 62",
+      "age": 62,
+      "occupation": "Senior Operations Advisor (Pre-Retirement)",
+      "yearsSinceLastStage": 7,
+      "cooldownRounds": 3,
+      "selectionSnippet": {
+        "firstTime": "Hello! Hannah Schmidt here at 62. I'm three years away from full retirement at 65. My daughter just had her first baby, making me a grandmother! I want to map out our Social Security claiming timeline, Medicare bridge healthcare, and safe 4% withdrawal strategy.",
+        "returningHelped": "Hannah Schmidt! Seventeen years ago, I walked into your firm with zero credit history, crying over an empty apartment after my divorce. Today, at 62, I am on the verge of retiring with complete financial dignity and peace! I need your final master plan for Social Security and my retirement runway.",
+        "returningSkipped": "Hannah Schmidt here. Over nearly two decades I worked hard to rebuild my life and retirement. At 62, I want your firm to design my safe retirement distribution strategy."
+      },
+      "dialogue": {
+        "greeting": "Holding my new granddaughter in my arms, knowing that she will grow up seeing her grandmother as strong, independent, and financially free... it is the greatest victory of my life.",
+        "emotion": "Deeply Peaceful & Triumphant",
+        "planApproved": "This is absolute perfection. Social Security claiming delayed to maximize lifetime payout, healthcare bridge secure, and our conservative portfolio generating peaceful monthly income.",
+        "planNeedsWork": "Wait, our conservative brokerage yield or liquidity allocation wasn't aligned for pre-retirement capital preservation."
+      },
+      "lifeEvent": {
+        "title": "Grandmotherhood & Pre-Retirement Milestone",
+        "description": "Hannah welcomed her first grandchild and prepares for retirement at 65 with capital preservation planning.",
+        "type": "general"
+      },
+      "financialState": {
+        "accounts": [
+          {
+            "id": "acc_hannah_checking",
+            "name": "Retirement Transition Checking",
+            "type": "checking",
+            "balance": 4500,
+            "apy": 0.05
+          },
+          {
+            "id": "acc_hannah_treasury",
+            "name": "3-Year Cash Buffer Treasury",
+            "type": "savings",
+            "balance": 35000,
+            "apy": 4.1
+          }
+        ],
+        "income": [
+          {
+            "id": "inc_hannah_advisor_pay",
+            "name": "Senior Advisor Compensation",
+            "amount": 6400,
+            "taxRate": 18,
+            "frequency": "monthly",
+            "routings": [
+              {
+                "destinationId": "acc_hannah_checking",
+                "amount": 100,
+                "type": "percentage"
+              }
+            ]
+          }
+        ],
+        "expenses": [
+          {
+            "id": "exp_hannah_rent",
+            "name": "Garden Apartment Rent",
+            "isFixed": true,
+            "defaultAmount": 1350
+          },
+          {
+            "id": "exp_hannah_lifestyle_grandbaby",
+            "name": "Groceries, Wellness & Grandbaby",
+            "isFixed": false,
+            "minValue": 480,
+            "defaultAmount": 650
+          },
+          {
+            "id": "exp_hannah_car_transit",
+            "name": "Auto & Utilities",
+            "isFixed": true,
+            "defaultAmount": 280
+          }
+        ],
+        "insurances": [
+          {
+            "id": "ins_hannah_med_bridge",
+            "name": "Medicare Bridge & Comprehensive Health",
+            "premium": 220,
+            "deductible": 500
+          }
+        ],
+        "retirements": [
+          {
+            "id": "ret_hannah_master_401k",
+            "name": "Master 401(k) Portfolio",
+            "type": "401k",
+            "balance": 245000,
+            "expectedApy": 6.8,
+            "employerMatchPercent": 6
+          }
+        ],
+        "goals": [
+          {
+            "id": "goal_hannah_runway_capital",
+            "name": "Pre-Retirement Safe Yield",
+            "targetAmount": 5500,
+            "targetMonths": 6
+          }
+        ]
+      },
+      "winConditions": {
+        "requireInsuranceCoverage": true,
+        "goalsFundedWithinMonths": {
+          "goalId": "goal_hannah_runway_capital",
+          "months": 6
+        }
+      },
+      "allowedActions": {
+        "canCreateAccounts": true,
+        "canDeleteAccounts": true,
+        "allowedAccountTypes": [
+          "checking",
+          "savings",
+          "brokerage"
+        ],
+        "allowedCardTypes": [
+          "debit",
+          "credit"
+        ]
+      }
+    }
+  ]
+}

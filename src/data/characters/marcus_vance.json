@@ -1,0 +1,578 @@
+{
+  "id": "marcus_vance",
+  "name": "Marcus Vance",
+  "bio": "First in his family to attend college, working his way up from warehouse logistics to senior IT infrastructure while anchoring his growing family.",
+  "avatarEmoji": "🔧",
+  "portraitId": "portrait_marcus",
+  "traits": [
+    "hardworking",
+    "cautious",
+    "protective"
+  ],
+  "stages": [
+    {
+      "stageId": "marcus_stage_1",
+      "stageTitle": "The Beater Dilemma",
+      "age": 19,
+      "occupation": "Night Warehouse Clerk & Community College Student",
+      "yearsSinceLastStage": 0,
+      "cooldownRounds": 2,
+      "selectionSnippet": {
+        "firstTime": "Hey... Marcus Vance here. My '08 Civic blew its head gasket on the highway and I put the $900 repair on an auto card. But worse, I have three different checking accounts open across different banks with random auto-debits hitting each one. My warehouse check lands in one bank, but bills hit the others and trigger overdraft fees. Can we consolidate this mess into a clean budget?",
+        "returningHelped": "Marcus Vance here! You helped me consolidate my fragmented bank accounts and escape that car repair nightmare years ago. I'm at another major turning point and would love your guidance.",
+        "returningSkipped": "Hi, Marcus Vance again. I reached out a while ago when my bank accounts and car broke down. Things have been tough, but I'm really hoping you might have an opening on your client roster this round."
+      },
+      "dialogue": {
+        "greeting": "I feel so disorganized. I have accounts scattered across three different banks, but every month one of them overdrafts because an auto-payment pulled from the wrong place. Can we consolidate everything into one clean system so I can build an emergency buffer?",
+        "emotion": "Stressed & Cautious",
+        "planApproved": "Man... you don't know how much this means. Consolidating those fragmented accounts into a clean checking and emergency fund gives me room to breathe. I won't have to panic every time an auto-debit hits.",
+        "planNeedsWork": "Wait, looking at this routing, one of my accounts is still overdrafting when auto-debits clear. We need to consolidate those expenses into the funded account or transfer money over."
+      },
+      "lifeEvent": {
+        "title": "Account Fragmentation & Blown Head Gasket",
+        "description": "Marcus has 3 fragmented bank accounts causing cash flow confusion alongside an emergency $900 car repair on a 24.9% auto card.",
+        "type": "debt"
+      },
+      "financialState": {
+        "accounts": [
+          {
+            "id": "acc_marcus_checking",
+            "name": "Main Logistics Checking",
+            "type": "checking",
+            "balance": 140,
+            "apy": 0.01
+          },
+          {
+            "id": "acc_marcus_old",
+            "name": "Old Dormant College Bank",
+            "type": "checking",
+            "balance": 50,
+            "apy": 0.0
+          },
+          {
+            "id": "acc_marcus_retail",
+            "name": "Retail Side Checking",
+            "type": "checking",
+            "balance": 65,
+            "apy": 0.01
+          }
+        ],
+        "cards": [
+          {
+            "id": "card_marcus_repair",
+            "name": "Auto Shop Credit Card",
+            "type": "credit",
+            "linkedAccountId": "acc_marcus_checking",
+            "balance": 900,
+            "apr": 24.99,
+            "minimumPayment": 45
+          }
+        ],
+        "income": [
+          {
+            "id": "inc_marcus_warehouse",
+            "name": "Warehouse Shifts",
+            "amount": 1750,
+            "taxRate": 12,
+            "frequency": "monthly",
+            "routings": [
+              {
+                "destinationId": "acc_marcus_checking",
+                "amount": 100,
+                "type": "percentage"
+              }
+            ]
+          }
+        ],
+        "expenses": [
+          {
+            "id": "exp_marcus_rent",
+            "name": "Shared Room Rent",
+            "isFixed": true,
+            "defaultAmount": 600
+          },
+          {
+            "id": "exp_marcus_groceries",
+            "name": "Groceries & Meal Prep",
+            "isFixed": false,
+            "minValue": 180,
+            "defaultAmount": 260
+          },
+          {
+            "id": "exp_marcus_gas",
+            "name": "Commuter Gas",
+            "isFixed": false,
+            "minValue": 100,
+            "defaultAmount": 140
+          },
+          {
+            "id": "exp_marcus_phone",
+            "name": "Phone Plan",
+            "isFixed": true,
+            "defaultAmount": 55
+          }
+        ],
+        "goals": [
+          {
+            "id": "goal_marcus_starter_buffer",
+            "name": "Starter Emergency Fund",
+            "targetAmount": 1000,
+            "targetMonths": 6
+          }
+        ],
+        "transferRules": [
+          {
+            "id": "rule_marcus_rent",
+            "sourceId": "acc_marcus_checking",
+            "destinationId": "exp_marcus_rent",
+            "amount": 600,
+            "type": "fixed"
+          },
+          {
+            "id": "rule_marcus_groceries",
+            "sourceId": "acc_marcus_checking",
+            "destinationId": "exp_marcus_groceries",
+            "amount": 260,
+            "type": "fixed"
+          },
+          {
+            "id": "rule_marcus_repair",
+            "sourceId": "acc_marcus_old",
+            "destinationId": "card_marcus_repair",
+            "amount": 45,
+            "type": "fixed"
+          },
+          {
+            "id": "rule_marcus_gas",
+            "sourceId": "acc_marcus_retail",
+            "destinationId": "exp_marcus_gas",
+            "amount": 140,
+            "type": "fixed"
+          },
+          {
+            "id": "rule_marcus_phone",
+            "sourceId": "acc_marcus_retail",
+            "destinationId": "exp_marcus_phone",
+            "amount": 55,
+            "type": "fixed"
+          }
+        ]
+      },
+      "winConditions": {
+        "requiredAccounts": [
+          "savings"
+        ],
+        "goalsFundedWithinMonths": {
+          "goalId": "goal_marcus_starter_buffer",
+          "months": 6
+        },
+        "optimalDebtRouting": "avalanche"
+      },
+      "allowedActions": {
+        "canCreateAccounts": true,
+        "canDeleteAccounts": true,
+        "allowedAccountTypes": [
+          "checking",
+          "savings"
+        ],
+        "allowedCardTypes": [
+          "debit",
+          "credit"
+        ]
+      }
+    },
+    {
+      "stageId": "marcus_stage_2",
+      "stageTitle": "First Salaried Role",
+      "age": 24,
+      "occupation": "Junior Systems Support Specialist",
+      "yearsSinceLastStage": 5,
+      "cooldownRounds": 2,
+      "selectionSnippet": {
+        "firstTime": "Hi! I'm Marcus Vance. I just finished my IT certifications and landed my first salaried help desk job. I went from minimum wage to $3,800 a month, and I'm terrified of making rookie mistakes with benefits and taxes.",
+        "returningHelped": "Marcus Vance here! Remember me? The emergency fund you helped me set up years ago saved my life when my alternator died. I just got promoted to Junior IT Specialist, and I need help managing my new 401(k) and health plan.",
+        "returningSkipped": "Marcus Vance checking back in. I couldn't get an appointment with you a few years back, but I persevered and finished my IT certs. Now I'm earning a real salary and really need an advisor's eye."
+      },
+      "dialogue": {
+        "greeting": "My HR coordinator handed me a 30-page benefits booklet with 401(k) matching and high-deductible health plans. I've never had health insurance before in my adult life.",
+        "emotion": "Hopeful & Determined",
+        "planApproved": "This is incredible. Capturing that company 401(k) match while keeping my savings growing makes me feel like I'm finally building a real adult foundation.",
+        "planNeedsWork": "Look here—it seems like we left the 401(k) employer match unclaimed or skipped insurance. If I get sick without health coverage, I'll wipe out everything I worked for."
+      },
+      "lifeEvent": {
+        "title": "Corporate Promotion & Benefits Enrollment",
+        "description": "Marcus landed a full-time IT job offering a 4% 401(k) employer match and employer healthcare coverage.",
+        "type": "income"
+      },
+      "financialState": {
+        "accounts": [
+          {
+            "id": "acc_marcus_checking",
+            "name": "Everyday Checking",
+            "type": "checking",
+            "balance": 1800,
+            "apy": 0.05
+          },
+          {
+            "id": "acc_marcus_savings",
+            "name": "Emergency Savings",
+            "type": "savings",
+            "balance": 3200,
+            "apy": 3
+          }
+        ],
+        "income": [
+          {
+            "id": "inc_marcus_it_salary",
+            "name": "IT Support Salary",
+            "amount": 3800,
+            "taxRate": 16,
+            "frequency": "monthly",
+            "routings": [
+              {
+                "destinationId": "acc_marcus_checking",
+                "amount": 100,
+                "type": "percentage"
+              }
+            ]
+          }
+        ],
+        "expenses": [
+          {
+            "id": "exp_marcus_rent",
+            "name": "1-Bedroom Apartment",
+            "isFixed": true,
+            "defaultAmount": 1150
+          },
+          {
+            "id": "exp_marcus_groceries",
+            "name": "Groceries",
+            "isFixed": false,
+            "minValue": 280,
+            "defaultAmount": 380
+          },
+          {
+            "id": "exp_marcus_transport",
+            "name": "Car Insurance & Fuel",
+            "isFixed": true,
+            "defaultAmount": 240
+          },
+          {
+            "id": "exp_marcus_utilities",
+            "name": "Utilities & Wifi",
+            "isFixed": true,
+            "defaultAmount": 160
+          }
+        ],
+        "insurances": [
+          {
+            "id": "ins_marcus_health",
+            "name": "Employer Health Plan",
+            "premium": 150,
+            "deductible": 1200
+          }
+        ],
+        "retirements": [
+          {
+            "id": "ret_marcus_401k",
+            "name": "Company 401(k)",
+            "type": "401k",
+            "balance": 1000,
+            "expectedApy": 7,
+            "employerMatchPercent": 4
+          }
+        ],
+        "goals": [
+          {
+            "id": "goal_marcus_car_upgrade",
+            "name": "Reliable Vehicle Downpayment",
+            "targetAmount": 4000,
+            "targetMonths": 8
+          }
+        ]
+      },
+      "winConditions": {
+        "requireInsuranceCoverage": true,
+        "goalsFundedWithinMonths": {
+          "goalId": "goal_marcus_car_upgrade",
+          "months": 8
+        }
+      },
+      "allowedActions": {
+        "canCreateAccounts": true,
+        "canDeleteAccounts": true,
+        "allowedAccountTypes": [
+          "checking",
+          "savings",
+          "brokerage"
+        ],
+        "allowedCardTypes": [
+          "debit",
+          "credit"
+        ]
+      }
+    },
+    {
+      "stageId": "marcus_stage_3",
+      "stageTitle": "Wedding Bells & A Baby on the Way",
+      "age": 29,
+      "occupation": "Senior Systems Administrator",
+      "yearsSinceLastStage": 5,
+      "cooldownRounds": 3,
+      "selectionSnippet": {
+        "firstTime": "Hello! Marcus Vance here. My partner and I just found out we're having a baby girl in six months, and we're planning a low-key backyard wedding. With childcare costs and nursery prep, our monthly expenses are about to explode.",
+        "returningHelped": "Marcus Vance! You've been my financial compass through every promotion. Well, big news—I'm getting married and our first child is due in November! I need to budget for childcare and protect my new family.",
+        "returningSkipped": "Marcus Vance reaching out again. We missed connecting in previous years, but my life has completely transformed: wedding next month, and our first baby arriving soon. I really can't afford to wing this."
+      },
+      "dialogue": {
+        "greeting": "Looking at ultrasound photos while looking at daycare tuition rates of $1,300 a month will give anyone grey hairs. I want to make sure my family never has to live with the financial anxiety I grew up with.",
+        "emotion": "Joyful but Terrified",
+        "planApproved": "Seeing the numbers work out with term life insurance and the baby fund locked in... I teared up a little. My fiancé and I are so grateful for your patience with us.",
+        "planNeedsWork": "Hold on, if we don't route money to the term life policy or baby fund, what happens if an unexpected hospital bill hits during delivery?"
+      },
+      "lifeEvent": {
+        "title": "Welcoming a Newborn",
+        "description": "Marcus and his spouse are preparing for baby gear, crib setup, and recurring infant childcare expenses.",
+        "type": "expense"
+      },
+      "financialState": {
+        "accounts": [
+          {
+            "id": "acc_marcus_checking",
+            "name": "Household Checking",
+            "type": "checking",
+            "balance": 3200,
+            "apy": 0.05
+          },
+          {
+            "id": "acc_marcus_savings",
+            "name": "Family Safety Net",
+            "type": "savings",
+            "balance": 8500,
+            "apy": 3.5
+          }
+        ],
+        "income": [
+          {
+            "id": "inc_marcus_senior_admin",
+            "name": "Senior SysAdmin Salary",
+            "amount": 5400,
+            "taxRate": 18,
+            "frequency": "monthly",
+            "routings": [
+              {
+                "destinationId": "acc_marcus_checking",
+                "amount": 100,
+                "type": "percentage"
+              }
+            ]
+          }
+        ],
+        "expenses": [
+          {
+            "id": "exp_marcus_2bed_rent",
+            "name": "2-Bed Family Apartment",
+            "isFixed": true,
+            "defaultAmount": 1650
+          },
+          {
+            "id": "exp_marcus_childcare",
+            "name": "Infant Daycare Sinking Fund",
+            "isFixed": true,
+            "defaultAmount": 800
+          },
+          {
+            "id": "exp_marcus_groceries",
+            "name": "Family Groceries & Formula",
+            "isFixed": false,
+            "minValue": 400,
+            "defaultAmount": 550
+          },
+          {
+            "id": "exp_marcus_transport",
+            "name": "Family Car Payment & Ins",
+            "isFixed": true,
+            "defaultAmount": 420
+          }
+        ],
+        "insurances": [
+          {
+            "id": "ins_marcus_life",
+            "name": "20-Year Term Life Insurance",
+            "premium": 45,
+            "deductible": 0
+          }
+        ],
+        "retirements": [
+          {
+            "id": "ret_marcus_401k",
+            "name": "Company 401(k)",
+            "type": "401k",
+            "balance": 18500,
+            "expectedApy": 7.5,
+            "employerMatchPercent": 5
+          }
+        ],
+        "goals": [
+          {
+            "id": "goal_marcus_baby_arrival",
+            "name": "Delivery & Nursery Buffer",
+            "targetAmount": 3000,
+            "targetMonths": 6
+          }
+        ]
+      },
+      "winConditions": {
+        "requireInsuranceCoverage": true,
+        "goalsFundedWithinMonths": {
+          "goalId": "goal_marcus_baby_arrival",
+          "months": 6
+        }
+      },
+      "allowedActions": {
+        "canCreateAccounts": true,
+        "canDeleteAccounts": true,
+        "allowedAccountTypes": [
+          "checking",
+          "savings",
+          "brokerage"
+        ],
+        "allowedCardTypes": [
+          "debit",
+          "credit"
+        ]
+      }
+    },
+    {
+      "stageId": "marcus_stage_4",
+      "stageTitle": "Homeownership & Generational Roots",
+      "age": 35,
+      "occupation": "Principal Cloud Infrastructure Architect",
+      "yearsSinceLastStage": 6,
+      "cooldownRounds": 3,
+      "selectionSnippet": {
+        "firstTime": "Marcus Vance here. I'm 35, married with two kids (6 and 4). We just placed an offer on our first house, but property taxes and home insurance are much steeper than renting. I want to make sure we don't become house-poor.",
+        "returningHelped": "Marcus Vance! From the 19-year-old kid sweating over a head gasket repair to closing on our first family home today—you've been with me every step. I need your eyes on our mortgage cash flow and college 529 plans.",
+        "returningSkipped": "Hello again, Marcus Vance here. I haven't been able to secure time on your calendar over the years, but our family has reached the mortgage closing stage. We really want professional verification before signing."
+      },
+      "dialogue": {
+        "greeting": "Sitting on the back porch of a house we actually own... it still feels surreal. Neither of my parents ever owned property. I want to make sure my children have security that lasts forever.",
+        "emotion": "Proud & Reflective",
+        "planApproved": "You've helped rewrite my family's entire trajectory. Everything is balanced—the mortgage escrow, the kids' college funds, and our retirement nest egg. Thank you from the bottom of my heart.",
+        "planNeedsWork": "Wait, our mortgage escrow and emergency buffer are uncomfortably tight. If a roof leak happens, we'd be dipping into retirement."
+      },
+      "lifeEvent": {
+        "title": "First Family Home Purchase",
+        "description": "Marcus purchased a modest single-family home. Mortgage, property taxes, and home maintenance replace apartment rent.",
+        "type": "expense"
+      },
+      "financialState": {
+        "accounts": [
+          {
+            "id": "acc_marcus_checking",
+            "name": "Family Operating Checking",
+            "type": "checking",
+            "balance": 4500,
+            "apy": 0.05
+          },
+          {
+            "id": "acc_marcus_savings",
+            "name": "Home Maintenance Reserve",
+            "type": "savings",
+            "balance": 12000,
+            "apy": 3.8
+          }
+        ],
+        "income": [
+          {
+            "id": "inc_marcus_principal_eng",
+            "name": "Cloud Architect Salary",
+            "amount": 7600,
+            "taxRate": 22,
+            "frequency": "monthly",
+            "routings": [
+              {
+                "destinationId": "acc_marcus_checking",
+                "amount": 100,
+                "type": "percentage"
+              }
+            ]
+          }
+        ],
+        "expenses": [
+          {
+            "id": "exp_marcus_mortgage",
+            "name": "Mortgage Principal & Interest",
+            "isFixed": true,
+            "defaultAmount": 2100
+          },
+          {
+            "id": "exp_marcus_property_tax",
+            "name": "Property Tax & Escrow",
+            "isFixed": true,
+            "defaultAmount": 450
+          },
+          {
+            "id": "exp_marcus_utilities",
+            "name": "Home Utilities & Trash",
+            "isFixed": true,
+            "defaultAmount": 320
+          },
+          {
+            "id": "exp_marcus_family_living",
+            "name": "Groceries & Kids Activities",
+            "isFixed": false,
+            "minValue": 650,
+            "defaultAmount": 850
+          }
+        ],
+        "insurances": [
+          {
+            "id": "ins_marcus_homeowners",
+            "name": "Homeowners & Umbrella Policy",
+            "premium": 130,
+            "deductible": 1500
+          }
+        ],
+        "retirements": [
+          {
+            "id": "ret_marcus_401k",
+            "name": "Company 401(k)",
+            "type": "401k",
+            "balance": 68000,
+            "expectedApy": 8,
+            "employerMatchPercent": 6
+          }
+        ],
+        "goals": [
+          {
+            "id": "goal_marcus_kids_college",
+            "name": "Dual Kids College 529",
+            "targetAmount": 5000,
+            "targetMonths": 10
+          }
+        ]
+      },
+      "winConditions": {
+        "requireInsuranceCoverage": true,
+        "goalsFundedWithinMonths": {
+          "goalId": "goal_marcus_kids_college",
+          "months": 10
+        }
+      },
+      "allowedActions": {
+        "canCreateAccounts": true,
+        "canDeleteAccounts": true,
+        "allowedAccountTypes": [
+          "checking",
+          "savings",
+          "brokerage"
+        ],
+        "allowedCardTypes": [
+          "debit",
+          "credit"
+        ]
+      }
+    }
+  ]
+}

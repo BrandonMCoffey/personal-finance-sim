@@ -1,0 +1,100 @@
+{
+  "title": "Unexpected Trip",
+  "desc": "Rebalance your expenses to accommodate a sudden required travel expense.",
+  "to-teach": "Adjust budget to absorb unexpected costs.",
+  "subCategoryIndex": 4,
+  "forecastMonths": 3,
+  "hints": [
+    "Notice the Emergency Travel expense striking in Month 2.",
+    "Reduce flexible dining allocations across all months so cash reserves cover the $400 travel expense."
+  ],
+  "client": {
+    "name": "Riley",
+    "description": "Riley must travel unexpectedly in Month 2 for family reasons and must trim monthly leisure spending to cover the ticket.",
+    "prompt": "I have a sudden $400 travel expense coming in Month 2. How do I adjust my ongoing spending so I don't go negative?",
+    "portraitId": "riley_01"
+  },
+  "startingState": {
+    "accounts": [
+      {
+        "id": "acc_01",
+        "name": "Checking Account",
+        "type": "checking",
+        "balance": 100,
+        "apy": 0
+      }
+    ],
+    "income": [
+      {
+        "id": "inc_01",
+        "name": "Income",
+        "amount": 2200,
+        "taxRate": 0,
+        "frequency": "monthly",
+        "routings": [
+          {
+            "destinationId": "acc_01",
+            "amount": 100,
+            "type": "percentage"
+          }
+        ]
+      }
+    ],
+    "expenses": [
+      {
+        "id": "exp_01",
+        "name": "Rent",
+        "isFixed": true,
+        "defaultAmount": 1500
+      },
+      {
+        "id": "exp_02",
+        "name": "Dining & Recreation",
+        "isFixed": false,
+        "minValue": 250,
+        "defaultAmount": 600
+      },
+      {
+        "id": "exp_03",
+        "name": "Emergency Travel",
+        "isFixed": true,
+        "occurrenceMonth": 2,
+        "defaultAmount": 400
+      }
+    ],
+    "transferRules": [
+      {
+        "id": "rule_01",
+        "sourceId": "acc_01",
+        "destinationId": "exp_01",
+        "amount": 1500,
+        "type": "fixed"
+      },
+      {
+        "id": "rule_02",
+        "sourceId": "acc_01",
+        "destinationId": "exp_02",
+        "amount": 600,
+        "type": "fixed"
+      },
+      {
+        "id": "rule_03",
+        "sourceId": "acc_01",
+        "destinationId": "exp_03",
+        "amount": 400,
+        "type": "fixed"
+      }
+    ]
+  },
+  "allowedActions": {
+    "canCreateAccounts": false,
+    "canDeleteAccounts": false,
+    "allowedAccountTypes": [],
+    "allowedCardTypes": []
+  },
+  "winConditions": {
+    "requiredAccounts": [
+      "checking"
+    ]
+  }
+}

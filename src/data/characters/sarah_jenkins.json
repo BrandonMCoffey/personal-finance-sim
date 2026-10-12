@@ -1,0 +1,502 @@
+{
+  "id": "sarah_jenkins",
+  "name": "Sarah Jenkins",
+  "bio": "Community social worker supporting vulnerable families, navigating $62,000 in student loan debt, the complex maze of Public Service Loan Forgiveness (PSLF), and stepping into non-profit leadership.",
+  "avatarEmoji": "🌱",
+  "portraitId": "portrait_sarah",
+  "traits": [
+    "idealistic",
+    "frugal",
+    "service-oriented"
+  ],
+  "stages": [
+    {
+      "stageId": "sarah_stage_1",
+      "stageTitle": "The Social Work Salary & PSLF Maze",
+      "age": 24,
+      "occupation": "Youth & Family Case Worker",
+      "yearsSinceLastStage": 0,
+      "cooldownRounds": 2,
+      "selectionSnippet": {
+        "firstTime": "Hello... Sarah Jenkins here. I just finished my Master of Social Work and took a position at a family shelter making $3,100 a month. But between my undergrad and graduate degrees, I have $62,000 in federal student debt. Standard payments would be $700 a month—over a third of my take-home pay! I need help setting up an Income-Driven Repayment plan for Public Service Loan Forgiveness.",
+        "returningHelped": "Sarah Jenkins here! You helped me set up my IDR student loan payments so I didn't drown years ago. I'm hitting another major milestone and need your guidance.",
+        "returningSkipped": "Hello, Sarah Jenkins again. I reached out when I was overwhelmed by my student loans. I've been managing case files at the shelter, but I really need an advisor's eye to keep my PSLF strategy on track."
+      },
+      "dialogue": {
+        "greeting": "I love my clients at the shelter with everything I have. But when I come home to a tiny apartment and look at a $62k loan balance, it's hard not to cry. I went to school to help people, not to be trapped in debt forever.",
+        "emotion": "Heartfelt & Overwhelmed",
+        "planApproved": "Oh, what a relief. Setting up my certified Income-Driven Repayment cap at $140/mo and automating an emergency fund means I can continue doing community work without fear.",
+        "planNeedsWork": "Wait, our IDR student loan payment wasn't covered! If I miss an on-time payment, my PSLF qualifying payment counter resets or gets delayed."
+      },
+      "lifeEvent": {
+        "title": "PSLF Income-Driven Enrollment",
+        "description": "Sarah enrolled in the Public Service Loan Forgiveness program, capping payments to an affordable income percentage ($140/mo).",
+        "type": "debt"
+      },
+      "financialState": {
+        "accounts": [
+          {
+            "id": "acc_sarah_checking",
+            "name": "Nonprofit Checking",
+            "type": "checking",
+            "balance": 350,
+            "apy": 0.01
+          }
+        ],
+        "loans": [
+          {
+            "id": "loan_sarah_pslf_federal",
+            "name": "Federal Direct Student Loans (PSLF)",
+            "balance": 62000,
+            "apr": 5.5,
+            "minimumPayment": 140
+          }
+        ],
+        "income": [
+          {
+            "id": "inc_sarah_case_worker",
+            "name": "Social Worker Salary",
+            "amount": 3100,
+            "taxRate": 13,
+            "frequency": "monthly",
+            "routings": [
+              {
+                "destinationId": "acc_sarah_checking",
+                "amount": 100,
+                "type": "percentage"
+              }
+            ]
+          }
+        ],
+        "expenses": [
+          {
+            "id": "exp_sarah_rent",
+            "name": "Shared Apartment Rent",
+            "isFixed": true,
+            "defaultAmount": 950
+          },
+          {
+            "id": "exp_sarah_groceries",
+            "name": "Groceries & Meal Prep",
+            "isFixed": false,
+            "minValue": 220,
+            "defaultAmount": 320
+          },
+          {
+            "id": "exp_sarah_transit",
+            "name": "Bus & Metro Pass",
+            "isFixed": true,
+            "defaultAmount": 110
+          },
+          {
+            "id": "exp_sarah_utilities",
+            "name": "Wifi & Phone",
+            "isFixed": true,
+            "defaultAmount": 120
+          }
+        ],
+        "goals": [
+          {
+            "id": "goal_sarah_starter_buffer",
+            "name": "Social Worker Emergency Cushion",
+            "targetAmount": 1200,
+            "targetMonths": 6
+          }
+        ]
+      },
+      "winConditions": {
+        "requiredAccounts": [
+          "savings"
+        ],
+        "goalsFundedWithinMonths": {
+          "goalId": "goal_sarah_starter_buffer",
+          "months": 6
+        },
+        "optimalDebtRouting": "avalanche"
+      },
+      "allowedActions": {
+        "canCreateAccounts": true,
+        "canDeleteAccounts": true,
+        "allowedAccountTypes": [
+          "checking",
+          "savings"
+        ],
+        "allowedCardTypes": [
+          "debit",
+          "credit"
+        ]
+      }
+    },
+    {
+      "stageId": "sarah_stage_2",
+      "stageTitle": "Marriage & The Married-Filing-Separately Dilemma",
+      "age": 29,
+      "occupation": "Senior Clinical Social Worker",
+      "yearsSinceLastStage": 5,
+      "cooldownRounds": 2,
+      "selectionSnippet": {
+        "firstTime": "Sarah Jenkins here! I'm 29 and getting married next month! My partner earns $75,000 as a private software developer. But under PSLF, if we file taxes jointly, the government will factor in his income and spike my monthly student loan payment from $160 to nearly $650! We need strategic tax and household budgeting.",
+        "returningHelped": "Sarah Jenkins! Year 5 of my PSLF certification is officially approved! Even bigger news: I'm getting married! But we need your guidance on navigating Married-Filing-Separately vs Jointly so my loan payments don't explode.",
+        "returningSkipped": "Sarah Jenkins here again. I couldn't connect with you before. I'm now a licensed clinical social worker getting married, and we really need advice on managing dual-income tax brackets and student loan rules."
+      },
+      "dialogue": {
+        "greeting": "Merging two lives is romantic; merging two tax returns when one person is on public loan forgiveness is a legal headache! We want to build an equitable household where neither of us feels penalized.",
+        "emotion": "Excited but Apprehensive",
+        "planApproved": "This solves our biggest anxiety. By filing separately, we keep my PSLF payment at $160/mo for the final 5 years, while funding our joint home downpayment fund together.",
+        "planNeedsWork": "Wait, our joint emergency buffer isn't funded properly. We need an integrated household safety net."
+      },
+      "lifeEvent": {
+        "title": "Dual-Income Marriage & Tax Strategy",
+        "description": "Sarah married her partner; filing separately preserves her low PSLF repayment rate while pooling household savings.",
+        "type": "income"
+      },
+      "financialState": {
+        "accounts": [
+          {
+            "id": "acc_sarah_checking",
+            "name": "Sarah Checking",
+            "type": "checking",
+            "balance": 1800,
+            "apy": 0.05
+          },
+          {
+            "id": "acc_sarah_joint_savings",
+            "name": "Joint Future Fund",
+            "type": "savings",
+            "balance": 7500,
+            "apy": 3.6
+          }
+        ],
+        "loans": [
+          {
+            "id": "loan_sarah_pslf_federal",
+            "name": "Federal Direct Loans (PSLF Yr 5)",
+            "balance": 52000,
+            "apr": 5.5,
+            "minimumPayment": 160
+          }
+        ],
+        "income": [
+          {
+            "id": "inc_sarah_clinical_pay",
+            "name": "Clinical Social Worker Salary",
+            "amount": 4200,
+            "taxRate": 16,
+            "frequency": "monthly",
+            "routings": [
+              {
+                "destinationId": "acc_sarah_checking",
+                "amount": 100,
+                "type": "percentage"
+              }
+            ]
+          }
+        ],
+        "expenses": [
+          {
+            "id": "exp_sarah_share_rent",
+            "name": "Share of Couple's Apartment",
+            "isFixed": true,
+            "defaultAmount": 1200
+          },
+          {
+            "id": "exp_sarah_groceries",
+            "name": "Groceries & Household",
+            "isFixed": false,
+            "minValue": 300,
+            "defaultAmount": 420
+          },
+          {
+            "id": "exp_sarah_transit",
+            "name": "Public Transit & Carpool",
+            "isFixed": true,
+            "defaultAmount": 140
+          },
+          {
+            "id": "exp_sarah_health",
+            "name": "Nonprofit Health Coverage",
+            "isFixed": true,
+            "defaultAmount": 160
+          }
+        ],
+        "goals": [
+          {
+            "id": "goal_sarah_home_seed",
+            "name": "Joint Home Downpayment Seed",
+            "targetAmount": 3500,
+            "targetMonths": 6
+          }
+        ]
+      },
+      "winConditions": {
+        "goalsFundedWithinMonths": {
+          "goalId": "goal_sarah_home_seed",
+          "months": 6
+        }
+      },
+      "allowedActions": {
+        "canCreateAccounts": true,
+        "canDeleteAccounts": true,
+        "allowedAccountTypes": [
+          "checking",
+          "savings",
+          "brokerage"
+        ],
+        "allowedCardTypes": [
+          "debit",
+          "credit"
+        ]
+      }
+    },
+    {
+      "stageId": "sarah_stage_3",
+      "stageTitle": "PSLF Freedom: $50,000 Loan Forgiveness!",
+      "age": 35,
+      "occupation": "Director of Community Programs",
+      "yearsSinceLastStage": 6,
+      "cooldownRounds": 3,
+      "selectionSnippet": {
+        "firstTime": "Hello! Sarah Jenkins here. At 35, the most incredible miracle happened: after 120 qualifying payments over 10 years at non-profits, the Department of Education just officially forgiven my remaining $48,000 student loan balance to $0! Suddenly, I have discretionary cash flow and no debt hanging over my head.",
+        "returningHelped": "Sarah Jenkins! WE DID IT! The official forgiveness letter arrived: 120 qualifying payments verified, $0 remaining balance! You guided me through every recertification. Now that this giant weight is off my chest, I want to deploy that cash into our first home and retirement.",
+        "returningSkipped": "Sarah Jenkins here. I persevered through the 10-year PSLF finish line and achieved full forgiveness. I'm ready to build real investments and would love your guidance."
+      },
+      "dialogue": {
+        "greeting": "Opening that student aid dashboard and seeing a big green checkmark with '$0.00' balance... I fell to the kitchen floor sobbing with relief. Ten years of public service, and now we are finally financially free.",
+        "emotion": "Ecstatic & Overjoyed",
+        "planApproved": "This is poetry. Taking the exact monthly amount I used to pay toward student loans and redirecting it into our Roth IRA and home equity feels like reclaiming our future.",
+        "planNeedsWork": "Wait, our Roth IRA or savings allocations are falling short. Now is the time to build wealth, not let money slip away to impulse spending."
+      },
+      "lifeEvent": {
+        "title": "PSLF 100% Student Debt Forgiveness",
+        "description": "Sarah completed 120 certified payments; her remaining $48,000 federal student loan balance was completely forgiven tax-free.",
+        "type": "debt"
+      },
+      "financialState": {
+        "accounts": [
+          {
+            "id": "acc_sarah_checking",
+            "name": "Operating Checking",
+            "type": "checking",
+            "balance": 2600,
+            "apy": 0.05
+          },
+          {
+            "id": "acc_sarah_hysa",
+            "name": "Freedom High-Yield Reserve",
+            "type": "savings",
+            "balance": 15000,
+            "apy": 3.9
+          }
+        ],
+        "income": [
+          {
+            "id": "inc_sarah_program_director",
+            "name": "Program Director Salary",
+            "amount": 5600,
+            "taxRate": 18,
+            "frequency": "monthly",
+            "routings": [
+              {
+                "destinationId": "acc_sarah_checking",
+                "amount": 100,
+                "type": "percentage"
+              }
+            ]
+          }
+        ],
+        "expenses": [
+          {
+            "id": "exp_sarah_mortgage",
+            "name": "Townhouse Mortgage Share",
+            "isFixed": true,
+            "defaultAmount": 1750
+          },
+          {
+            "id": "exp_sarah_family_living",
+            "name": "Groceries & Community Support",
+            "isFixed": false,
+            "minValue": 400,
+            "defaultAmount": 550
+          },
+          {
+            "id": "exp_sarah_transit",
+            "name": "Hybrid Commuter & Ins",
+            "isFixed": true,
+            "defaultAmount": 320
+          }
+        ],
+        "insurances": [
+          {
+            "id": "ins_sarah_disability",
+            "name": "Nonprofit Professional Disability",
+            "premium": 75,
+            "deductible": 0
+          }
+        ],
+        "retirements": [
+          {
+            "id": "ret_sarah_403b",
+            "name": "Agency 403(b)",
+            "type": "401k",
+            "balance": 28000,
+            "expectedApy": 7.5,
+            "employerMatchPercent": 4
+          }
+        ],
+        "goals": [
+          {
+            "id": "goal_sarah_roth_catchup",
+            "name": "Roth IRA Catch-Up Fund",
+            "targetAmount": 4000,
+            "targetMonths": 6
+          }
+        ]
+      },
+      "winConditions": {
+        "requireInsuranceCoverage": true,
+        "goalsFundedWithinMonths": {
+          "goalId": "goal_sarah_roth_catchup",
+          "months": 6
+        }
+      },
+      "allowedActions": {
+        "canCreateAccounts": true,
+        "canDeleteAccounts": true,
+        "allowedAccountTypes": [
+          "checking",
+          "savings",
+          "brokerage"
+        ],
+        "allowedCardTypes": [
+          "debit",
+          "credit"
+        ]
+      }
+    },
+    {
+      "stageId": "sarah_stage_4",
+      "stageTitle": "Executive Director & Endowment Philanthropy",
+      "age": 42,
+      "occupation": "Executive Director, Regional Youth Services",
+      "yearsSinceLastStage": 7,
+      "cooldownRounds": 3,
+      "selectionSnippet": {
+        "firstTime": "Hello! Sarah Jenkins here at 42. I was recently promoted to Executive Director of our regional youth and family services organization. I oversee a $4M annual operating endowment. Personally, my family is debt-free, and I want to optimize our 403(b) match and personal donor-advised philanthropy.",
+        "returningHelped": "Sarah Jenkins! From a panic-stricken 24-year-old case worker clutching a $62k loan bill to Executive Director of the entire regional network—you've been my trusted advisor every step. Now I want to structure our family's long-term endowment and retirement.",
+        "returningSkipped": "Sarah Jenkins here. I've risen to Executive Director of our community agency. I'm looking for an advisor to help with executive retirement benefits and long-term family investments."
+      },
+      "dialogue": {
+        "greeting": "Looking at the younger case workers we hire today who carry the same loan anxiety I used to have... being able to advocate for them at the state level is my calling. Having personal financial security allows me to lead fearlessly.",
+        "emotion": "Deeply Fulfilled & Serene",
+        "planApproved": "This architecture is inspirational. Executive 403(b) maximized, high-yield reserves automated, and our family giving fund active. Thank you for a lifetime of support.",
+        "planNeedsWork": "Wait, our executive 403(b) match contributions were left incomplete. Capturing our full employer retirement benefit is essential."
+      },
+      "lifeEvent": {
+        "title": "Executive Director Appointment",
+        "description": "Sarah was appointed Executive Director of the non-profit organization, receiving executive benefits and 6% 403(b) match.",
+        "type": "income"
+      },
+      "financialState": {
+        "accounts": [
+          {
+            "id": "acc_sarah_checking",
+            "name": "Executive Checking",
+            "type": "checking",
+            "balance": 4000,
+            "apy": 0.05
+          },
+          {
+            "id": "acc_sarah_hysa",
+            "name": "Liquid Family Reserve",
+            "type": "savings",
+            "balance": 28000,
+            "apy": 4.1
+          }
+        ],
+        "income": [
+          {
+            "id": "inc_sarah_ed_salary",
+            "name": "Executive Director Salary",
+            "amount": 7800,
+            "taxRate": 21,
+            "frequency": "monthly",
+            "routings": [
+              {
+                "destinationId": "acc_sarah_checking",
+                "amount": 100,
+                "type": "percentage"
+              }
+            ]
+          }
+        ],
+        "expenses": [
+          {
+            "id": "exp_sarah_mortgage",
+            "name": "Townhouse Mortgage",
+            "isFixed": true,
+            "defaultAmount": 2100
+          },
+          {
+            "id": "exp_sarah_family_living",
+            "name": "Household & Community Philanthropy",
+            "isFixed": false,
+            "minValue": 700,
+            "defaultAmount": 950
+          },
+          {
+            "id": "exp_sarah_auto_utilities",
+            "name": "Auto & Home Utilities",
+            "isFixed": true,
+            "defaultAmount": 420
+          }
+        ],
+        "insurances": [
+          {
+            "id": "ins_sarah_umbrella",
+            "name": "Executive Umbrella Policy",
+            "premium": 110,
+            "deductible": 500
+          }
+        ],
+        "retirements": [
+          {
+            "id": "ret_sarah_403b",
+            "name": "Nonprofit Executive 403(b)",
+            "type": "401k",
+            "balance": 92000,
+            "expectedApy": 7.5,
+            "employerMatchPercent": 6
+          }
+        ],
+        "goals": [
+          {
+            "id": "goal_sarah_wealth_brokerage",
+            "name": "Index Wealth Brokerage",
+            "targetAmount": 6000,
+            "targetMonths": 6
+          }
+        ]
+      },
+      "winConditions": {
+        "requireInsuranceCoverage": true,
+        "goalsFundedWithinMonths": {
+          "goalId": "goal_sarah_wealth_brokerage",
+          "months": 6
+        }
+      },
+      "allowedActions": {
+        "canCreateAccounts": true,
+        "canDeleteAccounts": true,
+        "allowedAccountTypes": [
+          "checking",
+          "savings",
+          "brokerage"
+        ],
+        "allowedCardTypes": [
+          "debit",
+          "credit"
+        ]
+      }
+    }
+  ]
+}

@@ -6,10 +6,17 @@ interface ExpenseNodeProps {
 		id: string;
 		name: string;
 		targetAmount: number;
+		defaultAmount?: number;
+		maxAmount?: number;
 		currentAmount: number;
 		isFixed: boolean;
 		minValue?: number;
 		isSnapped: boolean;
+		frequency?: number;
+		occurrenceMonth?: number;
+		isActiveThisMonth?: boolean;
+		isLocked?: boolean;
+		isFlashing?: boolean;
 	};
 }
 
@@ -46,10 +53,12 @@ export function ExpenseNode({ data }: ExpenseNodeProps) {
 		}
 	}
 
+	const isLocked = Boolean(data.isLocked);
+	const defaultAmt = data.defaultAmount !== undefined ? data.defaultAmount : data.targetAmount;
 	const fundedAmount = incomingRule?.amount || 0;
 	const minRequired = data.minValue || data.targetAmount;
-	const sliderMax = data.isFixed ? data.targetAmount : data.targetAmount * 1.5;
-	const fillPercentage = incomingRule ? Math.min((fundedAmount / sliderMax) * 100, 100) : 0;
+	const sliderMax = data.isFixed ? defaultAmt : (data.maxAmount !== undefined ? data.maxAmount : defaultAmt * 1.5);
+	const fillPercentage = incomingRule && sliderMax > 0 ? Math.min((fundedAmount / sliderMax) * 100, 100) : 0;
 
 	const cRedLight = [239, 68, 68];
 	const cRed = [255, 0, 0];
@@ -58,7 +67,9 @@ export function ExpenseNode({ data }: ExpenseNodeProps) {
 	const cIndigo = [5, 50, 255];
 
 	let currentRgb = cRedLight.join(", ");
-	if (fundedAmount == data.targetAmount) {
+	if (!data.isActiveThisMonth) {
+		currentRgb = "156, 163, 175";
+	} else if (fundedAmount == data.targetAmount) {
 		currentRgb = cBlue.join(", ");
 	} else if (fundedAmount < minRequired) {
 		currentRgb = cRed.join(", ");
@@ -72,24 +83,29 @@ export function ExpenseNode({ data }: ExpenseNodeProps) {
 		currentRgb = interpolateColor(cBlue, cIndigo, factor);
 	}
 
-	const amountText = data.isFixed ? `$${data.targetAmount.toFixed(0)} / mo` : `$${data.currentAmount.toFixed(0)} / $${data.targetAmount.toFixed(0)}`;
+	let timingLabel = "";
+	if (data.occurrenceMonth) timingLabel = `Month ${data.occurrenceMonth}`;
+	else if (data.frequency && data.frequency > 1) timingLabel = `Every ${data.frequency} Mos`;
+
+	const amountText = `$${data.currentAmount.toFixed(0)} / $${sliderMax.toFixed(0)}`;
 
 	return (
 		<BaseNode
 			title={data.name}
 			subtitle={data.isFixed ? "FIXED" : undefined}
-			bgColor="bg-white"
+			bgColor={data.isActiveThisMonth ? "bg-white" : "bg-gray-50"}
 			borderColor={`border-[rgba(${currentRgb},0.5)]`}
 			titleColor={`text-[rgb(${currentRgb})]`}
 			isSnapped={data.isSnapped}
+			isFlashing={data.isFlashing}
 			targetHandle={!data.isSnapped ? { color: "bg-red-500" } : undefined}
-			className="w-[160px] h-[68px]"
+			className="w-[180px] h-[74px]"
 		>
 			<style>{`
         .expense-slider::-webkit-slider-thumb { -webkit-appearance: none; appearance: none; width: 0; height: 0; }
         .expense-slider::-moz-range-thumb { width: 0; height: 0; border: 0; }
       `}</style>
-			<div className="w-full mt-0.5">
+			<div className={`w-full mt-0.5 flex flex-col justify-between flex-1 ${!data.isActiveThisMonth ? "opacity-50" : ""}`}>
 				{incomingRule ? (
 					<input
 						type="range"
@@ -98,24 +114,30 @@ export function ExpenseNode({ data }: ExpenseNodeProps) {
 						value={incomingRule.amount}
 						disabled={data.isFixed}
 						onChange={(e) => {
+							if (data.isFixed) return;
 							if (isIncomeRule) updateIncomeRoute(sourceId, data.id, Number(e.target.value), "fixed");
 							else updateTransferRule(incomingRule.id, Number(e.target.value), "fixed");
 						}}
 						style={{
 							background: `linear-gradient(to right, rgb(${currentRgb}) ${fillPercentage}%, rgba(0,0,0,0.1) ${fillPercentage}%)`
 						}}
-						className={`nodrag nopan expense-slider w-full h-1.5 rounded-full appearance-none outline-none ${data.isFixed ? "cursor-not-allowed opacity-90" : "cursor-pointer"}`}
+						className={`nodrag nopan expense-slider w-full h-1.5 rounded-full appearance-none outline-none ${
+							data.isFixed ? "cursor-default opacity-90" : "cursor-pointer"
+						}`}
 					/>
 				) : (
 					<div className="w-full bg-red-100 rounded-full h-1.5">
 						<div
 							className="h-1.5 rounded-full transition-all duration-300"
-							style={{ width: `${Math.min((data.currentAmount / data.targetAmount) * 100, 100)}%`, backgroundColor: `rgb(${cRed.join(",")})` }}
+							style={{ width: `${sliderMax > 0 ? Math.min((data.currentAmount / sliderMax) * 100, 100) : 0}%`, backgroundColor: `rgb(${cRed.join(",")})` }}
 						></div>
 					</div>
 				)}
-				<div className="text-[9px] text-right mt-1 font-medium opacity-80" style={{ color: `rgb(${currentRgb})` }}>
-					{amountText}
+				<div className="flex justify-between items-center mt-1 pb-0.5">
+					<span className="text-[8px] font-bold uppercase tracking-wider text-gray-400">{timingLabel}</span>
+					<div className="text-[9px] text-right font-medium opacity-80" style={{ color: `rgb(${currentRgb})` }}>
+						{!data.isActiveThisMonth ? "Inactive" : amountText}
+					</div>
 				</div>
 			</div>
 		</BaseNode>

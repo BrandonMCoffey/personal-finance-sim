@@ -1,0 +1,114 @@
+{
+  "title": "Lease vs Buy",
+  "desc": "Manage a budget featuring a leased vehicle with lower payments.",
+  "to-teach": "Manage cash flow with leased vehicles.",
+  "subCategoryIndex": 2,
+  "forecastMonths": 6,
+  "hints": [
+    "A lease offers a lower monthly cash commitment ($220) than purchase financing, but builds no asset equity.",
+    "Route $220 to the fixed Lease Payment and allocate the remaining surplus to a cash savings buffer."
+  ],
+  "client": {
+    "name": "Jordan",
+    "description": "Jordan chose a vehicle lease to minimize immediate cash outflow while redirecting savings toward an emergency cushion.",
+    "prompt": "I picked a car lease for lower monthly payments. How do I structure my leftover cash flow to build up a savings cushion?",
+    "portraitId": "jordan_01"
+  },
+  "startingState": {
+    "accounts": [
+      {
+        "id": "acc_01",
+        "name": "Main Checking",
+        "type": "checking",
+        "balance": 500,
+        "apy": 0
+      }
+    ],
+    "income": [
+      {
+        "id": "inc_01",
+        "name": "Salary",
+        "amount": 2700,
+        "taxRate": 0,
+        "frequency": "monthly",
+        "routings": [
+          {
+            "destinationId": "acc_01",
+            "amount": 100,
+            "type": "percentage"
+          }
+        ]
+      }
+    ],
+    "expenses": [
+      {
+        "id": "exp_01",
+        "name": "Housing",
+        "isFixed": true,
+        "defaultAmount": 1600
+      },
+      {
+        "id": "exp_02",
+        "name": "Car Lease Payment",
+        "isFixed": true,
+        "defaultAmount": 220
+      },
+      {
+        "id": "exp_03",
+        "name": "Flexible Spending",
+        "isFixed": false,
+        "minValue": 300,
+        "defaultAmount": 600
+      }
+    ],
+    "goals": [
+      {
+        "id": "goal_01",
+        "name": "Lease Buffer",
+        "targetAmount": 1200,
+        "targetMonths": 6
+      }
+    ],
+    "transferRules": [
+      {
+        "id": "rule_01",
+        "sourceId": "acc_01",
+        "destinationId": "exp_01",
+        "amount": 1600,
+        "type": "fixed"
+      },
+      {
+        "id": "rule_02",
+        "sourceId": "acc_01",
+        "destinationId": "exp_02",
+        "amount": 220,
+        "type": "fixed"
+      },
+      {
+        "id": "rule_03",
+        "sourceId": "acc_01",
+        "destinationId": "exp_03",
+        "amount": 600,
+        "type": "fixed"
+      }
+    ]
+  },
+  "allowedActions": {
+    "canCreateAccounts": true,
+    "canDeleteAccounts": false,
+    "maxNewAccounts": 1,
+    "allowedAccountTypes": [
+      "savings"
+    ],
+    "allowedCardTypes": []
+  },
+  "winConditions": {
+    "requiredAccounts": [
+      "savings"
+    ],
+    "goalsFundedWithinMonths": {
+      "goalId": "goal_01",
+      "months": 6
+    }
+  }
+}

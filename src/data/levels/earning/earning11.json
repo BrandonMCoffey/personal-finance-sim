@@ -1,0 +1,115 @@
+{
+  "title": "Wants and Fun",
+  "desc": "Cap your entertainment and shopping expenses at 30% across dedicated accounts.",
+  "to-teach": "Limit variable wants to thirty percent using multi-account budgeting.",
+  "subCategoryIndex": 3,
+  "forecastMonths": 3,
+  "hints": [
+    "Net income is $4,000.",
+    "Allocate 50% ($2,000) to Fixed Bills Checking, 30% ($1,200) to Fun & Lifestyle Checking, and 20% ($800) to High-Yield Savings."
+  ],
+  "client": {
+    "name": "Taylor",
+    "description": "Taylor set up dedicated checking accounts for essentials and discretionary spending, but needs automated paycheck direct deposit splits.",
+    "prompt": "I have one checking account for my fixed rent and another for fun money, plus a savings account. How do I split my $4,000 paycheck so my fun spending is capped at 30%?",
+    "portraitId": "taylor_01"
+  },
+  "startingState": {
+    "accounts": [
+      {
+        "id": "acc_fixed_bills",
+        "name": "Fixed Bills Checking",
+        "type": "checking",
+        "balance": 250,
+        "apy": 0
+      },
+      {
+        "id": "acc_discretionary",
+        "name": "Fun & Lifestyle Checking",
+        "type": "checking",
+        "balance": 150,
+        "apy": 0
+      },
+      {
+        "id": "acc_savings",
+        "name": "High-Yield Savings",
+        "type": "savings",
+        "balance": 500,
+        "apy": 4
+      }
+    ],
+    "income": [
+      {
+        "id": "inc_01",
+        "name": "Net Income",
+        "amount": 4000,
+        "taxRate": 0,
+        "frequency": "monthly",
+        "routings": []
+      }
+    ],
+    "expenses": [
+      {
+        "id": "exp_01",
+        "name": "Essential Needs",
+        "isFixed": true,
+        "defaultAmount": 2000
+      },
+      {
+        "id": "exp_02",
+        "name": "Lifestyle & Entertainment",
+        "isFixed": false,
+        "minValue": 800,
+        "defaultAmount": 1200
+      }
+    ],
+    "goals": [
+      {
+        "id": "goal_savings",
+        "name": "Emergency Fund",
+        "targetAmount": 2400,
+        "targetMonths": 3
+      }
+    ],
+    "transferRules": [
+      {
+        "id": "rule_01",
+        "sourceId": "acc_fixed_bills",
+        "destinationId": "exp_01",
+        "amount": 2000,
+        "type": "fixed"
+      },
+      {
+        "id": "rule_02",
+        "sourceId": "acc_discretionary",
+        "destinationId": "exp_02",
+        "amount": 1200,
+        "type": "fixed"
+      },
+      {
+        "id": "rule_03",
+        "sourceId": "acc_savings",
+        "destinationId": "goal_savings",
+        "amount": 800,
+        "type": "fixed"
+      }
+    ]
+  },
+  "allowedActions": {
+    "canCreateAccounts": false,
+    "canDeleteAccounts": false,
+    "allowedAccountTypes": [],
+    "allowedCardTypes": [],
+    "lockExpenses": true
+  },
+  "winConditions": {
+    "requiredAccounts": [
+      "checking",
+      "savings"
+    ],
+    "goalsFundedWithinMonths": {
+      "goalId": "goal_savings",
+      "months": 3
+    }
+  }
+}

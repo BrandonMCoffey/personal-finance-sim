@@ -1,4 +1,5 @@
 import type { ValidationReport } from "../../engines/validation";
+import { useFinanceStore } from "../../store/financeStore";
 
 interface GradeModalProps {
 	isOpen: boolean;
@@ -7,13 +8,27 @@ interface GradeModalProps {
 	onContinue: () => void;
 }
 
-const POSITIVE_FEEDBACK_PREFIXES = ["Great", "Success", "Excellent", "Good habit"];
+const POSITIVE_FEEDBACK_PREFIXES = [
+	"Great",
+	"Success",
+	"Excellent",
+	"Good habit",
+	"Debt Goal Achieved",
+	"Congratulations",
+	"Inflation Protected",
+	"Maximized Benefits",
+	"Retirement Target Met",
+	"Risk Protected",
+	"Goal Deprioritized",
+	"Expense Reduction"
+];
 
 function isPositiveFeedback(message: string) {
 	return POSITIVE_FEEDBACK_PREFIXES.some((prefix) => message.startsWith(prefix));
 }
 
 export function GradeModal({ isOpen, report, onRetry, onContinue }: GradeModalProps) {
+	const { client } = useFinanceStore();
 	if (!isOpen || !report) return null;
 
 	return (
@@ -27,6 +42,33 @@ export function GradeModal({ isOpen, report, onRetry, onContinue }: GradeModalPr
 				</div>
 
 				<div className="p-6">
+					{/* Client Emotional Reaction Dialogue */}
+					{client?.dialogue && (
+						<div className="mb-5 p-4 rounded-xl border bg-slate-50 border-slate-200">
+							<div className="flex items-center justify-between mb-2">
+								<div className="flex items-center gap-2">
+									<span className="text-2xl">{client.avatarEmoji || "👤"}</span>
+									<div>
+										<span className="font-bold text-slate-900 text-sm block">{client.name}</span>
+										<span className="text-[10px] text-slate-500 font-medium">{client.occupation || "Client"}</span>
+									</div>
+								</div>
+								<span
+									className={`text-xs px-2.5 py-0.5 rounded-full font-bold ${
+										report.passed
+											? "bg-emerald-100 text-emerald-800"
+											: "bg-amber-100 text-amber-800"
+									}`}
+								>
+									{report.passed ? "Relieved & Grateful" : client.dialogue.emotion || "Anxious & Hesitant"}
+								</span>
+							</div>
+							<p className="text-sm italic text-slate-700 leading-relaxed bg-white p-3 rounded-lg border border-slate-100 shadow-xs">
+								"{report.passed ? client.dialogue.planApproved : client.dialogue.planNeedsWork}"
+							</p>
+						</div>
+					)}
+
 					<h3 className="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-4">Financial Advisor Feedback</h3>
 					<ul className="space-y-3 mb-6">
 						{report.feedback.map((msg, idx) => {

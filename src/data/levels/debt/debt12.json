@@ -1,0 +1,99 @@
+{
+  "title": "Clearing the Slate",
+  "desc": "Use the snowball method to clear three small loans quickly.",
+  "to-teach": "Execute the debt snowball payoff strategy.",
+  "subCategoryIndex": 3,
+  "forecastMonths": 8,
+  "hints": [
+    "Order debts from lowest balance to highest: $500, then $1,100, then $3,000.",
+    "Maintain minimums on the larger two debts and route all remaining cash to the $500 balance."
+  ],
+  "client": {
+    "name": "Casey",
+    "description": "Casey has three separate revolving debts and wants to follow the snowball order strictly.",
+    "prompt": "I have balances of $500, $1,100, and $3,000. How do I configure my monthly payments for the snowball strategy?",
+    "portraitId": "casey_01"
+  },
+  "startingState": {
+    "accounts": [
+      {
+        "id": "acc_01",
+        "name": "Main Checking",
+        "type": "checking",
+        "balance": 400,
+        "apy": 0
+      }
+    ],
+    "cards": [
+      {
+        "id": "card_01",
+        "name": "Retail Account",
+        "type": "credit",
+        "linkedAccountId": "",
+        "balance": 500,
+        "limit": 1500,
+        "apr": 21
+      },
+      {
+        "id": "card_02",
+        "name": "Online Shopping Card",
+        "type": "credit",
+        "linkedAccountId": "",
+        "balance": 1100,
+        "limit": 2500,
+        "apr": 24
+      },
+      {
+        "id": "card_03",
+        "name": "Bank Card",
+        "type": "credit",
+        "linkedAccountId": "",
+        "balance": 3000,
+        "limit": 6000,
+        "apr": 18
+      }
+    ],
+    "income": [
+      {
+        "id": "inc_01",
+        "name": "Wages",
+        "amount": 3400,
+        "taxRate": 0,
+        "frequency": "monthly",
+        "routings": [
+          {
+            "destinationId": "acc_01",
+            "amount": 100,
+            "type": "percentage"
+          }
+        ]
+      }
+    ],
+    "expenses": [
+      {
+        "id": "exp_01",
+        "name": "Fixed Expenses",
+        "isFixed": true,
+        "defaultAmount": 2200
+      }
+    ],
+    "transferRules": [
+      {
+        "id": "rule_01",
+        "sourceId": "acc_01",
+        "destinationId": "exp_01",
+        "amount": 2200,
+        "type": "fixed"
+      }
+    ]
+  },
+  "allowedActions": {
+    "canCreateAccounts": false,
+    "canDeleteAccounts": false,
+    "allowedAccountTypes": [],
+    "allowedCardTypes": []
+  },
+  "winConditions": {
+    "optimalDebtRouting": "snowball"
+  }
+}

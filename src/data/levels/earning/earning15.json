@@ -1,0 +1,100 @@
+{
+  "title": "Flexible Adjustments",
+  "desc": "Shift funds from variable wants to cover a minor emergency.",
+  "to-teach": "Move funds from wants to emergencies.",
+  "subCategoryIndex": 4,
+  "forecastMonths": 4,
+  "hints": [
+    "A replacement phone costs $300 in Month 2.",
+    "Drop flexible subscriptions and entertainment down to $150 to keep checking positive."
+  ],
+  "client": {
+    "name": "Sam",
+    "description": "Sam cracked their work phone screen and needs $300 to replace it without draining their emergency baseline.",
+    "prompt": "I need to pay $300 for a phone replacement in Month 2. Can you help me cut my non-essential spending so I don't overdraft?",
+    "portraitId": "sam_01"
+  },
+  "startingState": {
+    "accounts": [
+      {
+        "id": "acc_01",
+        "name": "Main Checking",
+        "type": "checking",
+        "balance": 50,
+        "apy": 0
+      }
+    ],
+    "income": [
+      {
+        "id": "inc_01",
+        "name": "Wages",
+        "amount": 1800,
+        "taxRate": 0,
+        "frequency": "monthly",
+        "routings": [
+          {
+            "destinationId": "acc_01",
+            "amount": 100,
+            "type": "percentage"
+          }
+        ]
+      }
+    ],
+    "expenses": [
+      {
+        "id": "exp_01",
+        "name": "Housing",
+        "isFixed": true,
+        "defaultAmount": 1300
+      },
+      {
+        "id": "exp_02",
+        "name": "Non-Essential Wants",
+        "isFixed": false,
+        "minValue": 150,
+        "defaultAmount": 450
+      },
+      {
+        "id": "exp_03",
+        "name": "Phone Replacement",
+        "isFixed": true,
+        "occurrenceMonth": 2,
+        "defaultAmount": 300
+      }
+    ],
+    "transferRules": [
+      {
+        "id": "rule_01",
+        "sourceId": "acc_01",
+        "destinationId": "exp_01",
+        "amount": 1300,
+        "type": "fixed"
+      },
+      {
+        "id": "rule_02",
+        "sourceId": "acc_01",
+        "destinationId": "exp_02",
+        "amount": 450,
+        "type": "fixed"
+      },
+      {
+        "id": "rule_03",
+        "sourceId": "acc_01",
+        "destinationId": "exp_03",
+        "amount": 300,
+        "type": "fixed"
+      }
+    ]
+  },
+  "allowedActions": {
+    "canCreateAccounts": false,
+    "canDeleteAccounts": false,
+    "allowedAccountTypes": [],
+    "allowedCardTypes": []
+  },
+  "winConditions": {
+    "requiredAccounts": [
+      "checking"
+    ]
+  }
+}

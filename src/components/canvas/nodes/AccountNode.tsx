@@ -7,13 +7,16 @@ interface AccountNodeProps {
 		name: string;
 		balance: number;
 		forecastBalance: number;
+		realForecastBalance?: number;
 		interestEarned: number;
+		inflationDrag?: number;
 		forecastMonths: number;
 		accountType: string;
 		apy?: number;
-		history: { month: number; balance: number; goal: number; in: number; out: number }[];
+		history: { month: number; balance: number; goal: number; in: number; out: number; cardOut?: number }[];
 		originalBalance?: number;
 		isDeposited?: boolean;
+		isFlashing?: boolean;
 	};
 }
 
@@ -51,24 +54,42 @@ export function AccountNode({ data }: AccountNodeProps) {
 		</div>
 	) : undefined;
 
+	const displayHistory = data.history && data.history.length > 12 ? data.history.slice(0, 12) : data.history || [];
+
 	const rightPanel =
-		data.forecastMonths > 1 && history.length > 0 && !isDeposited ? (
-			<div className="nodrag nopan flex flex-col justify-center h-full w-24 border-l border-black/10 px-1.5 gap-[2px] bg-gray-50/30 rounded-r-md pointer-events-auto">
-				{data.history.map((h) => {
+		data.forecastMonths > 1 && displayHistory.length > 0 && !isDeposited ? (
+			<div
+				className="nodrag nopan flex flex-col justify-center h-full w-24 border-l border-black/10 px-1.5 gap-[2px] bg-gray-50/30 rounded-r-md pointer-events-auto"
+				title={data.history.length > 12 ? `Showing first 12 of ${data.history.length} months forecast` : undefined}
+			>
+				{displayHistory.map((h) => {
 					const totalBalance = Math.max(0, h.balance);
 					const goalEarmark = Math.min(h.goal || 0, totalBalance);
 					const availableBal = totalBalance - goalEarmark;
 
-					const outWidth = (h.out / maxScale) * 100;
+					const cardOut = h.cardOut || 0;
+					const regularOut = Math.max(0, h.out - cardOut);
+
+					const cardWidth = (cardOut / maxScale) * 100;
+					const outWidth = (regularOut / maxScale) * 100;
 					const goalWidth = (goalEarmark / maxScale) * 100;
 					const balWidth = (availableBal / maxScale) * 100;
 					const barColor = isCash ? "bg-green-500" : "bg-blue-400";
+
+					const tooltipParts = [
+						`Month ${h.month}`,
+						`In: $${h.in.toFixed(0)}`,
+						`Expenses: $${regularOut.toFixed(0)}`
+					];
+					if (cardOut > 0) tooltipParts.push(`Credit Card: $${cardOut.toFixed(0)}`);
+					tooltipParts.push(`Goal Alloc: $${goalEarmark.toFixed(0)}`);
+					tooltipParts.push(`End Bal: $${h.balance.toFixed(0)}`);
 
 					return (
 						<div
 							key={h.month}
 							className="flex flex-row items-center w-full h-1.5 hover:opacity-80 transition-opacity cursor-crosshair group relative"
-							title={`Month ${h.month}\nIn: $${h.in.toFixed(0)}\nOut: $${h.out.toFixed(0)}\nGoal Alloc: $${goalEarmark.toFixed(0)}\nEnd Bal: $${h.balance.toFixed(0)}`}
+							title={tooltipParts.join("\n")}
 						>
 							{h.balance < 0 && <div className="absolute -left-1.5 top-1/2 transform -translate-y-1/2 w-1 h-1 bg-red-600 rounded-full" />}
 							{balWidth > 0 && (
@@ -85,8 +106,14 @@ export function AccountNode({ data }: AccountNodeProps) {
 							)}
 							{outWidth > 0 && (
 								<div
-									className={`h-full bg-red-400 ${balWidth === 0 && goalWidth === 0 ? "rounded-sm" : "rounded-r-sm"}`}
+									className={`h-full bg-red-400 ${balWidth === 0 && goalWidth === 0 ? "rounded-l-sm" : ""} ${cardWidth === 0 ? "rounded-r-sm" : ""}`}
 									style={{ width: `${outWidth}%`, minWidth: outWidth > 0 ? "2px" : "0" }}
+								/>
+							)}
+							{cardWidth > 0 && (
+								<div
+									className={`h-full bg-indigo-500 ${balWidth === 0 && goalWidth === 0 && outWidth === 0 ? "rounded-l-sm" : ""} rounded-r-sm`}
+									style={{ width: `${cardWidth}%`, minWidth: cardWidth > 0 ? "2px" : "0" }}
 								/>
 							)}
 						</div>
@@ -102,15 +129,23 @@ export function AccountNode({ data }: AccountNodeProps) {
 			bgColor={bgColor}
 			borderColor={borderColor}
 			titleColor={titleColor}
-			targetHandle={!isDeposited ? { color: handleColor } : undefined}
+			isFlashing={data.isFlashing}
+			targetHandle={{ color: handleColor }}
 			sourceHandle={{ color: handleColor }}
 			onRename={(newName) => renameAccount(data.id, newName)}
 			headerElement={headerElement}
 			rightPanel={rightPanel}
-			className={data.forecastMonths > 1 && !isDeposited ? "w-[260px] h-[95px]" : "w-[160px] h-[85px]"}
+			className={data.forecastMonths > 1 && !isDeposited ? "w-[280px] h-[95px]" : "w-[180px] h-[85px]"}
 		>
 			{isDeposited ? (
-				<div className="text-xs font-bold text-gray-500 mt-2">Deposited: ${originalBalance.toFixed(0)}</div>
+				<div className="flex flex-col justify-center flex-1">
+					<div className="text-xs font-bold text-gray-500">Deposited: ${originalBalance.toFixed(0)}</div>
+					{data.forecastBalance > 0 && (
+						<div className="text-[10px] font-semibold text-green-600 mt-0.5">
+							{data.forecastMonths}m: ${data.forecastBalance.toFixed(0)}
+						</div>
+					)}
+				</div>
 			) : (
 				<>
 					<div className={`text-[10px] ${isCash ? "text-green-600/80" : "text-gray-400"}`}>Start: ${data.balance.toFixed(0)}</div>
@@ -119,7 +154,15 @@ export function AccountNode({ data }: AccountNodeProps) {
 					</div>
 					{data.interestEarned > 0 && (
 						<div className="text-[9px] font-bold text-green-500 bg-green-50 px-1 py-0.5 rounded w-fit mt-1 border border-green-100">
-							Earned: +${data.interestEarned.toFixed(2)}
+							{data.forecastMonths > 12 ? "1yr Earned" : "Earned"}: +${data.interestEarned.toFixed(2)}
+						</div>
+					)}
+					{data.inflationDrag !== undefined && data.inflationDrag > 0 && (
+						<div
+							className="text-[9px] font-bold text-amber-700 bg-amber-50 px-1 py-0.5 rounded w-fit mt-1 border border-amber-200"
+							title={`Purchasing power loss: Real value is $${(data.realForecastBalance ?? data.forecastBalance).toFixed(0)}`}
+						>
+							Inflation Drag: -${data.inflationDrag.toFixed(2)}
 						</div>
 					)}
 				</>

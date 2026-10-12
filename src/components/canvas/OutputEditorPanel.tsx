@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Panel } from "@xyflow/react";
-import { useFinanceStore } from "../../store/financeStore";
+import { useFinanceStore, type CardPaymentMethod } from "../../store/financeStore";
 
 interface OutputEditorPanelProps {
 	selectedEdgeId: string | null;
@@ -17,6 +17,7 @@ export function OutputEditorPanel({ selectedEdgeId, onClose }: OutputEditorPanel
 		cards,
 		loans,
 		retirements,
+		insurances,
 		updateIncomeRoute,
 		removeIncomeRoute,
 		reorderIncomeRoutes,
@@ -90,12 +91,16 @@ export function OutputEditorPanel({ selectedEdgeId, onClose }: OutputEditorPanel
 						expenses.find((e) => e.id === destId)?.name ||
 						loans.find((l) => l.id === destId)?.name ||
 						retirements.find((r) => r.id === destId)?.name ||
+						insurances.find((i) => i.id === destId)?.name ||
 						"Unknown";
 
 					const isGoal = goals.some((g) => g.id === destId);
 					const isLastIncomeRule = isIncome && idx === itemsList.length - 1;
 					const destAccount = accounts.find((a) => a.id === destId);
+					const destCard = cards.find((c) => c.id === destId);
+					const isCreditCard = destCard?.type === "credit";
 					const isChecking = destAccount?.type === "checking";
+					const canAuto = (isChecking || !!destAccount) && !isCreditCard;
 
 					return (
 						<li
@@ -106,17 +111,19 @@ export function OutputEditorPanel({ selectedEdgeId, onClose }: OutputEditorPanel
 							onDrop={(e) => handleDrop(e, idx)}
 							className={`flex items-center gap-2 p-2 rounded border cursor-move ${draggedIdx === idx ? "opacity-50" : "bg-gray-50"}`}
 						>
-							<span className="text-gray-400 cursor-move">☰</span>
+							<div className="w-4 h-4 rounded-full bg-gray-200 text-gray-500 flex items-center justify-center text-[9px] font-black shrink-0">
+								{idx + 1}
+							</div>
 							<div className="flex-1 truncate text-sm font-semibold text-gray-700">{destName}</div>
 
-							{isChecking && (
+							{canAuto && (
 								<label className="flex items-center gap-1 text-[10px] font-bold text-gray-500 mr-2 cursor-pointer">
 									<input
 										type="checkbox"
 										checked={item.isAuto || false}
 										onChange={(e) => {
 											if (isIncome) updateIncomeRoute(sourceId, destId, item.amount, item.type, e.target.checked);
-											else updateTransferRule(ruleId, item.amount, item.type, e.target.checked);
+											else updateTransferRule(ruleId, item.amount, item.type, e.target.checked, item.paymentMethod);
 										}}
 									/>
 									Auto
@@ -129,15 +136,49 @@ export function OutputEditorPanel({ selectedEdgeId, onClose }: OutputEditorPanel
 								</span>
 							) : isLastIncomeRule && !item.isAuto ? (
 								<span className="text-xs font-bold text-blue-600 bg-blue-50 px-3 py-1 rounded text-center whitespace-nowrap">Remaining</span>
-							) : sourceCard?.type === "credit" ? (
-								<select
-									value={item.type}
-									onChange={(e) => updateTransferRule(ruleId, item.amount, e.target.value as any)}
-									className="text-xs border rounded p-1 bg-white cursor-pointer w-24"
-								>
-									<option value="fixed">Pay Custom</option>
-									<option value="percentage">Pay Minimum</option>
-								</select>
+							) : isCreditCard ? (
+								<div className="flex items-center gap-1">
+									<select
+										value={item.paymentMethod || "statement"}
+										onChange={(e) => {
+											const method = e.target.value as CardPaymentMethod;
+											if (!isIncome) {
+												updateTransferRule(ruleId, item.amount, item.type, false, method);
+											}
+										}}
+										className="text-xs border rounded p-1 bg-white cursor-pointer w-28"
+									>
+										<option value="statement">Last Statement</option>
+										<option value="minimum">Minimum</option>
+										<option value="surplus" title="Pay as much as affordable while meeting other minimums">Surplus</option>
+										<option value="custom">Custom</option>
+									</select>
+									{item.paymentMethod === "custom" && (
+										<div className="flex items-center gap-1">
+											<input
+												type="number"
+												min="0"
+												value={item.amount}
+												disabled={item.isAuto}
+												onChange={(e) =>
+													updateTransferRule(ruleId, Number(e.target.value), item.type, false, "custom")
+												}
+												className={`border rounded px-1 py-1 w-14 text-xs text-right ${item.isAuto ? "bg-gray-100 text-gray-400" : "bg-white"}`}
+											/>
+											<select
+												value={item.type}
+												disabled={item.isAuto}
+												onChange={(e) =>
+													updateTransferRule(ruleId, item.amount, e.target.value as any, false, "custom")
+												}
+												className={`text-xs border rounded p-1 cursor-pointer ${item.isAuto ? "bg-gray-100 text-gray-400" : "bg-white"}`}
+											>
+												<option value="fixed">$</option>
+												<option value="percentage">%</option>
+											</select>
+										</div>
+									)}
+								</div>
 							) : (
 								<div className="flex items-center gap-1">
 									<input
@@ -148,7 +189,7 @@ export function OutputEditorPanel({ selectedEdgeId, onClose }: OutputEditorPanel
 										onChange={(e) =>
 											isIncome
 												? updateIncomeRoute(sourceId, destId, Number(e.target.value), item.type, false)
-												: updateTransferRule(ruleId, Number(e.target.value), item.type, false)
+												: updateTransferRule(ruleId, Number(e.target.value), item.type, false, item.paymentMethod)
 										}
 										className={`border rounded px-1 py-1 w-16 text-xs text-right ${item.isAuto ? "bg-gray-100 text-gray-400" : "bg-white"}`}
 									/>
@@ -158,7 +199,7 @@ export function OutputEditorPanel({ selectedEdgeId, onClose }: OutputEditorPanel
 										onChange={(e) =>
 											isIncome
 												? updateIncomeRoute(sourceId, destId, item.amount, e.target.value as any, false)
-												: updateTransferRule(ruleId, item.amount, e.target.value as any, false)
+												: updateTransferRule(ruleId, item.amount, e.target.value as any, false, item.paymentMethod)
 										}
 										className={`text-xs border rounded p-1 cursor-pointer ${item.isAuto ? "bg-gray-100 text-gray-400" : "bg-white"}`}
 									>

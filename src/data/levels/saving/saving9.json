@@ -1,0 +1,87 @@
+{
+  "title": "Yield Hunting",
+  "desc": "Move idle cash from checking into a high-yield savings account.",
+  "to-teach": "Maximize interest earnings using a high-yield savings account.",
+  "subCategoryIndex": 2,
+  "forecastMonths": 6,
+  "hints": [
+    "Checking earns 0.0% APY, while savings offers 4.5% APY.",
+    "Open a savings account, transfer $5,000 of idle checking funds into it, and capture compound interest."
+  ],
+  "client": {
+    "name": "David",
+    "description": "David has $6,000 sitting in a standard 0% checking account, missing out on monthly interest payouts.",
+    "prompt": "I have $6,000 in checking doing nothing. Can you move the bulk of it somewhere safe that pays interest?",
+    "portraitId": "david_01"
+  },
+  "startingState": {
+    "accounts": [
+      {
+        "id": "acc_01",
+        "name": "Zero-Yield Checking",
+        "type": "checking",
+        "balance": 6000,
+        "apy": 0
+      }
+    ],
+    "income": [
+      {
+        "id": "inc_01",
+        "name": "Salary",
+        "amount": 3000,
+        "taxRate": 0,
+        "frequency": "monthly",
+        "routings": [
+          {
+            "destinationId": "acc_01",
+            "amount": 100,
+            "type": "percentage"
+          }
+        ]
+      }
+    ],
+    "expenses": [
+      {
+        "id": "exp_01",
+        "name": "Monthly Living",
+        "isFixed": true,
+        "defaultAmount": 2500
+      }
+    ],
+    "goals": [
+      {
+        "id": "goal_01",
+        "name": "High Yield Reserve",
+        "targetAmount": 5000,
+        "targetMonths": 1
+      }
+    ],
+    "transferRules": [
+      {
+        "id": "rule_01",
+        "sourceId": "acc_01",
+        "destinationId": "exp_01",
+        "amount": 2500,
+        "type": "fixed"
+      }
+    ]
+  },
+  "allowedActions": {
+    "canCreateAccounts": true,
+    "canDeleteAccounts": false,
+    "maxNewAccounts": 1,
+    "allowedAccountTypes": [
+      "savings"
+    ],
+    "allowedCardTypes": []
+  },
+  "winConditions": {
+    "requiredAccounts": [
+      "savings"
+    ],
+    "goalsFundedWithinMonths": {
+      "goalId": "goal_01",
+      "months": 1
+    }
+  }
+}

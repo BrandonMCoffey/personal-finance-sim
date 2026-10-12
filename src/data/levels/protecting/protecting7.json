@@ -1,0 +1,103 @@
+{
+  "title": "The Clunker",
+  "desc": "Decide whether to keep repairing a car or buy new.",
+  "to-teach": "Compare repair costs against loan payments.",
+  "subCategoryIndex": 2,
+  "forecastMonths": 6,
+  "hints": [
+    "Recurring repair bills total $450 every two months, exceeding the monthly cost of a reliable loan payment.",
+    "Replace unpredictable repair drains by routing a steady $250 monthly transfer to an installment auto loan."
+  ],
+  "client": {
+    "name": "David",
+    "description": "David's old vehicle suffers repeated mechanical failures, disrupting his cash flow and draining his checking account.",
+    "prompt": "My car keeps breaking down unpredictably. How do I stabilize my budget by replacing repair spikes with a fixed loan payment?",
+    "portraitId": "david_01"
+  },
+  "startingState": {
+    "accounts": [
+      {
+        "id": "acc_01",
+        "name": "Main Checking",
+        "type": "checking",
+        "balance": 400,
+        "apy": 0
+      }
+    ],
+    "loans": [
+      {
+        "id": "loan_01",
+        "name": "Reliable Car Loan",
+        "balance": 7500,
+        "apr": 5.5,
+        "minimumPayment": 250
+      }
+    ],
+    "income": [
+      {
+        "id": "inc_01",
+        "name": "Wages",
+        "amount": 2600,
+        "taxRate": 0,
+        "frequency": "monthly",
+        "routings": [
+          {
+            "destinationId": "acc_01",
+            "amount": 100,
+            "type": "percentage"
+          }
+        ]
+      }
+    ],
+    "expenses": [
+      {
+        "id": "exp_01",
+        "name": "Apartment Rent",
+        "isFixed": true,
+        "defaultAmount": 1500
+      },
+      {
+        "id": "exp_02",
+        "name": "Gas & Maintenance",
+        "isFixed": false,
+        "minValue": 200,
+        "defaultAmount": 400
+      }
+    ],
+    "transferRules": [
+      {
+        "id": "rule_01",
+        "sourceId": "acc_01",
+        "destinationId": "exp_01",
+        "amount": 1500,
+        "type": "fixed"
+      },
+      {
+        "id": "rule_02",
+        "sourceId": "acc_01",
+        "destinationId": "exp_02",
+        "amount": 400,
+        "type": "fixed"
+      },
+      {
+        "id": "rule_03",
+        "sourceId": "acc_01",
+        "destinationId": "loan_01",
+        "amount": 250,
+        "type": "fixed"
+      }
+    ]
+  },
+  "allowedActions": {
+    "canCreateAccounts": false,
+    "canDeleteAccounts": false,
+    "allowedAccountTypes": [],
+    "allowedCardTypes": []
+  },
+  "winConditions": {
+    "requiredAccounts": [
+      "checking"
+    ],
+    "maxDebtBalance": 6200
+  }
+}

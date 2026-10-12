@@ -8,6 +8,7 @@ interface BaseNodeProps {
 	borderColor: string;
 	titleColor: string;
 	isSnapped?: boolean;
+	isFlashing?: boolean;
 	sourceHandle?: { color: string; position?: Position };
 	targetHandle?: { color: string; position?: Position };
 	children: React.ReactNode;
@@ -24,6 +25,7 @@ export function BaseNode({
 	borderColor,
 	titleColor,
 	isSnapped,
+	isFlashing,
 	sourceHandle,
 	targetHandle,
 	children,
@@ -53,19 +55,20 @@ export function BaseNode({
 	};
 
 	const snappedStyle = isSnapped ? "rounded-t-none shadow-none z-0 border-t-0" : "rounded-md shadow-md z-10";
-	const containerClass = className || "w-[160px] h-[60px]";
+	const flashStyle = isFlashing ? "animate-pulse ring-4 ring-amber-400 border-amber-500 shadow-xl shadow-amber-300" : "";
+	const containerClass = className || "w-[180px] h-[60px]";
 
 	return (
-		<div className={`relative px-3 py-2 border-2 flex flex-col ${containerClass} ${bgColor} ${borderColor} ${snappedStyle}`}>
+		<div className={`relative px-3 pt-2 pb-2.5 border-2 flex flex-col justify-between ${containerClass} ${bgColor} ${borderColor} ${snappedStyle} ${flashStyle} box-border`}>
 			{targetHandle && !isSnapped && (
 				<Handle type="target" position={targetHandle.position || Position.Left} className={`w-3 h-3 ${targetHandle.color}`} />
 			)}
 
-			<div className={`flex justify-between items-start w-full relative z-10 ${rightPanel ? "pr-24" : ""}`}>
+			<div className={`flex justify-between items-start w-full relative z-10 shrink-0 ${rightPanel ? "pr-24" : ""}`}>
 				{isEditing && onRename ? (
 					<input
 						autoFocus
-						className="w-full text-sm font-bold text-gray-900 bg-white/80 border border-gray-300 rounded px-1 outline-none"
+						className="w-full text-[13px] font-bold text-gray-900 bg-white/80 border border-gray-300 rounded px-1 outline-none"
 						value={editName}
 						onChange={(e) => setEditName(e.target.value)}
 						onBlur={handleBlur}
@@ -73,9 +76,9 @@ export function BaseNode({
 					/>
 				) : (
 					<span
-						className={`text-sm font-bold truncate leading-tight ${titleColor} ${onRename ? "cursor-text hover:opacity-80" : ""}`}
+						className={`text-[13px] font-bold truncate leading-tight ${titleColor} ${onRename ? "cursor-text hover:opacity-80" : ""}`}
 						onDoubleClick={() => onRename && setIsEditing(true)}
-						title={onRename ? "Double click to rename" : ""}
+						title={onRename ? `${title} (Double-click to rename)` : title}
 					>
 						{title}
 					</span>
@@ -86,7 +89,7 @@ export function BaseNode({
 				</div>
 			</div>
 
-			<div className={`flex-1 flex flex-col justify-end w-full relative z-10 ${rightPanel ? "pr-24" : ""}`}>{children}</div>
+			<div className={`flex-1 flex flex-col justify-between w-full relative z-10 min-h-0 ${rightPanel ? "pr-24" : ""}`}>{children}</div>
 
 			{rightPanel && <div className="absolute right-0 top-0 bottom-0 z-0">{rightPanel}</div>}
 

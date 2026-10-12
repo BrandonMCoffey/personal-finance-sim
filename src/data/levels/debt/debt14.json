@@ -1,0 +1,103 @@
+{
+  "title": "Student Debt",
+  "desc": "Balance living expenses while managing a fixed student loan payment.",
+  "to-teach": "Budget around a fixed loan payment.",
+  "subCategoryIndex": 4,
+  "forecastMonths": 6,
+  "hints": [
+    "Your fixed student loan installment is $280 every month.",
+    "Trim your flexible entertainment and dining spending to maintain a positive checking balance."
+  ],
+  "client": {
+    "name": "Taylor",
+    "description": "Taylor's post-college grace period has ended, adding an ongoing $280 monthly student loan obligation.",
+    "prompt": "My student loan payments just kicked in. How do I adjust my spending so I can cover the $280 without running out of cash?",
+    "portraitId": "taylor_01"
+  },
+  "startingState": {
+    "accounts": [
+      {
+        "id": "acc_01",
+        "name": "Primary Checking",
+        "type": "checking",
+        "balance": 250,
+        "apy": 0
+      }
+    ],
+    "loans": [
+      {
+        "id": "loan_01",
+        "name": "Federal Student Loan",
+        "balance": 18000,
+        "apr": 5.2,
+        "minimumPayment": 280
+      }
+    ],
+    "income": [
+      {
+        "id": "inc_01",
+        "name": "Wages",
+        "amount": 2600,
+        "taxRate": 0,
+        "frequency": "monthly",
+        "routings": [
+          {
+            "destinationId": "acc_01",
+            "amount": 100,
+            "type": "percentage"
+          }
+        ]
+      }
+    ],
+    "expenses": [
+      {
+        "id": "exp_01",
+        "name": "Rent & Utilities",
+        "isFixed": true,
+        "defaultAmount": 1600
+      },
+      {
+        "id": "exp_02",
+        "name": "Discretionary Spending",
+        "isFixed": false,
+        "minValue": 400,
+        "defaultAmount": 850
+      }
+    ],
+    "transferRules": [
+      {
+        "id": "rule_01",
+        "sourceId": "acc_01",
+        "destinationId": "exp_01",
+        "amount": 1600,
+        "type": "fixed"
+      },
+      {
+        "id": "rule_02",
+        "sourceId": "acc_01",
+        "destinationId": "exp_02",
+        "amount": 850,
+        "type": "fixed"
+      },
+      {
+        "id": "rule_03",
+        "sourceId": "acc_01",
+        "destinationId": "loan_01",
+        "amount": 280,
+        "type": "fixed"
+      }
+    ]
+  },
+  "allowedActions": {
+    "canCreateAccounts": false,
+    "canDeleteAccounts": false,
+    "allowedAccountTypes": [],
+    "allowedCardTypes": []
+  },
+  "winConditions": {
+    "requiredAccounts": [
+      "checking"
+    ],
+    "maxDebtBalance": 16500
+  }
+}

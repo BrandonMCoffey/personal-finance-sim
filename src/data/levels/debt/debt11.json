@@ -1,0 +1,90 @@
+{
+  "title": "Snowball Momentum",
+  "desc": "Roll the payment from a cleared debt into the next smallest.",
+  "to-teach": "Reallocate cleared payments to next debt.",
+  "subCategoryIndex": 3,
+  "forecastMonths": 6,
+  "hints": [
+    "Card A balance is $350 while Card B is $1,200.",
+    "Once Card A is paid off, add that entire monthly payment to Card B's monthly transfer."
+  ],
+  "client": {
+    "name": "Taylor",
+    "description": "Taylor is about to finish paying off a small store balance and wants to roll that payment into their next debt.",
+    "prompt": "When my first card is paid off, how do I redirect that monthly payment to snowball the next one?",
+    "portraitId": "taylor_01"
+  },
+  "startingState": {
+    "accounts": [
+      {
+        "id": "acc_01",
+        "name": "Checking Account",
+        "type": "checking",
+        "balance": 250,
+        "apy": 0
+      }
+    ],
+    "cards": [
+      {
+        "id": "card_01",
+        "name": "Gas Card",
+        "type": "credit",
+        "linkedAccountId": "",
+        "balance": 350,
+        "limit": 1000,
+        "apr": 19
+      },
+      {
+        "id": "card_02",
+        "name": "Electronics Card",
+        "type": "credit",
+        "linkedAccountId": "",
+        "balance": 1200,
+        "limit": 2500,
+        "apr": 22
+      }
+    ],
+    "income": [
+      {
+        "id": "inc_01",
+        "name": "Salary",
+        "amount": 2600,
+        "taxRate": 0,
+        "frequency": "monthly",
+        "routings": [
+          {
+            "destinationId": "acc_01",
+            "amount": 100,
+            "type": "percentage"
+          }
+        ]
+      }
+    ],
+    "expenses": [
+      {
+        "id": "exp_01",
+        "name": "Living Costs",
+        "isFixed": true,
+        "defaultAmount": 1800
+      }
+    ],
+    "transferRules": [
+      {
+        "id": "rule_01",
+        "sourceId": "acc_01",
+        "destinationId": "exp_01",
+        "amount": 1800,
+        "type": "fixed"
+      }
+    ]
+  },
+  "allowedActions": {
+    "canCreateAccounts": false,
+    "canDeleteAccounts": false,
+    "allowedAccountTypes": [],
+    "allowedCardTypes": []
+  },
+  "winConditions": {
+    "optimalDebtRouting": "snowball"
+  }
+}

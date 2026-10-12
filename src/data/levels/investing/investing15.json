@@ -1,0 +1,98 @@
+{
+  "title": "Wealth Machine",
+  "desc": "Create a fully optimized system of checking, savings, and investments.",
+  "to-teach": "Optimize routing across all account types.",
+  "subCategoryIndex": 4,
+  "forecastMonths": 12,
+  "hints": [
+    "Your direct deposit can fund your 401k match first, checking for bills second, and savings/brokerage third.",
+    "Route 5% to 401k, cover the $2,500 monthly bills from Checking, and split the remaining surplus between Savings and Brokerage."
+  ],
+  "client": {
+    "name": "Elena",
+    "description": "Elena wants to build an automated wealth pipeline that simultaneously handles bills, retirement match, cash reserves, and brokerage growth.",
+    "prompt": "I want an end-to-end automated system that captures my retirement match, covers my living costs, and funds both savings and stocks every month!",
+    "portraitId": "elena_01"
+  },
+  "startingState": {
+    "accounts": [
+      {
+        "id": "acc_01",
+        "name": "Bills Checking",
+        "type": "checking",
+        "balance": 1500,
+        "apy": 0
+      },
+      {
+        "id": "acc_02",
+        "name": "Safety Savings",
+        "type": "savings",
+        "balance": 4000,
+        "apy": 4.5
+      },
+      {
+        "id": "acc_03",
+        "name": "Growth Brokerage",
+        "type": "brokerage",
+        "balance": 6000,
+        "apy": 8
+      }
+    ],
+    "retirements": [
+      {
+        "id": "ret_01",
+        "name": "Company 401k",
+        "type": "401k",
+        "balance": 5000,
+        "expectedApy": 7,
+        "employerMatchPercent": 5
+      }
+    ],
+    "income": [
+      {
+        "id": "inc_01",
+        "name": "Executive Salary",
+        "amount": 5000,
+        "taxRate": 20,
+        "frequency": "monthly",
+        "routings": [
+          {
+            "destinationId": "acc_01",
+            "amount": 100,
+            "type": "percentage"
+          }
+        ]
+      }
+    ],
+    "expenses": [
+      {
+        "id": "exp_01",
+        "name": "Living Expenses",
+        "isFixed": true,
+        "defaultAmount": 2500
+      }
+    ],
+    "transferRules": [
+      {
+        "id": "rule_01",
+        "sourceId": "acc_01",
+        "destinationId": "exp_01",
+        "amount": 2500,
+        "type": "fixed"
+      }
+    ]
+  },
+  "allowedActions": {
+    "canCreateAccounts": false,
+    "canDeleteAccounts": false,
+    "allowedAccountTypes": [],
+    "allowedCardTypes": []
+  },
+  "winConditions": {
+    "requiredAccounts": [
+      "checking",
+      "savings",
+      "brokerage"
+    ]
+  }
+}

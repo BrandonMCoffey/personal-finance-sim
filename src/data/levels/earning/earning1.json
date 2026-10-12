@@ -1,0 +1,46 @@
+{
+  "title": "Opening an Account",
+  "desc": "Open your first bank account and route your paycheck into it.",
+  "to-teach": "Open a checking account from Actions and connect your income.",
+  "subCategoryIndex": 0,
+  "forecastMonths": 3,
+  "hints": [
+    "Click '+ Checking' in the top Actions menu to open your account.",
+    "Drag a connection from your Job Salary node to your newly opened checking account."
+  ],
+  "client": {
+    "name": "Alex",
+    "description": "Alex just graduated and landed an entry-level job, but needs to set up a bank account for direct deposit.",
+    "prompt": "I just started my first job, but my paycheck has nowhere to go! How do I open a bank account and get my money deposited?",
+    "portraitId": "alex_01"
+  },
+  "startingState": {
+    "accounts": [],
+    "income": [
+      {
+        "id": "inc_01",
+        "name": "Job Salary",
+        "amount": 2500,
+        "taxRate": 0,
+        "frequency": "monthly",
+        "routings": []
+      }
+    ],
+    "expenses": [],
+    "transferRules": []
+  },
+  "allowedActions": {
+    "canCreateAccounts": true,
+    "canDeleteAccounts": true,
+    "allowedAccountTypes": [
+      "bank"
+    ],
+    "allowedCardTypes": [],
+    "lockExpenses": true
+  },
+  "winConditions": {
+    "requiredAccounts": [
+      "bank"
+    ]
+  }
+}

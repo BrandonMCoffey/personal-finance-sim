@@ -1,0 +1,93 @@
+{
+  "title": "Plastic Money",
+  "desc": "Route expenses to a credit card and pay the statement.",
+  "to-teach": "Use a credit card for variable expenses.",
+  "subCategoryIndex": 0,
+  "forecastMonths": 3,
+  "hints": [
+    "Groceries require a card payment to process.",
+    "Route Groceries through your Rewards Visa, then pay off the card balance from Checking."
+  ],
+  "client": {
+    "name": "Sarah",
+    "description": "Sarah received her first credit card and wants to use it for groceries while paying it off monthly from checking.",
+    "prompt": "I got my first credit card! How do I put my groceries on it and pay off the card balance every month?",
+    "portraitId": "sarah_01"
+  },
+  "startingState": {
+    "accounts": [
+      {
+        "id": "acc_01",
+        "name": "Main Checking",
+        "type": "checking",
+        "balance": 1200,
+        "apy": 0
+      }
+    ],
+    "cards": [
+      {
+        "id": "card_01",
+        "name": "Rewards Visa",
+        "type": "credit",
+        "linkedAccountId": "",
+        "balance": 0,
+        "limit": 2000,
+        "apr": 20
+      }
+    ],
+    "income": [
+      {
+        "id": "inc_01",
+        "name": "Salary",
+        "amount": 2500,
+        "taxRate": 0,
+        "frequency": "monthly",
+        "routings": [
+          {
+            "destinationId": "acc_01",
+            "amount": 100,
+            "type": "percentage"
+          }
+        ]
+      }
+    ],
+    "expenses": [
+      {
+        "id": "exp_01",
+        "name": "Rent",
+        "isFixed": true,
+        "requiresCard": false,
+        "defaultAmount": 1200
+      },
+      {
+        "id": "exp_02",
+        "name": "Groceries",
+        "isFixed": false,
+        "minValue": 300,
+        "requiresCard": true,
+        "defaultAmount": 400
+      }
+    ],
+    "transferRules": [
+      {
+        "id": "rule_01",
+        "sourceId": "acc_01",
+        "destinationId": "exp_01",
+        "amount": 1200,
+        "type": "fixed"
+      }
+    ]
+  },
+  "allowedActions": {
+    "canCreateAccounts": false,
+    "canDeleteAccounts": false,
+    "allowedAccountTypes": [],
+    "allowedCardTypes": []
+  },
+  "winConditions": {
+    "requiredAccounts": [
+      "checking"
+    ],
+    "maxDebtBalance": 0
+  }
+}

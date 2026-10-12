@@ -1,7 +1,96 @@
 import { create } from "zustand";
 
 // --- Type Definitions ---
-export type AccountType = "cash" | "checking" | "savings" | "credit" | "bank";
+export type AccountType = "cash" | "checking" | "savings" | "credit" | "bank" | "brokerage";
+
+export interface TaxBracket {
+	rate: number;
+	upTo?: number;
+	max?: number;
+	min?: number;
+}
+
+export interface TaxDeduction {
+	name: string;
+	rate?: number;
+	limit?: number;
+	wageCap?: number;
+	amount?: number;
+	fixedAmount?: number;
+	type?: "flat" | "bracket" | "fixed" | "fica";
+	brackets?: TaxBracket[];
+}
+
+export function calculateIncomeTaxes(
+	grossAmount: number,
+	taxRateOrDeductions?: number | TaxDeduction[],
+	taxDeductionsParam?: TaxDeduction[]
+): {
+	totalTax: number;
+	netAmount: number;
+	netPay: number;
+	breakdown: { name: string; amount: number; rate?: number }[];
+} {
+	let taxDeductions: TaxDeduction[] | undefined;
+	let fallbackRate = 0;
+
+	if (Array.isArray(taxRateOrDeductions)) {
+		taxDeductions = taxRateOrDeductions;
+	} else {
+		fallbackRate = taxRateOrDeductions || 0;
+		taxDeductions = taxDeductionsParam;
+	}
+
+	if (taxDeductions && taxDeductions.length > 0) {
+		const breakdown: { name: string; amount: number; rate?: number }[] = [];
+		let totalTax = 0;
+
+		taxDeductions.forEach((deduction) => {
+			let deductionAmount = 0;
+			const fixedVal = deduction.fixedAmount ?? deduction.amount;
+
+			if (deduction.type === "bracket" || (deduction.brackets && deduction.brackets.length > 0)) {
+				const brackets = deduction.brackets || [];
+				let prevLimit = 0;
+				for (const bracket of brackets) {
+					const rawCap = bracket.upTo ?? bracket.max;
+					const minVal = bracket.min !== undefined ? (bracket.min > grossAmount * 4 ? bracket.min / 12 : bracket.min) : prevLimit;
+					const bracketCap =
+						rawCap !== undefined ? (rawCap > grossAmount * 4 ? rawCap / 12 : rawCap) : Infinity;
+
+					if (grossAmount > minVal) {
+						const taxableInBracket = Math.min(grossAmount - minVal, bracketCap - minVal);
+						if (taxableInBracket > 0) {
+							deductionAmount += taxableInBracket * (bracket.rate / 100);
+						}
+					}
+					prevLimit = bracketCap;
+					if (grossAmount <= bracketCap) break;
+				}
+				breakdown.push({ name: deduction.name, amount: deductionAmount });
+			} else if (fixedVal !== undefined) {
+				deductionAmount = fixedVal;
+				breakdown.push({ name: deduction.name, amount: deductionAmount });
+			} else if (deduction.rate !== undefined) {
+				const rawLimit = deduction.limit ?? deduction.wageCap;
+				const limit =
+					rawLimit !== undefined ? (rawLimit > grossAmount * 4 ? rawLimit / 12 : rawLimit) : Infinity;
+				const taxableBase = Math.min(grossAmount, limit);
+				deductionAmount = taxableBase * (deduction.rate / 100);
+				breakdown.push({ name: deduction.name, amount: deductionAmount, rate: deduction.rate });
+			}
+			totalTax += deductionAmount;
+		});
+
+		const netAmount = Math.max(0, grossAmount - totalTax);
+		return { totalTax, netAmount, netPay: netAmount, breakdown };
+	}
+
+	const totalTax = grossAmount * (fallbackRate / 100);
+	const netAmount = Math.max(0, grossAmount - totalTax);
+	const breakdown = fallbackRate > 0 ? [{ name: "Standard Tax", amount: totalTax, rate: fallbackRate }] : [];
+	return { totalTax, netAmount, netPay: netAmount, breakdown };
+}
 
 export interface AllowedActions {
 	canCreateAccounts: boolean;
@@ -9,6 +98,8 @@ export interface AllowedActions {
 	allowedAccountTypes: AccountType[];
 	maxNewAccounts?: number;
 	allowedCardTypes?: ("debit" | "credit")[];
+	lockExpenses?: boolean;
+	lockPreconfiguredRules?: boolean;
 }
 
 export interface Account {
@@ -27,6 +118,7 @@ export interface Card {
 	balance: number;
 	limit?: number;
 	apr?: number;
+	minimumPayment?: number;
 }
 
 export interface Loan {
@@ -35,6 +127,14 @@ export interface Loan {
 	balance: number;
 	apr: number;
 	minimumPayment: number;
+}
+
+export interface Insurance {
+	id: string;
+	name: string;
+	premium: number;
+	deductible: number;
+	coveredExpenseIds?: string[];
 }
 
 export interface Retirement {
@@ -58,6 +158,7 @@ export interface Income {
 	name: string;
 	amount: number;
 	taxRate?: number;
+	taxDeductions?: TaxDeduction[];
 	frequency: string;
 	routings: IncomeRoute[];
 }
@@ -69,6 +170,8 @@ export interface Goal {
 	targetMonths?: number;
 }
 
+export type CardPaymentMethod = "minimum" | "statement" | "surplus" | "custom";
+
 export interface TransferRule {
 	id: string;
 	sourceId: string;
@@ -76,6 +179,7 @@ export interface TransferRule {
 	amount: number;
 	type: "fixed" | "percentage";
 	isAuto?: boolean;
+	paymentMethod?: CardPaymentMethod;
 }
 
 export interface Client {
@@ -83,15 +187,38 @@ export interface Client {
 	description: string;
 	prompt: string;
 	portraitId: string;
+	avatarEmoji?: string;
+	emotion?: string;
+	occupation?: string;
+	age?: number;
+	stageTitle?: string;
+	lifeEvent?: {
+		title: string;
+		description: string;
+		type: string;
+	};
+	characterId?: string;
+	stageId?: string;
+	dialogue?: {
+		greeting: string;
+		emotion: string;
+		planApproved: string;
+		planNeedsWork: string;
+	};
 }
 
 export interface Expense {
 	id: string;
 	name: string;
 	amount: number;
+	defaultAmount?: number;
+	maxAmount?: number;
 	isFixed: boolean;
 	minValue?: number;
 	requiresCard?: boolean;
+	frequency?: number;
+	occurrenceMonth?: number;
+	isCancelable?: boolean;
 }
 
 export interface WinConditions {
@@ -105,21 +232,32 @@ export interface WinConditions {
 		type: string;
 		description: string;
 	}[];
+	optimalDebtRouting?: "avalanche" | "snowball";
+	requireInsuranceCoverage?: boolean;
+	maxDebtBalance?: number;
+	debtPaidOff?: string[];
+	requireRetirementMatch?: boolean;
+	minRetirementBalance?: number;
 }
 
 // --- Store Interface ---
 interface FinanceState {
 	currentScreen: "main_menu" | "levels" | "story" | "endless" | "game";
-	levelScores: Record<number, number>;
+	levelScores: Record<string, number>;
+	levelId: string | null;
+	lastSelectedLevelId: string | null;
+	selectedCategory: string | null;
 	isAllUnlocked: boolean;
-	levelId: number | null;
 	category: string;
+	toTeach?: string;
+	inflationRate: number;
 	hints: string[];
 	client: Client | null;
 	expenses: Expense[];
 	accounts: Account[];
 	cards: Card[];
 	loans: Loan[];
+	insurances: Insurance[];
 	retirements: Retirement[];
 	incomes: Income[];
 	goals: Goal[];
@@ -128,9 +266,20 @@ interface FinanceState {
 	forecastMonths: number;
 	allowedActions: AllowedActions | null;
 	initialAccountCount: number;
+	initialAccountTypes: AccountType[];
+	flashingNodeId: string | null;
+	endlessAge: number;
+	endlessMilestoneIndex: number;
+	endlessCompletedPrerequisites: string[];
+
+	setFlashingNodeId: (id: string | null) => void;
+	setEndlessAge: (age: number) => void;
+	setEndlessMilestoneIndex: (idx: number) => void;
+	addEndlessPrerequisite: (id: string) => void;
 
 	setCurrentScreen: (screen: "main_menu" | "levels" | "story" | "endless" | "game") => void;
-	saveLevelScore: (levelId: number, score: number) => void;
+	setSelectedCategory: (cat: string) => void;
+	saveLevelScore: (levelId: string, score: number) => void;
 	unlockAllLevels: () => void;
 	clearProgress: () => void;
 	loadLevel: (levelData: any) => void;
@@ -141,8 +290,10 @@ interface FinanceState {
 	addCard: (name: string, type: "debit" | "credit", linkedAccountId: string) => void;
 	removeCard: (cardId: string) => void;
 	updateCardLink: (cardId: string, accountId: string) => void;
-	addLoan: (name: string, balance: number, apr: number, minimumPayment: number) => void;
-	addRetirement: (name: string, balance: number, expectedApy: number, employerMatchPercent: number) => void;
+	addLoan: (name: string, balance: number, apr: number, minimumPayment: number) => string;
+	addInsurance: (name: string, premium: number, deductible: number, coveredExpenseIds?: string[]) => string;
+	removeInsurance: (insuranceId: string) => void;
+	addRetirement: (name: string, balance: number, expectedApy: number, employerMatchPercent: number) => string;
 
 	addIncomeRoute: (incomeId: string, destinationId: string, defaultAmount?: number, defaultType?: "fixed" | "percentage", isAuto?: boolean) => void;
 	updateIncomeRoute: (incomeId: string, destinationId: string, amount: number, type: "fixed" | "percentage", isAuto?: boolean) => void;
@@ -150,26 +301,54 @@ interface FinanceState {
 	removeIncomeRoute: (incomeId: string, destinationId: string) => void;
 	reorderIncomeRoutes: (incomeId: string, startIndex: number, endIndex: number) => void;
 
-	addTransferRule: (sourceId: string, destinationId: string, amount?: number, type?: "fixed" | "percentage", isAuto?: boolean) => void;
-	updateTransferRule: (ruleId: string, amount: number, type: "fixed" | "percentage", isAuto?: boolean) => void;
+	addTransferRule: (
+		sourceId: string,
+		destinationId: string,
+		amount?: number,
+		type?: "fixed" | "percentage",
+		isAuto?: boolean,
+		paymentMethod?: CardPaymentMethod
+	) => void;
+	updateTransferRule: (
+		ruleId: string,
+		amount: number,
+		type: "fixed" | "percentage",
+		isAuto?: boolean,
+		paymentMethod?: CardPaymentMethod
+	) => void;
 	removeTransferRule: (ruleId: string) => void;
 	reorderTransferRules: (sourceId: string, startIndex: number, endIndex: number) => void;
+
+	addExpense: (
+		name: string,
+		amount: number,
+		isFixed: boolean,
+		options?: { maxAmount?: number; minValue?: number; requiresCard?: boolean; frequency?: number; occurrenceMonth?: number }
+	) => string;
+	addIncome: (name: string, amount: number, taxRate: number, frequency: string) => string;
+	applyMilestoneEffects: (effects: any) => void;
+	applyTimeSkip: (newState: any) => void;
 }
 
 // --- Zustand Implementation ---
 export const useFinanceStore = create<FinanceState>()((set) => ({
 	currentScreen: "main_menu",
-	levelScores: JSON.parse(localStorage.getItem("finance_scores") || "{}"),
-	isAllUnlocked: localStorage.getItem("finance_unlocked") === "true",
+	levelScores: typeof localStorage !== "undefined" ? JSON.parse(localStorage.getItem("finance_scores") || "{}") : {},
+	isAllUnlocked: typeof localStorage !== "undefined" && localStorage.getItem("finance_unlocked") === "true",
 
 	levelId: null,
-	category: "budgeting",
+	lastSelectedLevelId: null,
+	selectedCategory: null,
+	category: "earning",
+	toTeach: undefined,
+	inflationRate: 0,
 	hints: [],
 	client: null,
 	expenses: [],
 	accounts: [],
 	cards: [],
 	loans: [],
+	insurances: [],
 	retirements: [],
 	incomes: [],
 	goals: [],
@@ -178,20 +357,35 @@ export const useFinanceStore = create<FinanceState>()((set) => ({
 	forecastMonths: 6,
 	allowedActions: null,
 	initialAccountCount: 0,
+	initialAccountTypes: [],
+	flashingNodeId: null,
+	endlessAge: 16,
+	endlessMilestoneIndex: 0,
+	endlessCompletedPrerequisites: [],
+
+	setFlashingNodeId: (id) => set({ flashingNodeId: id }),
+	setEndlessAge: (age) => set({ endlessAge: age }),
+	setEndlessMilestoneIndex: (idx) => set({ endlessMilestoneIndex: idx }),
+	addEndlessPrerequisite: (id) => set((s) => ({ endlessCompletedPrerequisites: [...s.endlessCompletedPrerequisites, id] })),
 
 	setCurrentScreen: (screen) => set({ currentScreen: screen }),
+	setSelectedCategory: (cat) => set({ selectedCategory: cat }),
 
 	saveLevelScore: (levelId, score) =>
 		set((state) => {
 			const currentHigh = state.levelScores[levelId] || 0;
 			const newScores = { ...state.levelScores, [levelId]: Math.max(currentHigh, score) };
-			localStorage.setItem("finance_scores", JSON.stringify(newScores));
+			if (typeof localStorage !== "undefined") {
+				localStorage.setItem("finance_scores", JSON.stringify(newScores));
+			}
 			return { levelScores: newScores };
 		}),
 
 	unlockAllLevels: () =>
 		set(() => {
-			localStorage.setItem("finance_unlocked", "true");
+			if (typeof localStorage !== "undefined") {
+				localStorage.setItem("finance_unlocked", "true");
+			}
 			return { isAllUnlocked: true };
 		}),
 
@@ -203,21 +397,57 @@ export const useFinanceStore = create<FinanceState>()((set) => ({
 		}),
 
 	loadLevel: (levelData: any) =>
-		set((_) => {
-			const rawAccounts = levelData.startingState?.accounts || [];
+		set(() => {
+			const rawAccounts = (levelData.startingState?.accounts || []).filter((a: any) => a.type !== "insurance");
 			const isChecking = (destId: string) => rawAccounts.some((a: any) => a.id === destId && a.type === "checking");
 
+			const rawInsurances: Insurance[] = [
+				...(levelData.startingState?.insurances || levelData.startingState?.insurance || []),
+				...(levelData.startingState?.accounts || []).filter((a: any) => a.type === "insurance"),
+				...(levelData.startingState?.expenses || []).filter((e: any) => e.type === "insurance" || e.premium !== undefined)
+			].map((ins: any, idx: number) => ({
+				id: ins.id || `ins_${idx + 1}`,
+				name: ins.name || "Insurance Policy",
+				premium: ins.premium !== undefined ? ins.premium : ins.amount || 100,
+				deductible: ins.deductible !== undefined ? ins.deductible : 500,
+				coveredExpenseIds: ins.coveredExpenseIds
+			}));
+
 			return {
-				levelId: levelData.levelId,
-				category: levelData.category || "budgeting",
+				levelId: levelData.id,
+				lastSelectedLevelId: levelData.id,
+				category: levelData.category || "earning",
+				selectedCategory: levelData.category || "earning",
+				toTeach: levelData["to-teach"] || levelData.toTeach || levelData.desc || "",
+				inflationRate: levelData.startingState?.inflationRate || 0,
+				insurances: rawInsurances,
 				hints: levelData.hints || [],
 				client: levelData.client || null,
-				expenses: (levelData.startingState?.expenses || []).map((exp: any) => ({
-					...exp,
-					requiresCard: exp.requiresCard || false
-				})),
+				expenses: (levelData.startingState?.expenses || [])
+					.filter((exp: any) => exp.type !== "insurance" && exp.premium === undefined)
+					.map((exp: any) => {
+						const defaultAmount = exp.defaultAmount !== undefined ? exp.defaultAmount : (exp.amount || 0);
+						const maxAmount = exp.maxAmount !== undefined ? exp.maxAmount : defaultAmount * 1.5;
+						return {
+							...exp,
+							amount: defaultAmount,
+							defaultAmount,
+							maxAmount,
+							requiresCard: exp.requiresCard || false,
+							frequency: exp.frequency || 1,
+							occurrenceMonth: exp.occurrenceMonth
+						};
+					}),
 				accounts: rawAccounts,
-				cards: levelData.startingState?.cards || [],
+				cards: (levelData.startingState?.cards || []).map((card: any) => ({
+					...card,
+					minimumPayment:
+						card.minimumPayment !== undefined
+							? card.minimumPayment
+							: card.type === "credit" && card.balance > 0
+								? Math.min(card.balance, Math.max(25, card.balance * 0.025))
+								: 0
+				})),
 				loans: levelData.startingState?.loans || [],
 				retirements: (levelData.startingState?.retirements || []).map((ret: any) => ({
 					...ret,
@@ -226,6 +456,7 @@ export const useFinanceStore = create<FinanceState>()((set) => ({
 				incomes: (levelData.startingState?.income || []).map((inc: any) => ({
 					...inc,
 					taxRate: inc.taxRate || 0,
+					taxDeductions: inc.taxDeductions || [],
 					routings: inc.routings
 						? inc.routings.map((r: any) => ({
 								destinationId: r.destinationId,
@@ -236,14 +467,29 @@ export const useFinanceStore = create<FinanceState>()((set) => ({
 						: []
 				})),
 				goals: levelData.startingState?.goals || [],
-				transferRules: (levelData.startingState?.transferRules || []).map((rule: any) => ({
-					...rule,
-					isAuto: rule.isAuto !== undefined ? rule.isAuto : isChecking(rule.destinationId)
-				})),
+				transferRules: (levelData.startingState?.transferRules || []).map((rule: any) => {
+					const isCreditCard = (levelData.startingState?.cards || []).some(
+						(c: any) => c.id === rule.destinationId && c.type === "credit"
+					);
+					return {
+						...rule,
+						isAuto: rule.isAuto !== undefined ? rule.isAuto : isChecking(rule.destinationId),
+						paymentMethod: rule.paymentMethod
+							? rule.paymentMethod
+							: isCreditCard
+							? (rule.amount !== undefined && rule.amount > 0 && rule.amount !== 100 && rule.type === "fixed" ? "custom" : "statement")
+							: undefined
+					};
+				}),
 				winConditions: levelData.winConditions || null,
 				forecastMonths: levelData.forecastMonths || 6,
 				allowedActions: levelData.allowedActions || null,
-				initialAccountCount: rawAccounts.length || 0
+				initialAccountCount: rawAccounts.length || 0,
+				initialAccountTypes: rawAccounts.map((a: any) => a.type as AccountType),
+				flashingNodeId: null,
+				endlessAge: levelData.category === "endless" ? 16 : 22,
+				endlessMilestoneIndex: 0,
+				endlessCompletedPrerequisites: []
 			};
 		}),
 
@@ -284,20 +530,25 @@ export const useFinanceStore = create<FinanceState>()((set) => ({
 		}),
 
 	addCard: (name, type, linkedAccountId) =>
-		set((state) => ({
-			cards: [
-				...state.cards,
-				{
-					id: `card_${Date.now()}`,
-					name,
-					type,
-					linkedAccountId,
-					balance: 0,
-					limit: type === "credit" ? 5000 : undefined,
-					apr: type === "credit" ? 19.99 : 0
-				}
-			]
-		})),
+		set((state) => {
+			const existingSameType = state.cards.filter((c) => c.type === type);
+			const defaultName = existingSameType.length === 0 ? name : `${name} ${existingSameType.length + 1}`;
+			return {
+				cards: [
+					...state.cards,
+					{
+						id: `card_${Date.now()}`,
+						name: defaultName,
+						type,
+						linkedAccountId,
+						balance: 0,
+						limit: type === "credit" ? 5000 : undefined,
+						apr: type === "credit" ? 19.99 : 0,
+						minimumPayment: type === "credit" ? 25 : undefined
+					}
+				]
+			};
+		}),
 
 	removeCard: (cardId) =>
 		set((state) => ({
@@ -310,15 +561,41 @@ export const useFinanceStore = create<FinanceState>()((set) => ({
 			cards: state.cards.map((c) => (c.id === cardId ? { ...c, linkedAccountId: accountId } : c))
 		})),
 
-	addLoan: (name, balance, apr, minimumPayment) =>
+	addLoan: (name, balance, apr, minimumPayment) => {
+		const id = `loan_${Date.now()}`;
 		set((state) => ({
-			loans: [...state.loans, { id: `loan_${Date.now()}`, name, balance, apr, minimumPayment }]
+			loans: [...state.loans, { id, name, balance, apr, minimumPayment }],
+			flashingNodeId: id
+		}));
+		return id;
+	},
+
+	addInsurance: (name, premium, deductible, coveredExpenseIds) => {
+		const id = `ins_${Date.now()}`;
+		set((state) => ({
+			insurances: [
+				...state.insurances,
+				{ id, name, premium, deductible, coveredExpenseIds }
+			],
+			flashingNodeId: id
+		}));
+		return id;
+	},
+
+	removeInsurance: (insuranceId) =>
+		set((state) => ({
+			insurances: state.insurances.filter((i) => i.id !== insuranceId),
+			transferRules: state.transferRules.filter((r) => r.destinationId !== insuranceId && r.sourceId !== insuranceId)
 		})),
 
-	addRetirement: (name, balance, expectedApy, employerMatchPercent) =>
+	addRetirement: (name, balance, expectedApy, employerMatchPercent) => {
+		const id = `ret_${Date.now()}`;
 		set((state) => ({
-			retirements: [...state.retirements, { id: `ret_${Date.now()}`, name, balance, expectedApy, employerMatchPercent }]
-		})),
+			retirements: [...state.retirements, { id, name, balance, expectedApy, employerMatchPercent }],
+			flashingNodeId: id
+		}));
+		return id;
+	},
 
 	// --- INCOME ACTIONS ---
 	addIncomeRoute: (incomeId, destinationId, defaultAmount = 10, defaultType = "percentage", isAuto = false) =>
@@ -382,21 +659,34 @@ export const useFinanceStore = create<FinanceState>()((set) => ({
 		})),
 
 	// --- TRANSFER ACTIONS ---
-	addTransferRule: (sourceId, destinationId, amount = 10, type = "percentage", isAuto = false) =>
+	addTransferRule: (sourceId, destinationId, amount = 10, type = "percentage", isAuto = false, paymentMethod) =>
 		set((state) => {
 			if (state.transferRules.find((r) => r.sourceId === sourceId && r.destinationId === destinationId)) {
 				return { transferRules: state.transferRules };
 			}
+			const targetCard = state.cards.find((c) => c.id === destinationId);
+			const resolvedMethod =
+				paymentMethod || (targetCard?.type === "credit" ? "statement" : undefined);
 			return {
-				transferRules: [...state.transferRules, { id: `rule_${Date.now()}`, sourceId, destinationId, amount, type, isAuto }]
+				transferRules: [
+					...state.transferRules,
+					{ id: `rule_${Date.now()}`, sourceId, destinationId, amount, type, isAuto, paymentMethod: resolvedMethod }
+				]
 			};
 		}),
 
-	updateTransferRule: (ruleId, amount, type, isAuto) =>
+	updateTransferRule: (ruleId, amount, type, isAuto, paymentMethod) =>
 		set((state) => ({
-			transferRules: state.transferRules.map((rule) =>
-				rule.id === ruleId ? { ...rule, amount, type, isAuto: isAuto !== undefined ? isAuto : rule.isAuto } : rule
-			)
+			transferRules: state.transferRules.map((rule) => {
+				if (rule.id !== ruleId) return rule;
+				return {
+					...rule,
+					amount,
+					type,
+					isAuto: isAuto !== undefined ? isAuto : rule.isAuto,
+					paymentMethod: paymentMethod !== undefined ? paymentMethod : rule.paymentMethod
+				};
+			})
 		})),
 
 	removeTransferRule: (ruleId) =>
@@ -414,5 +704,187 @@ export const useFinanceStore = create<FinanceState>()((set) => ({
 			newSourceRules.splice(endIndex, 0, moved);
 
 			return { transferRules: [...otherRules, ...newSourceRules] };
+		}),
+
+	addExpense: (name, defaultAmount, isFixed, options) => {
+		const id = `exp_${Date.now()}`;
+		const maxAmount = options?.maxAmount !== undefined ? options.maxAmount : defaultAmount * 1.5;
+		set((state) => ({
+			expenses: [
+				...state.expenses,
+				{
+					id,
+					name,
+					amount: defaultAmount,
+					defaultAmount,
+					maxAmount,
+					isFixed,
+					...options
+				}
+			],
+			flashingNodeId: id
+		}));
+		return id;
+	},
+
+	addIncome: (name, amount, taxRate, frequency) => {
+		const id = `inc_${Date.now()}`;
+		set((state) => ({
+			incomes: [...state.incomes, { id, name, amount, taxRate, frequency, routings: [] }],
+			flashingNodeId: id
+		}));
+		return id;
+	},
+
+	applyMilestoneEffects: (effects: any) =>
+		set((state) => {
+			let flashingId: string | null = null;
+			let updatedIncomes = [...state.incomes];
+			let updatedExpenses = [...state.expenses];
+			let updatedLoans = [...state.loans];
+			let updatedCards = [...state.cards];
+			let updatedRetirements = [...state.retirements];
+			let updatedInsurances = [...state.insurances];
+
+			if (effects.incomesToUpdate) {
+				for (const inc of effects.incomesToUpdate) {
+					const existingIdx = updatedIncomes.findIndex((i) => i.id === inc.id);
+					if (existingIdx !== -1) {
+						updatedIncomes[existingIdx] = {
+							...updatedIncomes[existingIdx],
+							name: inc.name || updatedIncomes[existingIdx].name,
+							amount: inc.amount,
+							taxRate: inc.taxRate ?? updatedIncomes[existingIdx].taxRate
+						};
+						flashingId = inc.id;
+					} else {
+						const newInc = {
+							id: inc.id || `inc_${Date.now()}`,
+							name: inc.name,
+							amount: inc.amount,
+							taxRate: inc.taxRate ?? 15,
+							frequency: "monthly" as const,
+							routings: []
+						};
+						updatedIncomes.push(newInc);
+						flashingId = newInc.id;
+					}
+				}
+			}
+
+			if (effects.incomesToAdd) {
+				for (const inc of effects.incomesToAdd) {
+					const newInc = {
+						id: inc.id || `inc_${Date.now()}_${Math.floor(Math.random() * 1000)}`,
+						name: inc.name,
+						amount: inc.amount,
+						taxRate: inc.taxRate ?? 15,
+						frequency: (inc.frequency || "monthly") as "monthly",
+						routings: []
+					};
+					updatedIncomes.push(newInc);
+					flashingId = newInc.id;
+				}
+			}
+
+			if (effects.expensesToAdd) {
+				for (const exp of effects.expensesToAdd) {
+					const newExp = {
+						id: exp.id || `exp_${Date.now()}_${Math.floor(Math.random() * 1000)}`,
+						name: exp.name,
+						amount: exp.amount,
+						defaultAmount: exp.amount,
+						maxAmount: exp.maxAmount ?? exp.amount * 1.5,
+						isFixed: exp.isFixed ?? true,
+						minValue: exp.minValue
+					};
+					updatedExpenses.push(newExp);
+					flashingId = newExp.id;
+				}
+			}
+
+			if (effects.loansToAdd) {
+				for (const loan of effects.loansToAdd) {
+					const newLoan = {
+						id: loan.id || `loan_${Date.now()}_${Math.floor(Math.random() * 1000)}`,
+						name: loan.name,
+						balance: loan.balance,
+						apr: loan.apr,
+						minimumPayment: loan.minimumPayment
+					};
+					updatedLoans.push(newLoan);
+					flashingId = newLoan.id;
+				}
+			}
+
+			if (effects.cardsToAdd) {
+				for (const card of effects.cardsToAdd) {
+					const checkingAcc = state.accounts.find((a) => a.type === "checking");
+					const newCard = {
+						id: card.id || `card_${Date.now()}_${Math.floor(Math.random() * 1000)}`,
+						name: card.name,
+						type: (card.type || "credit") as "credit" | "debit",
+						linkedAccountId: checkingAcc ? checkingAcc.id : "",
+						balance: card.balance,
+						limit: card.limit || Math.max(card.balance * 1.5, 5000),
+						apr: card.apr ?? 21.99,
+						minimumPayment: card.minimumPayment
+					};
+					updatedCards.push(newCard);
+					flashingId = newCard.id;
+				}
+			}
+
+			if (effects.retirementsToAdd) {
+				for (const ret of effects.retirementsToAdd) {
+					const newRet = {
+						id: ret.id || `ret_${Date.now()}_${Math.floor(Math.random() * 1000)}`,
+						name: ret.name,
+						balance: ret.balance,
+						expectedApy: ret.expectedApy,
+						employerMatchPercent: ret.employerMatchPercent,
+						type: ret.type || "401k"
+					};
+					updatedRetirements.push(newRet);
+					flashingId = newRet.id;
+				}
+			}
+
+			if (effects.insurancesToAdd) {
+				for (const ins of effects.insurancesToAdd) {
+					const newIns = {
+						id: ins.id || `ins_${Date.now()}_${Math.floor(Math.random() * 1000)}`,
+						name: ins.name,
+						premium: ins.premium,
+						deductible: ins.deductible
+					};
+					updatedInsurances.push(newIns);
+					flashingId = newIns.id;
+				}
+			}
+
+			return {
+				incomes: updatedIncomes,
+				expenses: updatedExpenses,
+				loans: updatedLoans,
+				cards: updatedCards,
+				retirements: updatedRetirements,
+				insurances: updatedInsurances,
+				flashingNodeId: flashingId
+			};
+		}),
+
+	applyTimeSkip: (snapshot: any) =>
+		set((state) => {
+			return {
+				accounts: state.accounts.map((a) => ({ ...a, balance: snapshot.accountBalances[a.id] !== undefined ? snapshot.accountBalances[a.id] : a.balance })),
+				cards: state.cards.map((c) => ({ ...c, balance: snapshot.cardBalances[c.id] !== undefined ? snapshot.cardBalances[c.id] : c.balance })),
+				loans: state.loans.map((l) => ({ ...l, balance: snapshot.loanBalances[l.id] !== undefined ? snapshot.loanBalances[l.id] : l.balance })),
+				retirements: state.retirements.map((r) => ({ ...r, balance: snapshot.retirementBalances[r.id] !== undefined ? snapshot.retirementBalances[r.id] : r.balance })),
+				goals: state.goals.filter((g) => (snapshot.goalProgress[g.id] || 0) < g.targetAmount),
+				transferRules: state.transferRules.filter(
+					(rule) => !state.goals.some((g) => g.id === rule.destinationId && (snapshot.goalProgress[g.id] || 0) >= g.targetAmount)
+				)
+			};
 		})
 }));

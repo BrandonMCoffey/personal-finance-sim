@@ -1,0 +1,94 @@
+{
+  "title": "Renter's Relief",
+  "desc": "Recover financially after an apartment issue using an emergency fund.",
+  "to-teach": "Maintain emergency funds for property issues.",
+  "subCategoryIndex": 0,
+  "forecastMonths": 6,
+  "hints": [
+    "A plumbing leak damages personal property in Month 4, leaving a $750 uncovered expense.",
+    "Open a savings account and route $250 monthly from Checking to ensure you have $750 ready by Month 4."
+  ],
+  "client": {
+    "name": "Jordan",
+    "description": "Jordan's apartment complex had a water leak; renter's insurance handles structural items, but Jordan must replace belongings.",
+    "prompt": "I need to replace damaged furniture in Month 4 costing $750. How do I automate savings to prepare for it?",
+    "portraitId": "jordan_01"
+  },
+  "startingState": {
+    "accounts": [
+      {
+        "id": "acc_01",
+        "name": "Operating Checking",
+        "type": "checking",
+        "balance": 400,
+        "apy": 0
+      }
+    ],
+    "income": [
+      {
+        "id": "inc_01",
+        "name": "Salary",
+        "amount": 3000,
+        "taxRate": 0,
+        "frequency": "monthly",
+        "routings": [
+          {
+            "destinationId": "acc_01",
+            "amount": 100,
+            "type": "percentage"
+          }
+        ]
+      }
+    ],
+    "expenses": [
+      {
+        "id": "exp_01",
+        "name": "Rent and Utilities",
+        "isFixed": true,
+        "defaultAmount": 2200
+      },
+      {
+        "id": "exp_02",
+        "name": "Property Replacement",
+        "isFixed": true,
+        "occurrenceMonth": 4,
+        "defaultAmount": 750
+      }
+    ],
+    "goals": [
+      {
+        "id": "goal_01",
+        "name": "Property Emergency Fund",
+        "targetAmount": 750,
+        "targetMonths": 4
+      }
+    ],
+    "transferRules": [
+      {
+        "id": "rule_01",
+        "sourceId": "acc_01",
+        "destinationId": "exp_01",
+        "amount": 2200,
+        "type": "fixed"
+      }
+    ]
+  },
+  "allowedActions": {
+    "canCreateAccounts": true,
+    "canDeleteAccounts": false,
+    "maxNewAccounts": 1,
+    "allowedAccountTypes": [
+      "savings"
+    ],
+    "allowedCardTypes": []
+  },
+  "winConditions": {
+    "requiredAccounts": [
+      "savings"
+    ],
+    "goalsFundedWithinMonths": {
+      "goalId": "goal_01",
+      "months": 4
+    }
+  }
+}

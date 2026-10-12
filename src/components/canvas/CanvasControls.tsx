@@ -9,6 +9,10 @@ export function CanvasControls() {
 
 	const addedCount = accounts.length - initialAccountCount;
 	const canAddMoreAccounts = allowedActions.maxNewAccounts === undefined || addedCount < allowedActions.maxNewAccounts;
+	const hasAccountActions = canAddMoreAccounts && allowedActions.canCreateAccounts && (allowedActions.allowedAccountTypes?.length ?? 0) > 0;
+	const hasCardActions = Boolean(allowedActions.allowedCardTypes && allowedActions.allowedCardTypes.length > 0);
+
+	if (!hasAccountActions && !hasCardActions) return null;
 
 	const handleAddAccount = (type: AccountType) => {
 		const defaultName = `${type.charAt(0).toUpperCase() + type.slice(1)} ${accounts.length + 1}`;
@@ -52,15 +56,15 @@ export function CanvasControls() {
 							+ Bank Account
 						</button>
 					)}
+					{allowedActions.allowedAccountTypes.includes("brokerage") && (
+						<button
+							onClick={() => handleAddAccount("brokerage")}
+							className="px-3 py-1.5 bg-emerald-50 text-emerald-700 text-sm font-medium rounded border border-emerald-200 hover:bg-emerald-100"
+						>
+							+ Brokerage
+						</button>
+					)}
 				</>
-			)}
-			{allowedActions.allowedCardTypes?.includes("debit") && (
-				<button
-					onClick={() => handleAddCard("debit")}
-					className="px-3 py-1.5 bg-teal-50 text-teal-700 text-sm font-medium rounded border border-teal-200 hover:bg-teal-100"
-				>
-					+ Debit Card
-				</button>
 			)}
 			{allowedActions.allowedCardTypes?.includes("credit") && (
 				<button

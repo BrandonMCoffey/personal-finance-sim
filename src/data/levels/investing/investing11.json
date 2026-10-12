@@ -1,0 +1,76 @@
+{
+  "title": "Beating Inflation",
+  "desc": "Move funds from 0% cash to investments to beat inflation.",
+  "to-teach": "Relocate assets to outpace inflation erosion.",
+  "subCategoryIndex": 3,
+  "forecastMonths": 12,
+  "hints": [
+    "Inflation is at 5%, meaning uninvested cash loses 5% of its real value across the 12-month forecast.",
+    "Open a brokerage account yielding 8% APY and route the monthly surplus into it to secure real positive returns."
+  ],
+  "client": {
+    "name": "Alex",
+    "description": "Alex has cash reserves in an uninvested envelope and wants to protect their buying power against a 5% inflation environment.",
+    "prompt": "Prices keep rising by 5% each year. How can I position my monthly savings so inflation doesn't eat my purchasing power?",
+    "portraitId": "alex_01"
+  },
+  "startingState": {
+    "inflationRate": 5,
+    "accounts": [
+      {
+        "id": "acc_01",
+        "name": "Main Checking",
+        "type": "checking",
+        "balance": 4000,
+        "apy": 0
+      }
+    ],
+    "income": [
+      {
+        "id": "inc_01",
+        "name": "Salary",
+        "amount": 3800,
+        "taxRate": 15,
+        "frequency": "monthly",
+        "routings": [
+          {
+            "destinationId": "acc_01",
+            "amount": 100,
+            "type": "percentage"
+          }
+        ]
+      }
+    ],
+    "expenses": [
+      {
+        "id": "exp_01",
+        "name": "Rent & Necessities",
+        "isFixed": true,
+        "defaultAmount": 2400
+      }
+    ],
+    "transferRules": [
+      {
+        "id": "rule_01",
+        "sourceId": "acc_01",
+        "destinationId": "exp_01",
+        "amount": 2400,
+        "type": "fixed"
+      }
+    ]
+  },
+  "allowedActions": {
+    "canCreateAccounts": true,
+    "canDeleteAccounts": false,
+    "maxNewAccounts": 1,
+    "allowedAccountTypes": [
+      "brokerage"
+    ],
+    "allowedCardTypes": []
+  },
+  "winConditions": {
+    "requiredAccounts": [
+      "brokerage"
+    ]
+  }
+}

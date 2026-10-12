@@ -1,0 +1,94 @@
+{
+  "title": "Changing Careers",
+  "desc": "Manage a temporary income dip while transitioning to a new job.",
+  "to-teach": "Bridge an income gap using savings.",
+  "subCategoryIndex": 3,
+  "forecastMonths": 4,
+  "hints": [
+    "During the apprenticeship transition, monthly income drops by $600.",
+    "Route $400 monthly from savings to checking while reducing discretionary spending by $200."
+  ],
+  "client": {
+    "name": "Taylor",
+    "description": "Taylor stepped down from full-time retail to take a lower-paying technical apprenticeship with long-term upside.",
+    "prompt": "My apprenticeship pay is $600 less per month. How do I bridge the gap using my savings until my certification raises kick in?",
+    "portraitId": "taylor_01"
+  },
+  "startingState": {
+    "accounts": [
+      {
+        "id": "acc_01",
+        "name": "Operating Checking",
+        "type": "checking",
+        "balance": 300,
+        "apy": 0
+      },
+      {
+        "id": "acc_02",
+        "name": "Transition Savings",
+        "type": "savings",
+        "balance": 2400,
+        "apy": 3.5
+      }
+    ],
+    "income": [
+      {
+        "id": "inc_01",
+        "name": "Apprentice Stipend",
+        "amount": 2000,
+        "taxRate": 0,
+        "frequency": "monthly",
+        "routings": [
+          {
+            "destinationId": "acc_01",
+            "amount": 100,
+            "type": "percentage"
+          }
+        ]
+      }
+    ],
+    "expenses": [
+      {
+        "id": "exp_01",
+        "name": "Rent and Bills",
+        "isFixed": true,
+        "defaultAmount": 1800
+      },
+      {
+        "id": "exp_02",
+        "name": "Lifestyle Expenses",
+        "isFixed": false,
+        "minValue": 300,
+        "defaultAmount": 500
+      }
+    ],
+    "transferRules": [
+      {
+        "id": "rule_01",
+        "sourceId": "acc_01",
+        "destinationId": "exp_01",
+        "amount": 1800,
+        "type": "fixed"
+      },
+      {
+        "id": "rule_02",
+        "sourceId": "acc_01",
+        "destinationId": "exp_02",
+        "amount": 500,
+        "type": "fixed"
+      }
+    ]
+  },
+  "allowedActions": {
+    "canCreateAccounts": false,
+    "canDeleteAccounts": false,
+    "allowedAccountTypes": [],
+    "allowedCardTypes": []
+  },
+  "winConditions": {
+    "requiredAccounts": [
+      "checking",
+      "savings"
+    ]
+  }
+}
