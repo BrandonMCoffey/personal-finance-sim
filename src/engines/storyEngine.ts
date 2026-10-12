@@ -16,6 +16,7 @@ export interface StoryCandidateChoice {
 	primaryWorry: string;
 	monthlyIncome: number;
 	monthlyExpenses: number;
+	totalOutflow: number;
 }
 
 export function initializeStoryClientStates(): Record<string, CharacterClientState> {
@@ -145,6 +146,11 @@ export function pickRoundCandidates(
 		// Calculate overview metrics
 		const rawIncome = (stage.financialState.income || []).reduce((sum, inc) => sum + inc.amount, 0);
 		const rawExpenses = (stage.financialState.expenses || []).reduce((sum, exp) => sum + (exp.defaultAmount !== undefined ? exp.defaultAmount : exp.amount || 0), 0);
+		const rawDebts = [
+			...(stage.financialState.cards || []).map((c) => c.minimumPayment || 0),
+			...(stage.financialState.loans || []).map((l) => l.minimumPayment || 0)
+		].reduce((a, b) => a + b, 0);
+		const totalOutflow = rawExpenses + rawDebts;
 
 		return {
 			character: char,
@@ -155,7 +161,8 @@ export function pickRoundCandidates(
 			relationshipNote,
 			primaryWorry: stage.lifeEvent?.title || stage.stageTitle,
 			monthlyIncome: rawIncome,
-			monthlyExpenses: rawExpenses
+			monthlyExpenses: rawExpenses,
+			totalOutflow
 		};
 	});
 }
@@ -212,7 +219,8 @@ export function handleSessionCompletion(
 	clientStates: Record<string, CharacterClientState>,
 	characterId: string,
 	finalFinancialState: any,
-	roundNumber: number
+	roundNumber: number,
+	score?: number
 ): Record<string, CharacterClientState> {
 	const updated = { ...clientStates };
 	const char = CHARACTER_MAP[characterId];
@@ -227,6 +235,16 @@ export function handleSessionCompletion(
 	s.lastRoundHelped = roundNumber;
 	s.cooldownRoundsRemaining = currentStage ? currentStage.cooldownRounds : 2;
 	s.savedFinancialState = finalFinancialState;
+	s.lastScore = score;
+	if (score !== undefined) {
+		if (score >= 90) {
+			s.lastReactionMessage = currentStage?.dialogue?.planApproved || "Thrilled with our financial plan!";
+		} else if (score >= 70) {
+			s.lastReactionMessage = "Great consultation, feeling confident moving forward.";
+		} else {
+			s.lastReactionMessage = currentStage?.dialogue?.planNeedsWork || "Appreciates the guidance, making adjustments.";
+		}
+	}
 	s.currentStageIndex += 1;
 
 	updated[characterId] = s;
@@ -251,6 +269,55 @@ export function buildStoryLevel(
 				balance: Math.max(100, Math.round(acc.balance * 1.05))
 			}));
 		}
+	}
+
+	// Clients start with their pre-existing accounts and expenses connected
+	if (!startingState.transferRules || startingState.transferRules.length === 0) {
+		const rules: any[] = [];
+		const primaryAcc = startingState.accounts?.find((a: any) => a.type === "checking" || a.type === "bank") || startingState.accounts?.[0];
+		if (primaryAcc) {
+			const exps = startingState.expenses || [];
+			exps.forEach((exp: any, idx: number) => {
+				// Rare disconnected expense (e.g. last discretionary expense)
+				if (exps.length > 3 && idx === exps.length - 1 && !exp.isFixed) {
+					return;
+				}
+				rules.push({
+					id: `rule_story_${exp.id}`,
+					sourceId: primaryAcc.id,
+					destinationId: exp.id,
+					amount: exp.defaultAmount !== undefined ? exp.defaultAmount : exp.amount,
+					type: "fixed"
+				});
+			});
+
+			// Pre-connect card minimum payments
+			(startingState.cards || []).forEach((c: any) => {
+				if (c.type === "credit" && c.balance > 0) {
+					rules.push({
+						id: `rule_story_${c.id}`,
+						sourceId: primaryAcc.id,
+						destinationId: c.id,
+						amount: c.minimumPayment || Math.max(25, Math.round(c.balance * 0.025)),
+						type: "fixed"
+					});
+				}
+			});
+
+			// Pre-connect loan payments
+			(startingState.loans || []).forEach((l: any) => {
+				if (l.balance > 0) {
+					rules.push({
+						id: `rule_story_${l.id}`,
+						sourceId: primaryAcc.id,
+						destinationId: l.id,
+						amount: l.minimumPayment,
+						type: "fixed"
+					});
+				}
+			});
+		}
+		startingState.transferRules = rules;
 	}
 
 	return {

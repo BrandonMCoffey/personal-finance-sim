@@ -6,6 +6,7 @@ interface ExpenseNodeProps {
 		id: string;
 		name: string;
 		targetAmount: number;
+		defaultAmount?: number;
 		maxAmount?: number;
 		currentAmount: number;
 		isFixed: boolean;
@@ -15,6 +16,7 @@ interface ExpenseNodeProps {
 		occurrenceMonth?: number;
 		isActiveThisMonth?: boolean;
 		isLocked?: boolean;
+		isFlashing?: boolean;
 	};
 }
 
@@ -52,10 +54,11 @@ export function ExpenseNode({ data }: ExpenseNodeProps) {
 	}
 
 	const isLocked = Boolean(data.isLocked);
+	const defaultAmt = data.defaultAmount !== undefined ? data.defaultAmount : data.targetAmount;
 	const fundedAmount = incomingRule?.amount || 0;
 	const minRequired = data.minValue || data.targetAmount;
-	const sliderMax = data.maxAmount !== undefined ? data.maxAmount : data.targetAmount * 1.5;
-	const fillPercentage = incomingRule ? Math.min((fundedAmount / sliderMax) * 100, 100) : 0;
+	const sliderMax = data.isFixed ? defaultAmt : (data.maxAmount !== undefined ? data.maxAmount : defaultAmt * 1.5);
+	const fillPercentage = incomingRule && sliderMax > 0 ? Math.min((fundedAmount / sliderMax) * 100, 100) : 0;
 
 	const cRedLight = [239, 68, 68];
 	const cRed = [255, 0, 0];
@@ -94,39 +97,43 @@ export function ExpenseNode({ data }: ExpenseNodeProps) {
 			borderColor={`border-[rgba(${currentRgb},0.5)]`}
 			titleColor={`text-[rgb(${currentRgb})]`}
 			isSnapped={data.isSnapped}
+			isFlashing={data.isFlashing}
 			targetHandle={!data.isSnapped ? { color: "bg-red-500" } : undefined}
-			className="w-[160px] h-[68px]"
+			className="w-[164px] h-[74px]"
 		>
 			<style>{`
         .expense-slider::-webkit-slider-thumb { -webkit-appearance: none; appearance: none; width: 0; height: 0; }
         .expense-slider::-moz-range-thumb { width: 0; height: 0; border: 0; }
       `}</style>
-			<div className={`w-full mt-0.5 ${!data.isActiveThisMonth ? "opacity-50" : ""}`}>
+			<div className={`w-full mt-0.5 flex flex-col justify-between flex-1 ${!data.isActiveThisMonth ? "opacity-50" : ""}`}>
 				{incomingRule ? (
 					<input
 						type="range"
 						min="0"
 						max={sliderMax}
 						value={incomingRule.amount}
-						disabled={isLocked}
+						disabled={isLocked || data.isFixed}
 						onChange={(e) => {
+							if (data.isFixed) return;
 							if (isIncomeRule) updateIncomeRoute(sourceId, data.id, Number(e.target.value), "fixed");
 							else updateTransferRule(incomingRule.id, Number(e.target.value), "fixed");
 						}}
 						style={{
 							background: `linear-gradient(to right, rgb(${currentRgb}) ${fillPercentage}%, rgba(0,0,0,0.1) ${fillPercentage}%)`
 						}}
-						className={`nodrag nopan expense-slider w-full h-1.5 rounded-full appearance-none outline-none ${isLocked ? "cursor-not-allowed opacity-90" : "cursor-pointer"}`}
+						className={`nodrag nopan expense-slider w-full h-1.5 rounded-full appearance-none outline-none ${
+							isLocked || data.isFixed ? "cursor-default opacity-90" : "cursor-pointer"
+						}`}
 					/>
 				) : (
 					<div className="w-full bg-red-100 rounded-full h-1.5">
 						<div
 							className="h-1.5 rounded-full transition-all duration-300"
-							style={{ width: `${Math.min((data.currentAmount / sliderMax) * 100, 100)}%`, backgroundColor: `rgb(${cRed.join(",")})` }}
+							style={{ width: `${sliderMax > 0 ? Math.min((data.currentAmount / sliderMax) * 100, 100) : 0}%`, backgroundColor: `rgb(${cRed.join(",")})` }}
 						></div>
 					</div>
 				)}
-				<div className="flex justify-between items-center mt-1">
+				<div className="flex justify-between items-center mt-1 pb-0.5">
 					<span className="text-[8px] font-bold uppercase tracking-wider text-gray-400">{timingLabel}</span>
 					<div className="text-[9px] text-right font-medium opacity-80" style={{ color: `rgb(${currentRgb})` }}>
 						{!data.isActiveThisMonth ? "Inactive" : amountText}

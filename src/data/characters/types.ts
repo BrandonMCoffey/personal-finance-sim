@@ -67,6 +67,7 @@ export interface CharacterStartingFinancialState {
 		requiresCard?: boolean;
 		frequency?: number;
 		occurrenceMonth?: number;
+		isCancelable?: boolean;
 	}[];
 	insurances?: {
 		id: string;
@@ -150,4 +151,6 @@ export interface CharacterClientState {
 	savedFinancialState?: any;
 	lastRoundHelped?: number;
 	lastRoundOffered?: number;
+	lastScore?: number;
+	lastReactionMessage?: string;
 }

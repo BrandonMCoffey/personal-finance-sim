@@ -1,10 +1,42 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { useFinanceStore } from "../../store/financeStore";
 import { CATEGORIES, levels, LevelRegistry, type LevelData } from "../../data/levels/registry";
 
 export function LevelSelectMenu() {
-	const { levelScores, isAllUnlocked, loadLevel, setCurrentScreen, unlockAllLevels, clearProgress } = useFinanceStore();
-	const [activeCategory, setActiveCategory] = useState<string>(CATEGORIES[0].id);
+	const {
+		levelScores,
+		isAllUnlocked,
+		loadLevel,
+		setCurrentScreen,
+		unlockAllLevels,
+		clearProgress,
+		selectedCategory,
+		setSelectedCategory,
+		lastSelectedLevelId,
+		levelId,
+		category
+	} = useFinanceStore();
+
+	const initialCategory = selectedCategory || (CATEGORIES.some((c) => c.id === category) ? category : CATEGORIES[0].id);
+	const [activeCategory, setActiveCategory] = useState<string>(initialCategory);
+
+	useEffect(() => {
+		const targetId = lastSelectedLevelId || levelId;
+		if (targetId) {
+			const timer = setTimeout(() => {
+				const el = document.getElementById(`level-card-${targetId}`);
+				if (el) {
+					el.scrollIntoView({ behavior: "smooth", block: "center" });
+				}
+			}, 100);
+			return () => clearTimeout(timer);
+		}
+	}, [activeCategory, lastSelectedLevelId, levelId]);
+
+	const handleCategoryChange = (catId: string) => {
+		setActiveCategory(catId);
+		setSelectedCategory(catId);
+	};
 
 	const handlePlay = (id: string) => {
 		const levelData = LevelRegistry[id];
@@ -66,7 +98,7 @@ export function LevelSelectMenu() {
 							return (
 								<button
 									key={category.id}
-									onClick={() => setActiveCategory(category.id)}
+									onClick={() => handleCategoryChange(category.id)}
 									className={`flex items-center gap-3 p-4 rounded-lg text-left transition-all font-medium border-2 ${
 										isActive
 											? "bg-blue-50 border-blue-400 text-blue-800 shadow-sm"
@@ -88,8 +120,8 @@ export function LevelSelectMenu() {
 						</button>
 					</div>
 				</aside>
-				<section className="flex-1 p-8 overflow-y-auto bg-gray-50">
-					<div className="max-w-4xl">
+				<section className="flex-1 p-6 lg:p-8 overflow-y-auto bg-gray-50">
+					<div className="w-full max-w-[1600px]">
 						<h2 className="text-2xl font-bold text-gray-800 mb-8">{activeCatDef?.title}</h2>
 						{!activeCatDef || activeCatDef.subCategories.length === 0 ? (
 							<div className="p-8 text-center border-2 border-dashed border-gray-300 rounded-xl text-gray-500">
@@ -105,34 +137,55 @@ export function LevelSelectMenu() {
 
 									if (catLevels.length === 0) return null;
 
+									const completedCount = catLevels.filter((l) => (levelScores[l.id] || 0) >= 60).length;
+
 									return (
 										<div key={subIdx}>
-											<h3 className="text-lg font-bold text-gray-700 mb-4 border-b border-gray-200 pb-2">{subCategoryName}</h3>
-											<div className="grid grid-cols-1 xl:grid-cols-2 gap-4">
+											<div className="flex items-center justify-between mb-4 border-b border-gray-200 pb-2">
+												<h3 className="text-lg font-bold text-gray-800">{subCategoryName}</h3>
+												<span className="text-xs font-semibold text-gray-400">
+													{completedCount}/{catLevels.length} Completed
+												</span>
+											</div>
+											<div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-4 sm:gap-5">
 												{catLevels.map((level: LevelData) => {
 													const score = levelScores[level.id] || 0;
 													const isCompleted = score >= 60;
+													const isLastPlayed = level.id === (lastSelectedLevelId || levelId);
 
 													return (
 														<div
 															key={level.id}
-															className={`p-5 rounded-xl border-2 transition-all flex flex-col ${isUnlocked ? "bg-white border-gray-200 hover:border-blue-400 hover:shadow-md cursor-pointer" : "bg-gray-100 border-gray-200 opacity-60 grayscale cursor-not-allowed"}`}
+															id={`level-card-${level.id}`}
+															className={`p-5 rounded-xl border-2 transition-all flex flex-col justify-between ${
+																isLastPlayed ? "ring-2 ring-blue-500 shadow-md " : ""
+															}${
+																isUnlocked
+																	? "bg-white border-gray-200 hover:border-blue-400 hover:shadow-md cursor-pointer"
+																	: "bg-gray-100 border-gray-200 opacity-60 grayscale cursor-not-allowed"
+															}`}
 															onClick={() => isUnlocked && handlePlay(level.id)}
 														>
-															<div className="flex justify-between items-start mb-2">
-																<h4 className="font-bold text-gray-800 leading-tight">{level.title}</h4>
-																{isCompleted && (
-																	<span className="bg-green-100 text-green-700 text-xs font-bold px-2 py-1 rounded-full shrink-0 ml-2">
-																		✓ {score}%
-																	</span>
-																)}
+															<div>
+																<div className="flex justify-between items-start mb-2 gap-2">
+																	<h4 className="font-bold text-gray-800 leading-snug">{level.title}</h4>
+																	{isCompleted && (
+																		<span className="bg-green-100 text-green-700 text-xs font-bold px-2 py-0.5 rounded-full shrink-0">
+																			✓ {score}%
+																		</span>
+																	)}
+																</div>
+																<p className="text-sm text-gray-600 mb-4 leading-relaxed">{level.desc}</p>
 															</div>
-															<p className="text-sm text-gray-600 mb-4 flex-1">{level.desc}</p>
 															<button
 																disabled={!isUnlocked}
-																className={`w-full py-2 rounded font-bold text-xs transition-colors ${isUnlocked ? "bg-blue-50 text-blue-700 hover:bg-blue-100" : "bg-gray-200 text-gray-400"}`}
+																className={`w-full py-2.5 rounded-lg font-bold text-xs transition-all ${
+																	isUnlocked
+																		? "bg-blue-50 text-blue-700 hover:bg-blue-100 active:scale-[0.99] cursor-pointer"
+																		: "bg-gray-200 text-gray-400 cursor-not-allowed"
+																}`}
 															>
-																{isUnlocked ? (isCompleted ? "Replay" : "Start Scenario") : "Locked"}
+																{isUnlocked ? (isCompleted ? "Replay Scenario" : "Start Scenario") : "Locked"}
 															</button>
 														</div>
 													);

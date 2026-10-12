@@ -291,6 +291,21 @@ export function generateForecast(
 			}
 		});
 
+		// Continuous sweep for cash accounts deposited into checking/bank accounts
+		transferRules.forEach((rule) => {
+			const sourceAcc = accounts.find((a) => a.id === rule.sourceId);
+			const destAcc = accounts.find((a) => a.id === rule.destinationId);
+			if (sourceAcc?.type === "cash" && destAcc && destAcc.type !== "cash") {
+				const remCash = nextBalances[rule.sourceId] || 0;
+				if (remCash > 0) {
+					nextBalances[rule.destinationId] = (nextBalances[rule.destinationId] || 0) + remCash;
+					monthlyFlows[rule.destinationId].in += remCash;
+					nextBalances[rule.sourceId] = 0;
+					monthlyFlows[rule.sourceId].out += remCash;
+				}
+			}
+		});
+
 		// 3. Process Interest
 		accounts.forEach((acc) => {
 			if (acc.apy > 0 && nextBalances[acc.id] > 0) {

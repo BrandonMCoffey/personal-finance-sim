@@ -215,6 +215,7 @@ export interface Expense {
 	requiresCard?: boolean;
 	frequency?: number;
 	occurrenceMonth?: number;
+	isCancelable?: boolean;
 }
 
 export interface WinConditions {
@@ -241,6 +242,8 @@ interface FinanceState {
 	currentScreen: "main_menu" | "levels" | "story" | "endless" | "game";
 	levelScores: Record<string, number>;
 	levelId: string | null;
+	lastSelectedLevelId: string | null;
+	selectedCategory: string | null;
 	isAllUnlocked: boolean;
 	category: string;
 	toTeach?: string;
@@ -260,8 +263,18 @@ interface FinanceState {
 	forecastMonths: number;
 	allowedActions: AllowedActions | null;
 	initialAccountCount: number;
+	flashingNodeId: string | null;
+	endlessAge: number;
+	endlessMilestoneIndex: number;
+	endlessCompletedPrerequisites: string[];
+
+	setFlashingNodeId: (id: string | null) => void;
+	setEndlessAge: (age: number) => void;
+	setEndlessMilestoneIndex: (idx: number) => void;
+	addEndlessPrerequisite: (id: string) => void;
 
 	setCurrentScreen: (screen: "main_menu" | "levels" | "story" | "endless" | "game") => void;
+	setSelectedCategory: (cat: string) => void;
 	saveLevelScore: (levelId: string, score: number) => void;
 	unlockAllLevels: () => void;
 	clearProgress: () => void;
@@ -273,10 +286,10 @@ interface FinanceState {
 	addCard: (name: string, type: "debit" | "credit", linkedAccountId: string) => void;
 	removeCard: (cardId: string) => void;
 	updateCardLink: (cardId: string, accountId: string) => void;
-	addLoan: (name: string, balance: number, apr: number, minimumPayment: number) => void;
-	addInsurance: (name: string, premium: number, deductible: number, coveredExpenseIds?: string[]) => void;
+	addLoan: (name: string, balance: number, apr: number, minimumPayment: number) => string;
+	addInsurance: (name: string, premium: number, deductible: number, coveredExpenseIds?: string[]) => string;
 	removeInsurance: (insuranceId: string) => void;
-	addRetirement: (name: string, balance: number, expectedApy: number, employerMatchPercent: number) => void;
+	addRetirement: (name: string, balance: number, expectedApy: number, employerMatchPercent: number) => string;
 
 	addIncomeRoute: (incomeId: string, destinationId: string, defaultAmount?: number, defaultType?: "fixed" | "percentage", isAuto?: boolean) => void;
 	updateIncomeRoute: (incomeId: string, destinationId: string, amount: number, type: "fixed" | "percentage", isAuto?: boolean) => void;
@@ -294,8 +307,9 @@ interface FinanceState {
 		amount: number,
 		isFixed: boolean,
 		options?: { maxAmount?: number; minValue?: number; requiresCard?: boolean; frequency?: number; occurrenceMonth?: number }
-	) => void;
-	addIncome: (name: string, amount: number, taxRate: number, frequency: string) => void;
+	) => string;
+	addIncome: (name: string, amount: number, taxRate: number, frequency: string) => string;
+	applyMilestoneEffects: (effects: any) => void;
 	applyTimeSkip: (newState: any) => void;
 }
 
@@ -306,7 +320,9 @@ export const useFinanceStore = create<FinanceState>()((set) => ({
 	isAllUnlocked: typeof localStorage !== "undefined" && localStorage.getItem("finance_unlocked") === "true",
 
 	levelId: null,
-	category: "budgeting",
+	lastSelectedLevelId: null,
+	selectedCategory: null,
+	category: "earning",
 	toTeach: undefined,
 	inflationRate: 0,
 	hints: [],
@@ -324,8 +340,18 @@ export const useFinanceStore = create<FinanceState>()((set) => ({
 	forecastMonths: 6,
 	allowedActions: null,
 	initialAccountCount: 0,
+	flashingNodeId: null,
+	endlessAge: 16,
+	endlessMilestoneIndex: 0,
+	endlessCompletedPrerequisites: [],
+
+	setFlashingNodeId: (id) => set({ flashingNodeId: id }),
+	setEndlessAge: (age) => set({ endlessAge: age }),
+	setEndlessMilestoneIndex: (idx) => set({ endlessMilestoneIndex: idx }),
+	addEndlessPrerequisite: (id) => set((s) => ({ endlessCompletedPrerequisites: [...s.endlessCompletedPrerequisites, id] })),
 
 	setCurrentScreen: (screen) => set({ currentScreen: screen }),
+	setSelectedCategory: (cat) => set({ selectedCategory: cat }),
 
 	saveLevelScore: (levelId, score) =>
 		set((state) => {
@@ -371,7 +397,9 @@ export const useFinanceStore = create<FinanceState>()((set) => ({
 
 			return {
 				levelId: levelData.id,
-				category: levelData.category || "budgeting",
+				lastSelectedLevelId: levelData.id,
+				category: levelData.category || "earning",
+				selectedCategory: levelData.category || "earning",
 				toTeach: levelData["to-teach"] || levelData.toTeach || levelData.desc || "",
 				inflationRate: levelData.startingState?.inflationRate || 0,
 				insurances: rawInsurances,
@@ -428,7 +456,11 @@ export const useFinanceStore = create<FinanceState>()((set) => ({
 				winConditions: levelData.winConditions || null,
 				forecastMonths: levelData.forecastMonths || 6,
 				allowedActions: levelData.allowedActions || null,
-				initialAccountCount: rawAccounts.length || 0
+				initialAccountCount: rawAccounts.length || 0,
+				flashingNodeId: null,
+				endlessAge: levelData.category === "endless" ? 16 : 22,
+				endlessMilestoneIndex: 0,
+				endlessCompletedPrerequisites: []
 			};
 		}),
 
@@ -495,18 +527,26 @@ export const useFinanceStore = create<FinanceState>()((set) => ({
 			cards: state.cards.map((c) => (c.id === cardId ? { ...c, linkedAccountId: accountId } : c))
 		})),
 
-	addLoan: (name, balance, apr, minimumPayment) =>
+	addLoan: (name, balance, apr, minimumPayment) => {
+		const id = `loan_${Date.now()}`;
 		set((state) => ({
-			loans: [...state.loans, { id: `loan_${Date.now()}`, name, balance, apr, minimumPayment }]
-		})),
+			loans: [...state.loans, { id, name, balance, apr, minimumPayment }],
+			flashingNodeId: id
+		}));
+		return id;
+	},
 
-	addInsurance: (name, premium, deductible, coveredExpenseIds) =>
+	addInsurance: (name, premium, deductible, coveredExpenseIds) => {
+		const id = `ins_${Date.now()}`;
 		set((state) => ({
 			insurances: [
 				...state.insurances,
-				{ id: `ins_${Date.now()}`, name, premium, deductible, coveredExpenseIds }
-			]
-		})),
+				{ id, name, premium, deductible, coveredExpenseIds }
+			],
+			flashingNodeId: id
+		}));
+		return id;
+	},
 
 	removeInsurance: (insuranceId) =>
 		set((state) => ({
@@ -514,10 +554,14 @@ export const useFinanceStore = create<FinanceState>()((set) => ({
 			transferRules: state.transferRules.filter((r) => r.destinationId !== insuranceId && r.sourceId !== insuranceId)
 		})),
 
-	addRetirement: (name, balance, expectedApy, employerMatchPercent) =>
+	addRetirement: (name, balance, expectedApy, employerMatchPercent) => {
+		const id = `ret_${Date.now()}`;
 		set((state) => ({
-			retirements: [...state.retirements, { id: `ret_${Date.now()}`, name, balance, expectedApy, employerMatchPercent }]
-		})),
+			retirements: [...state.retirements, { id, name, balance, expectedApy, employerMatchPercent }],
+			flashingNodeId: id
+		}));
+		return id;
+	},
 
 	// --- INCOME ACTIONS ---
 	addIncomeRoute: (incomeId, destinationId, defaultAmount = 10, defaultType = "percentage", isAuto = false) =>
@@ -615,29 +659,173 @@ export const useFinanceStore = create<FinanceState>()((set) => ({
 			return { transferRules: [...otherRules, ...newSourceRules] };
 		}),
 
-	addExpense: (name, defaultAmount, isFixed, options) =>
+	addExpense: (name, defaultAmount, isFixed, options) => {
+		const id = `exp_${Date.now()}`;
+		const maxAmount = options?.maxAmount !== undefined ? options.maxAmount : defaultAmount * 1.5;
+		set((state) => ({
+			expenses: [
+				...state.expenses,
+				{
+					id,
+					name,
+					amount: defaultAmount,
+					defaultAmount,
+					maxAmount,
+					isFixed,
+					...options
+				}
+			],
+			flashingNodeId: id
+		}));
+		return id;
+	},
+
+	addIncome: (name, amount, taxRate, frequency) => {
+		const id = `inc_${Date.now()}`;
+		set((state) => ({
+			incomes: [...state.incomes, { id, name, amount, taxRate, frequency, routings: [] }],
+			flashingNodeId: id
+		}));
+		return id;
+	},
+
+	applyMilestoneEffects: (effects: any) =>
 		set((state) => {
-			const maxAmount = options?.maxAmount !== undefined ? options.maxAmount : defaultAmount * 1.5;
-			return {
-				expenses: [
-					...state.expenses,
-					{
-						id: `exp_${Date.now()}`,
-						name,
-						amount: defaultAmount,
-						defaultAmount,
-						maxAmount,
-						isFixed,
-						...options
+			let flashingId: string | null = null;
+			let updatedIncomes = [...state.incomes];
+			let updatedExpenses = [...state.expenses];
+			let updatedLoans = [...state.loans];
+			let updatedCards = [...state.cards];
+			let updatedRetirements = [...state.retirements];
+			let updatedInsurances = [...state.insurances];
+
+			if (effects.incomesToUpdate) {
+				for (const inc of effects.incomesToUpdate) {
+					const existingIdx = updatedIncomes.findIndex((i) => i.id === inc.id);
+					if (existingIdx !== -1) {
+						updatedIncomes[existingIdx] = {
+							...updatedIncomes[existingIdx],
+							name: inc.name || updatedIncomes[existingIdx].name,
+							amount: inc.amount,
+							taxRate: inc.taxRate ?? updatedIncomes[existingIdx].taxRate
+						};
+						flashingId = inc.id;
+					} else {
+						const newInc = {
+							id: inc.id || `inc_${Date.now()}`,
+							name: inc.name,
+							amount: inc.amount,
+							taxRate: inc.taxRate ?? 15,
+							frequency: "monthly" as const,
+							routings: []
+						};
+						updatedIncomes.push(newInc);
+						flashingId = newInc.id;
 					}
-				]
+				}
+			}
+
+			if (effects.incomesToAdd) {
+				for (const inc of effects.incomesToAdd) {
+					const newInc = {
+						id: inc.id || `inc_${Date.now()}_${Math.floor(Math.random() * 1000)}`,
+						name: inc.name,
+						amount: inc.amount,
+						taxRate: inc.taxRate ?? 15,
+						frequency: (inc.frequency || "monthly") as "monthly",
+						routings: []
+					};
+					updatedIncomes.push(newInc);
+					flashingId = newInc.id;
+				}
+			}
+
+			if (effects.expensesToAdd) {
+				for (const exp of effects.expensesToAdd) {
+					const newExp = {
+						id: exp.id || `exp_${Date.now()}_${Math.floor(Math.random() * 1000)}`,
+						name: exp.name,
+						amount: exp.amount,
+						defaultAmount: exp.amount,
+						maxAmount: exp.maxAmount ?? exp.amount * 1.5,
+						isFixed: exp.isFixed ?? true,
+						minValue: exp.minValue
+					};
+					updatedExpenses.push(newExp);
+					flashingId = newExp.id;
+				}
+			}
+
+			if (effects.loansToAdd) {
+				for (const loan of effects.loansToAdd) {
+					const newLoan = {
+						id: loan.id || `loan_${Date.now()}_${Math.floor(Math.random() * 1000)}`,
+						name: loan.name,
+						balance: loan.balance,
+						apr: loan.apr,
+						minimumPayment: loan.minimumPayment
+					};
+					updatedLoans.push(newLoan);
+					flashingId = newLoan.id;
+				}
+			}
+
+			if (effects.cardsToAdd) {
+				for (const card of effects.cardsToAdd) {
+					const checkingAcc = state.accounts.find((a) => a.type === "checking");
+					const newCard = {
+						id: card.id || `card_${Date.now()}_${Math.floor(Math.random() * 1000)}`,
+						name: card.name,
+						type: (card.type || "credit") as "credit" | "debit",
+						linkedAccountId: checkingAcc ? checkingAcc.id : "",
+						balance: card.balance,
+						limit: card.limit || Math.max(card.balance * 1.5, 5000),
+						apr: card.apr ?? 21.99,
+						minimumPayment: card.minimumPayment
+					};
+					updatedCards.push(newCard);
+					flashingId = newCard.id;
+				}
+			}
+
+			if (effects.retirementsToAdd) {
+				for (const ret of effects.retirementsToAdd) {
+					const newRet = {
+						id: ret.id || `ret_${Date.now()}_${Math.floor(Math.random() * 1000)}`,
+						name: ret.name,
+						balance: ret.balance,
+						expectedApy: ret.expectedApy,
+						employerMatchPercent: ret.employerMatchPercent,
+						type: ret.type || "401k"
+					};
+					updatedRetirements.push(newRet);
+					flashingId = newRet.id;
+				}
+			}
+
+			if (effects.insurancesToAdd) {
+				for (const ins of effects.insurancesToAdd) {
+					const newIns = {
+						id: ins.id || `ins_${Date.now()}_${Math.floor(Math.random() * 1000)}`,
+						name: ins.name,
+						premium: ins.premium,
+						deductible: ins.deductible
+					};
+					updatedInsurances.push(newIns);
+					flashingId = newIns.id;
+				}
+			}
+
+			return {
+				incomes: updatedIncomes,
+				expenses: updatedExpenses,
+				loans: updatedLoans,
+				cards: updatedCards,
+				retirements: updatedRetirements,
+				insurances: updatedInsurances,
+				flashingNodeId: flashingId
 			};
 		}),
-
-	addIncome: (name, amount, taxRate, frequency) =>
-		set((state) => ({
-			incomes: [...state.incomes, { id: `inc_${Date.now()}`, name, amount, taxRate, frequency, routings: [] }]
-		})),
 
 	applyTimeSkip: (snapshot: any) =>
 		set((state) => {

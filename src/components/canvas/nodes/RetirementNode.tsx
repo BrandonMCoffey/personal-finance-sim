@@ -11,6 +11,7 @@ interface RetirementNodeProps {
 		employerMatchPercent: number;
 		forecastBalance: number;
 		employerMatchTotal: number;
+		isFlashing?: boolean;
 	};
 }
 
@@ -29,6 +30,7 @@ export function RetirementNode({ data }: RetirementNodeProps) {
 			onRename={(newName) => renameAccount(data.id, newName)}
 			headerElement={<span className="text-[10px] font-bold text-emerald-600">~{data.expectedApy}% APY</span>}
 			className="w-[160px] h-[95px]"
+			isFlashing={data.isFlashing}
 		>
 			<div className="flex flex-col w-full mt-1">
 				<div className="flex justify-between items-end w-full">

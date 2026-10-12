@@ -66,13 +66,14 @@ export const useStoryStore = create<StoryStoreState>()((set, get) => ({
 		});
 	},
 
-	completeClientSession: (characterId: string, finalFinancialState: any) => {
+	completeClientSession: (characterId: string, finalFinancialState: any, score?: number) => {
 		const { clientStates, roundNumber, totalClientsAdvised } = get();
 		const updatedStates = handleSessionCompletion(
 			clientStates,
 			characterId,
 			finalFinancialState,
-			roundNumber
+			roundNumber,
+			score
 		);
 		set({
 			clientStates: updatedStates,

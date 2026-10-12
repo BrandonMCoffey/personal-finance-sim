@@ -49,6 +49,7 @@ function FlowSandboxInner() {
 		inflationRate,
 		allowedActions,
 		forecastMonths,
+		flashingNodeId,
 		addIncomeRoute,
 		addTransferRule,
 		updateCardLink,
@@ -229,7 +230,8 @@ function FlowSandboxInner() {
 						taxRate: inc.taxRate || 0,
 						taxAmount: totalTax,
 						taxDeductionBreakdown: breakdown,
-						isBalanced
+						isBalanced,
+						isFlashing: flashingNodeId === inc.id
 					}
 				};
 			}),
@@ -272,7 +274,8 @@ function FlowSandboxInner() {
 						accountType: acc.type,
 						apy: acc.apy,
 						history,
-						isDeposited
+						isDeposited,
+						isFlashing: flashingNodeId === acc.id
 					}
 				};
 			}),
@@ -304,7 +307,8 @@ function FlowSandboxInner() {
 						deductible: ins.deductible,
 						isCovered,
 						fundedAmount: directFunding + incomeFunding,
-						coveredExpenseIds: ins.coveredExpenseIds
+						coveredExpenseIds: ins.coveredExpenseIds,
+						isFlashing: flashingNodeId === ins.id
 					}
 				};
 			}),
@@ -323,7 +327,8 @@ function FlowSandboxInner() {
 						forecastBalance: finalSnapshot ? finalSnapshot.cardBalances[card.id] : card.balance,
 						interestPaid: finalSnapshot ? finalSnapshot.cardInterestPaid[card.id] : 0, // <-- Added
 						apr: card.apr,
-						isSnapped: !!snap
+						isSnapped: !!snap,
+						isFlashing: flashingNodeId === card.id
 					}
 				};
 			}),
@@ -338,7 +343,8 @@ function FlowSandboxInner() {
 					apr: loan.apr,
 					minimumPayment: loan.minimumPayment,
 					forecastBalance: finalSnapshot ? finalSnapshot.loanBalances[loan.id] : loan.balance,
-					interestPaid: finalSnapshot ? finalSnapshot.loanInterestPaid[loan.id] : 0 // <-- Added
+					interestPaid: finalSnapshot ? finalSnapshot.loanInterestPaid[loan.id] : 0,
+					isFlashing: flashingNodeId === loan.id
 				}
 			})),
 			...retirements.map((ret) => ({
@@ -352,7 +358,8 @@ function FlowSandboxInner() {
 					expectedApy: ret.expectedApy,
 					employerMatchPercent: ret.employerMatchPercent,
 					forecastBalance: finalSnapshot ? finalSnapshot.retirementBalances[ret.id] : ret.balance,
-					employerMatchTotal: finalSnapshot ? finalSnapshot.retirementEmployerMatch[ret.id] : 0 // <-- Added
+					employerMatchTotal: finalSnapshot ? finalSnapshot.retirementEmployerMatch[ret.id] : 0,
+					isFlashing: flashingNodeId === ret.id
 				}
 			})),
 			...goals.map((goal, i) => {
@@ -370,7 +377,8 @@ function FlowSandboxInner() {
 						targetMonths: goal.targetMonths,
 						currentAmount: finalSnapshot ? finalSnapshot.goalProgress[goal.id] : 0,
 						hitMonth: finalSnapshot ? finalSnapshot.goalHitMonths[goal.id] : undefined,
-						isSnapped: !!snap
+						isSnapped: !!snap,
+						isFlashing: flashingNodeId === goal.id
 					}
 				};
 			}),
@@ -397,7 +405,8 @@ function FlowSandboxInner() {
 						occurrenceMonth: exp.occurrenceMonth,
 						isActiveThisMonth,
 						isSnapped: !!snap,
-						isLocked: isLockedExpense(exp.id, !!snap)
+						isLocked: isLockedExpense(exp.id, !!snap),
+						isFlashing: flashingNodeId === exp.id
 					}
 				};
 			})
@@ -608,9 +617,9 @@ function FlowSandboxInner() {
 
 				if (node.type === "expense") {
 					const expenseData = expenses.find((e) => e.id === node.id);
-					const parentType = accounts.find((a) => a.id === targetParentId) ? "account" : "card";
-					if (expenseData?.requiresCard && parentType === "account") {
-						setSnapTrigger((s) => s + 1); // Force snap-back on rejection
+					const parentAccount = accounts.find((a) => a.id === targetParentId);
+					if (expenseData?.requiresCard && parentAccount?.type === "cash") {
+						setSnapTrigger((s) => s + 1); // Reject physical cash for card-only expenses
 						return;
 					}
 				}
@@ -626,12 +635,16 @@ function FlowSandboxInner() {
 				addTransferRule(targetParentId, node.id, targetAmount ? Math.min(10000, targetAmount) : 100, "fixed");
 			} else {
 				if (node.parentId) {
+					if (allowedActions?.lockExpenses && expenses.some((e) => e.id === node.id)) {
+						setSnapTrigger((s) => s + 1);
+						return;
+					}
 					const existingRules = transferRules.filter((r) => r.destinationId === node.id);
 					existingRules.forEach((r) => removeTransferRule(r.id));
 				}
 			}
 		},
-		[getIntersectingNodes, transferRules, expenses, goals, cards, accounts, removeTransferRule, addTransferRule, updateCardLink]
+		[getIntersectingNodes, transferRules, expenses, goals, cards, accounts, allowedActions, removeTransferRule, addTransferRule, updateCardLink]
 	);
 
 	const onEdgeClick = useCallback((_event: React.MouseEvent, edge: Edge) => {

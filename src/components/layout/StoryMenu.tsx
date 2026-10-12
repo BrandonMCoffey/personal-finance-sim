@@ -126,7 +126,7 @@ export function StoryMenu() {
 					<section className="bg-white border-2 border-slate-200 rounded-2xl p-6 shadow-sm">
 						<div className="flex justify-between items-center mb-4">
 							<h2 className="text-lg font-bold text-slate-900 flex items-center gap-2">
-								<span>📂</span> Master Client Directory ({CHARACTER_DEFINITIONS.length} Characters)
+								<span>👥</span> Advised Client Directory
 							</h2>
 							<button
 								onClick={() => setShowRoster(false)}
@@ -135,54 +135,48 @@ export function StoryMenu() {
 								✕ Close
 							</button>
 						</div>
-						<div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-3">
-							{CHARACTER_DEFINITIONS.map((char) => {
-								const s = clientStates[char.id];
-								const stageIdx = s ? s.currentStageIndex : 0;
-								const stage = char.stages[Math.min(stageIdx, char.stages.length - 1)];
+						{CHARACTER_DEFINITIONS.filter((c) => (clientStates[c.id]?.timesHelped || 0) > 0).length === 0 ? (
+							<div className="text-xs text-slate-500 italic py-6 text-center">
+								No clients advised yet. Select an intake inquiry below to begin building your advisory record!
+							</div>
+						) : (
+							<div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
+								{CHARACTER_DEFINITIONS.filter((c) => (clientStates[c.id]?.timesHelped || 0) > 0).map((char) => {
+									const s = clientStates[char.id];
+									const stageIdx = s ? Math.max(0, s.currentStageIndex - 1) : 0;
+									const stage = char.stages[Math.min(stageIdx, char.stages.length - 1)];
 
-								return (
-									<div
-										key={char.id}
-										className={`p-3 rounded-xl border text-xs flex flex-col justify-between ${
-											s?.isLost
-												? "bg-slate-100 border-slate-200 opacity-60 text-slate-400"
-												: s?.timesHelped && s.timesHelped > 0
-												? "bg-emerald-50/60 border-emerald-200 text-emerald-950"
-												: "bg-white border-slate-200 text-slate-800"
-										}`}
-									>
-										<div>
-											<div className="flex items-center gap-2 mb-1.5">
-												<span className="text-xl">{char.avatarEmoji}</span>
-												<div>
-													<div className="font-bold">{char.name}</div>
-													<div className="text-[10px] text-slate-500">Age {stage?.age || 20}</div>
+									return (
+										<div
+											key={char.id}
+											className="p-3.5 rounded-xl border border-slate-200 bg-white text-xs flex flex-col justify-between shadow-xs"
+										>
+											<div>
+												<div className="flex items-center gap-2 mb-1.5">
+													<span className="text-2xl">{char.avatarEmoji}</span>
+													<div>
+														<div className="font-bold text-slate-900">{char.name}</div>
+														<div className="text-[10px] text-slate-500">Age {stage?.age || 20} • {stage?.occupation || "Client"}</div>
+													</div>
+												</div>
+												<div className="text-[11px] text-slate-700 italic my-2 bg-slate-50 p-2.5 rounded-lg border border-slate-100 leading-snug">
+													“{s?.lastReactionMessage || "Thank you for the guidance on my finances!"}”
 												</div>
 											</div>
-											<div className="text-[11px] text-slate-600 font-medium mb-1 line-clamp-1">
-												{stage?.occupation || "Client"}
+
+											<div className="pt-2 border-t border-slate-100 flex justify-between items-center text-[10px]">
+												<span className="text-purple-700 font-bold">
+													Consultations: {s?.timesHelped || 1}
+												</span>
+												<span className="font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">
+													Score: {s?.lastScore !== undefined ? `${s.lastScore}%` : "Passed"}
+												</span>
 											</div>
 										</div>
-
-										<div className="pt-2 border-t border-slate-200/50 flex justify-between items-center text-[10px]">
-											{s?.isLost ? (
-												<span className="text-red-500 font-bold">Left Firm</span>
-											) : s?.cooldownRoundsRemaining ? (
-												<span className="text-amber-700 font-semibold">Away ({s.cooldownRoundsRemaining}r)</span>
-											) : s?.timesHelped ? (
-												<span className="text-emerald-700 font-bold">{s.timesHelped}x Helped</span>
-											) : (
-												<span className="text-slate-500 font-medium">Prospective</span>
-											)}
-											<span className="text-slate-400">
-												Ch {Math.min((s?.currentStageIndex || 0) + 1, char.stages.length)}/{char.stages.length}
-											</span>
-										</div>
-									</div>
-								);
-							})}
-						</div>
+									);
+								})}
+							</div>
+						)}
 					</section>
 				)}
 
@@ -205,9 +199,8 @@ export function StoryMenu() {
 								snippet,
 								relationshipStatus,
 								relationshipNote,
-								primaryWorry,
 								monthlyIncome,
-								monthlyExpenses
+								totalOutflow
 							} = candidate;
 
 							return (
@@ -258,18 +251,6 @@ export function StoryMenu() {
 										</div>
 									</div>
 
-									{/* Life Event Callout if applicable */}
-									{stage.lifeEvent && (
-										<div className="mx-6 mt-4 p-3 bg-amber-50/70 border border-amber-200 rounded-xl text-xs">
-											<div className="font-bold text-amber-950 flex items-center gap-1 mb-1">
-												<span>⚡</span> {stage.lifeEvent.title}
-											</div>
-											<p className="text-[11px] text-amber-900/90 leading-relaxed">
-												{stage.lifeEvent.description}
-											</p>
-										</div>
-									)}
-
 									{/* Narrative First-Person Message */}
 									<div className="p-6 flex-1 flex flex-col justify-between">
 										<div>
@@ -283,22 +264,21 @@ export function StoryMenu() {
 											</div>
 										</div>
 
-										{/* Financial Snapshot */}
-										<div className="mt-5 pt-4 border-t border-slate-100">
-											<div className="text-[10px] text-purple-700 font-bold mb-1.5 flex items-center gap-1">
-												<span>🎯</span> Case Focus: {primaryWorry}
-											</div>
-											<div className="grid grid-cols-2 gap-2 text-xs">
-												<div className="bg-slate-50 p-2.5 rounded-lg">
-													<div className="text-[10px] text-slate-500 font-medium">Est. Income</div>
-													<div className="font-bold text-emerald-700">${monthlyIncome.toFixed(0)}/mo</div>
+										{/* Financial Snapshot - Only shown for returning clients */}
+										{relationshipStatus !== "new" && (
+											<div className="mt-5 pt-4 border-t border-slate-100">
+												<div className="grid grid-cols-2 gap-2 text-xs">
+													<div className="bg-slate-50 p-2.5 rounded-lg">
+														<div className="text-[10px] text-slate-500 font-medium">Total Income</div>
+														<div className="font-bold text-emerald-700">${monthlyIncome.toFixed(0)}/mo</div>
+													</div>
+													<div className="bg-slate-50 p-2.5 rounded-lg">
+														<div className="text-[10px] text-slate-500 font-medium">Total Outflows</div>
+														<div className="font-bold text-rose-600">${totalOutflow.toFixed(0)}/mo</div>
+													</div>
 												</div>
-												<div className="bg-slate-50 p-2.5 rounded-lg">
-													<div className="text-[10px] text-slate-500 font-medium">Fixed/Core Outflows</div>
-													<div className="font-bold text-rose-600">${monthlyExpenses.toFixed(0)}/mo</div>
-												</div>
 											</div>
-										</div>
+										)}
 									</div>
 
 									{/* Action Footer */}

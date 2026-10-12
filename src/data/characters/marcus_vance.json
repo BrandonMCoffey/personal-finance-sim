@@ -18,28 +18,42 @@
       "yearsSinceLastStage": 0,
       "cooldownRounds": 2,
       "selectionSnippet": {
-        "firstTime": "Hey... I saw your advisory sign on 4th Street. My '08 Civic just blew its head gasket on the expressway, and I put the repair on a 24.9% store card. I'm working 35 hours a week at the warehouse, but my checking account is always negative before Friday.",
-        "returningHelped": "Marcus Vance here! You helped me climb out of that car repair nightmare a couple years ago. I'm at another major turning point and would love your guidance.",
-        "returningSkipped": "Hi, Marcus Vance again. I reached out a while ago when my car broke down. Things have been tough, but I'm really hoping you might have an opening on your client roster this round."
+        "firstTime": "Hey... Marcus Vance here. My '08 Civic blew its head gasket on the highway and I put the $900 repair on an auto card. But worse, I have three different checking accounts open across different banks with random auto-debits hitting each one. My warehouse check lands in one bank, but bills hit the others and trigger overdraft fees. Can we consolidate this mess into a clean budget?",
+        "returningHelped": "Marcus Vance here! You helped me consolidate my fragmented bank accounts and escape that car repair nightmare years ago. I'm at another major turning point and would love your guidance.",
+        "returningSkipped": "Hi, Marcus Vance again. I reached out a while ago when my bank accounts and car broke down. Things have been tough, but I'm really hoping you might have an opening on your client roster this round."
       },
       "dialogue": {
-        "greeting": "I honestly felt embarrassed walking in here. My coworkers blow their paychecks on shoes and takeout, but I'm just trying to make sure I don't overdraft when my insurance auto-renews.",
+        "greeting": "I feel so disorganized. I have accounts scattered across three different banks, but every month one of them overdrafts because an auto-payment pulled from the wrong place. Can we consolidate everything into one clean system so I can build an emergency buffer?",
         "emotion": "Stressed & Cautious",
-        "planApproved": "Man... you don't know how much this means. Actually seeing that emergency fund line item on paper gives me room to breathe. I won't have to panic every time the check engine light flickers.",
-        "planNeedsWork": "Wait, looking at this routing, won't my checking account drop below zero when my room rent clears? I really can't afford another $35 overdraft fee from the bank."
+        "planApproved": "Man... you don't know how much this means. Consolidating those fragmented accounts into a clean checking and emergency fund gives me room to breathe. I won't have to panic every time an auto-debit hits.",
+        "planNeedsWork": "Wait, looking at this routing, one of my accounts is still overdrafting when auto-debits clear. We need to consolidate those expenses into the funded account or transfer money over."
       },
       "lifeEvent": {
-        "title": "Blown Head Gasket Repair",
-        "description": "Marcus had to charge an emergency $900 radiator and head gasket repair to a high-interest store card to keep his commute alive.",
+        "title": "Account Fragmentation & Blown Head Gasket",
+        "description": "Marcus has 3 fragmented bank accounts causing cash flow confusion alongside an emergency $900 car repair on a 24.9% auto card.",
         "type": "debt"
       },
       "financialState": {
         "accounts": [
           {
             "id": "acc_marcus_checking",
-            "name": "Basic Checking",
+            "name": "Main Logistics Checking",
             "type": "checking",
             "balance": 140,
+            "apy": 0.01
+          },
+          {
+            "id": "acc_marcus_old",
+            "name": "Old Dormant College Bank",
+            "type": "checking",
+            "balance": 50,
+            "apy": 0.0
+          },
+          {
+            "id": "acc_marcus_retail",
+            "name": "Retail Side Checking",
+            "type": "checking",
+            "balance": 65,
             "apy": 0.01
           }
         ],
@@ -104,6 +118,43 @@
             "name": "Starter Emergency Fund",
             "targetAmount": 1000,
             "targetMonths": 6
+          }
+        ],
+        "transferRules": [
+          {
+            "id": "rule_marcus_rent",
+            "sourceId": "acc_marcus_checking",
+            "destinationId": "exp_marcus_rent",
+            "amount": 600,
+            "type": "fixed"
+          },
+          {
+            "id": "rule_marcus_groceries",
+            "sourceId": "acc_marcus_checking",
+            "destinationId": "exp_marcus_groceries",
+            "amount": 260,
+            "type": "fixed"
+          },
+          {
+            "id": "rule_marcus_repair",
+            "sourceId": "acc_marcus_old",
+            "destinationId": "card_marcus_repair",
+            "amount": 45,
+            "type": "fixed"
+          },
+          {
+            "id": "rule_marcus_gas",
+            "sourceId": "acc_marcus_retail",
+            "destinationId": "exp_marcus_gas",
+            "amount": 140,
+            "type": "fixed"
+          },
+          {
+            "id": "rule_marcus_phone",
+            "sourceId": "acc_marcus_retail",
+            "destinationId": "exp_marcus_phone",
+            "amount": 55,
+            "type": "fixed"
           }
         ]
       },

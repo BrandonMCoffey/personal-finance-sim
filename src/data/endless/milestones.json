@@ -1,0 +1,626 @@
+[
+  {
+    "id": "ms_age_18",
+    "age": 18,
+    "gapYears": 2,
+    "title": "High School Graduation & Post-Secondary Fork",
+    "narrative": "You've crossed the stage and received your high school diploma! The world is wide open, but your next step sets the trajectory for your early adult earning power and debt profile.",
+    "choices": [
+      {
+        "id": "choice_college",
+        "title": "4-Year University (Bachelor's Degree)",
+        "tag": "High Ceiling",
+        "description": "Enroll in university. Grants access to lucrative professional corporate careers, but comes with student loan debt and modest work-study earnings during school.",
+        "grantsPrerequisiteId": "college_degree",
+        "effects": {
+          "incomesToUpdate": [
+            {
+              "id": "inc_1",
+              "name": "Work-Study & Campus Job",
+              "amount": 950,
+              "taxRate": 10
+            }
+          ],
+          "loansToAdd": [
+            {
+              "id": "loan_student_federal",
+              "name": "Federal Student Loans",
+              "balance": 24000,
+              "apr": 5.5,
+              "minimumPayment": 160
+            }
+          ],
+          "expensesToAdd": [
+            {
+              "id": "exp_tuition_fees",
+              "name": "Books & Tech Fees",
+              "amount": 180,
+              "isFixed": true
+            }
+          ],
+          "eventMessage": "Enrolled in university. Added $24,000 Federal Student Loans and $180/mo tech fees."
+        }
+      },
+      {
+        "id": "choice_trade",
+        "title": "Skilled Trade Apprenticeship (Electrician / Plumbing)",
+        "tag": "Debt-Free Earn & Learn",
+        "description": "Enter a paid trade union apprenticeship. Zero student debt, solid immediate wages, and practical mastery that is always in demand.",
+        "grantsPrerequisiteId": "skilled_trade",
+        "effects": {
+          "incomesToUpdate": [
+            {
+              "id": "inc_1",
+              "name": "Apprentice Trade Wage",
+              "amount": 2600,
+              "taxRate": 14
+            }
+          ],
+          "loansToAdd": [
+            {
+              "id": "loan_tool_starter",
+              "name": "Apprentice Starter Tool Loan",
+              "balance": 2500,
+              "apr": 6.0,
+              "minimumPayment": 75
+            }
+          ],
+          "expensesToAdd": [
+            {
+              "id": "exp_union_dues",
+              "name": "Union Dues & Gear",
+              "amount": 110,
+              "isFixed": true
+            }
+          ],
+          "eventMessage": "Joined union apprenticeship! Earning $2,600/mo with a small tool loan."
+        }
+      },
+      {
+        "id": "choice_workforce",
+        "title": "Direct Full-Time Workforce (Retail & Logistics)",
+        "tag": "Immediate Cash",
+        "description": "Jump straight into full-time customer service and warehouse shifts. Immediate independence without any loans or school obligations.",
+        "grantsPrerequisiteId": "workforce_experience",
+        "effects": {
+          "incomesToUpdate": [
+            {
+              "id": "inc_1",
+              "name": "Full-Time Hourly Wage",
+              "amount": 1900,
+              "taxRate": 12
+            }
+          ],
+          "expensesToAdd": [
+            {
+              "id": "exp_work_commute",
+              "name": "Bus & Transit Pass",
+              "amount": 90,
+              "isFixed": true
+            }
+          ],
+          "eventMessage": "Entered full-time workforce at $1,900/mo with zero debt."
+        }
+      }
+    ]
+  },
+  {
+    "id": "ms_age_21",
+    "age": 21,
+    "gapYears": 3,
+    "title": "First Independent Living",
+    "narrative": "At age 21, it's time to establish your own living arrangement. Housing is typically your single largest monthly expenditure.",
+    "choices": [
+      {
+        "id": "choice_solo_apt",
+        "title": "Solo Downtown Studio Apartment",
+        "tag": "Maximum Freedom",
+        "description": "Rent your own studio downtown. Complete privacy and independence, but heavy fixed monthly overhead and credit card debt for furnishings.",
+        "effects": {
+          "expensesToAdd": [
+            {
+              "id": "exp_solo_rent",
+              "name": "Studio Apartment Rent",
+              "amount": 1350,
+              "isFixed": true
+            },
+            {
+              "id": "exp_apt_utilities",
+              "name": "Wifi & Power",
+              "amount": 160,
+              "isFixed": true
+            }
+          ],
+          "cardsToAdd": [
+            {
+              "id": "card_furnishings",
+              "name": "Furniture Store Card",
+              "type": "credit",
+              "balance": 2200,
+              "apr": 23.5,
+              "minimumPayment": 80
+            }
+          ],
+          "eventMessage": "Moved into solo studio ($1,350/mo) with $2,200 on a furniture store card."
+        }
+      },
+      {
+        "id": "choice_roommates",
+        "title": "Shared Apartment with 2 Roommates",
+        "tag": "Prudent & Social",
+        "description": "Split a 3-bedroom apartment with reliable roommates. Balances independence with manageable shared bills.",
+        "effects": {
+          "expensesToAdd": [
+            {
+              "id": "exp_shared_rent",
+              "name": "Shared Room Rent",
+              "amount": 680,
+              "isFixed": true
+            },
+            {
+              "id": "exp_shared_utilities",
+              "name": "Split Utilities & Internet",
+              "amount": 75,
+              "isFixed": true
+            }
+          ],
+          "eventMessage": "Moved into shared apartment: rent is capped at a manageable $680/mo."
+        }
+      },
+      {
+        "id": "choice_stay_home",
+        "title": "Stay at Family Home & Commute",
+        "tag": "Maximum Savings",
+        "description": "Live at home to supercharge your savings rate and eliminate rental drag while launching your adulthood.",
+        "effects": {
+          "expensesToAdd": [
+            {
+              "id": "exp_family_contribution",
+              "name": "Family Groceries & Board",
+              "amount": 250,
+              "isFixed": true
+            }
+          ],
+          "eventMessage": "Staying at home for now: paying only $250/mo board, leaving cash flow free to invest."
+        }
+      }
+    ]
+  },
+  {
+    "id": "ms_age_24",
+    "age": 24,
+    "gapYears": 3,
+    "title": "Career Launch & Transportation",
+    "narrative": "At age 24, your training pays off as you enter your career field. Plus, you need reliable transport to sustain your commute.",
+    "choices": [
+      {
+        "id": "choice_corporate_launch",
+        "title": "Corporate Associate & Reliable Used Car",
+        "tag": "High Growth & Prudent Auto",
+        "prerequisiteOptionId": "college_degree",
+        "description": "Step into a corporate salary ($5,200/mo) with a company 401(k) match, driving a reliable certified pre-owned car.",
+        "effects": {
+          "incomesToUpdate": [
+            {
+              "id": "inc_1",
+              "name": "Corporate Professional Salary",
+              "amount": 5200,
+              "taxRate": 20
+            }
+          ],
+          "retirementsToAdd": [
+            {
+              "id": "ret_company_401k",
+              "name": "Company 401(k)",
+              "balance": 1500,
+              "expectedApy": 7.5,
+              "employerMatchPercent": 5,
+              "type": "401k"
+            }
+          ],
+          "loansToAdd": [
+            {
+              "id": "loan_reliable_auto",
+              "name": "Certified Pre-Owned Auto Loan",
+              "balance": 8500,
+              "apr": 5.8,
+              "minimumPayment": 190
+            }
+          ],
+          "expensesToAdd": [
+            {
+              "id": "exp_car_insurance_gas",
+              "name": "Auto Insurance & Fuel",
+              "amount": 240,
+              "isFixed": true
+            }
+          ],
+          "eventMessage": "Launched corporate career at $5,200/mo with a 5% 401(k) match and sensible auto loan."
+        }
+      },
+      {
+        "id": "choice_journeyman_launch",
+        "title": "Journeyman Contractor & Work Truck",
+        "tag": "High Cash Flow & Tools",
+        "prerequisiteOptionId": "skilled_trade",
+        "description": "Promoted to Journeyman Trade Specialist ($4,800/mo). Finance a dedicated commercial work truck.",
+        "effects": {
+          "incomesToUpdate": [
+            {
+              "id": "inc_1",
+              "name": "Journeyman Specialist Pay",
+              "amount": 4800,
+              "taxRate": 18
+            }
+          ],
+          "loansToAdd": [
+            {
+              "id": "loan_work_truck",
+              "name": "Commercial Work Truck Loan",
+              "balance": 14000,
+              "apr": 6.5,
+              "minimumPayment": 290
+            }
+          ],
+          "expensesToAdd": [
+            {
+              "id": "exp_truck_fuel_ins",
+              "name": "Commercial Gas & Ins",
+              "amount": 320,
+              "isFixed": true
+            }
+          ],
+          "eventMessage": "Journeyman status achieved! Salary is $4,800/mo with work truck loan."
+        }
+      },
+      {
+        "id": "choice_manager_launch",
+        "title": "Store General Manager & Economy Commuter",
+        "tag": "Steady Track",
+        "description": "Promoted to Store General Manager ($3,400/mo). Modest used commuter car keeps payments low.",
+        "effects": {
+          "incomesToUpdate": [
+            {
+              "id": "inc_1",
+              "name": "Store Management Salary",
+              "amount": 3400,
+              "taxRate": 16
+            }
+          ],
+          "loansToAdd": [
+            {
+              "id": "loan_economy_auto",
+              "name": "Used Economy Auto Loan",
+              "balance": 6500,
+              "apr": 6.9,
+              "minimumPayment": 150
+            }
+          ],
+          "expensesToAdd": [
+            {
+              "id": "exp_commuter_gas",
+              "name": "Commuter Fuel & Ins",
+              "amount": 190,
+              "isFixed": true
+            }
+          ],
+          "eventMessage": "Promoted to GM at $3,400/mo with economical $150/mo car payment."
+        }
+      }
+    ]
+  },
+  {
+    "id": "ms_age_27",
+    "age": 27,
+    "gapYears": 3,
+    "title": "Independent Healthcare & Life Shock",
+    "narrative": "At age 27, you are off parental health insurance. Deciding how to manage risk transfer is a cornerstone of adult personal finance.",
+    "choices": [
+      {
+        "id": "choice_full_insurance",
+        "title": "Comprehensive Health & Disability Policy",
+        "tag": "Risk Transferred",
+        "description": "Secure a solid health insurance policy with modest deductible. Monthly premium safeguards your savings against unexpected medical emergencies.",
+        "effects": {
+          "insurancesToAdd": [
+            {
+              "id": "ins_health_policy",
+              "name": "Comprehensive Health Plan",
+              "premium": 180,
+              "deductible": 1200
+            }
+          ],
+          "eventMessage": "Active Health Policy established ($180/mo premium, $1,200 deductible)."
+        }
+      },
+      {
+        "id": "choice_skip_insurance",
+        "title": "Go Uninsured / High Deductible Gamble",
+        "tag": "Dangerous Gamble",
+        "description": "Skip paying monthly insurance premiums to keep more cash, but expose yourself to catastrophic hospital bills.",
+        "effects": {
+          "loansToAdd": [
+            {
+              "id": "loan_er_bill",
+              "name": "Emergency Medical Hospital Bill",
+              "balance": 4800,
+              "apr": 9.5,
+              "minimumPayment": 140
+            }
+          ],
+          "eventMessage": "Skipped insurance! An appendicitis scare landed you with a $4,800 medical debt."
+        }
+      }
+    ]
+  },
+  {
+    "id": "ms_age_30",
+    "age": 30,
+    "gapYears": 3,
+    "title": "Marriage & Partnership",
+    "narrative": "At age 30, you marry your long-term partner! Combining households introduces dual income, but the celebration cost can either build solidarity or spark heavy debt.",
+    "choices": [
+      {
+        "id": "choice_intimate_wedding",
+        "title": "Intimate Celebration & Dual Income Synergy",
+        "tag": "Frugal & Synergistic",
+        "description": "Host a modest community celebration. Your partner brings a $3,500/mo income into the household with minimal debt.",
+        "grantsPrerequisiteId": "married",
+        "effects": {
+          "incomesToAdd": [
+            {
+              "id": "inc_partner",
+              "name": "Partner's Monthly Salary",
+              "amount": 3500,
+              "taxRate": 16
+            }
+          ],
+          "expensesToAdd": [
+            {
+              "id": "exp_joint_groceries",
+              "name": "Joint Groceries & Dining",
+              "amount": 550,
+              "isFixed": false,
+              "minValue": 350
+            }
+          ],
+          "eventMessage": "Married! Added partner income (+$3,500/mo) and joint household expenses."
+        }
+      },
+      {
+        "id": "choice_luxury_wedding",
+        "title": "Extravagant Destination Wedding on Credit",
+        "tag": "Heavy Debt Trap",
+        "description": "Host a glamorous resort wedding and European honeymoon funded on high-interest credit cards ($16,000 at 22.9% APR).",
+        "grantsPrerequisiteId": "married",
+        "effects": {
+          "incomesToAdd": [
+            {
+              "id": "inc_partner",
+              "name": "Partner's Monthly Salary",
+              "amount": 3500,
+              "taxRate": 16
+            }
+          ],
+          "cardsToAdd": [
+            {
+              "id": "card_wedding_debt",
+              "name": "Destination Wedding Card",
+              "type": "credit",
+              "balance": 16000,
+              "apr": 22.9,
+              "minimumPayment": 480
+            }
+          ],
+          "expensesToAdd": [
+            {
+              "id": "exp_joint_groceries",
+              "name": "Joint Groceries & Dining",
+              "amount": 650,
+              "isFixed": false,
+              "minValue": 400
+            }
+          ],
+          "eventMessage": "Lavish wedding celebrated! Loaded $16,000 onto a 22.9% credit card ($480/mo min payment)."
+        }
+      }
+    ]
+  },
+  {
+    "id": "ms_age_35",
+    "age": 35,
+    "gapYears": 5,
+    "title": "Housing & Children",
+    "narrative": "At age 35, your family is growing with two kids! The defining financial question is whether to buy a home with a mortgage or invest heavily while renting.",
+    "choices": [
+      {
+        "id": "choice_buy_home",
+        "title": "Buy Suburban Home (30-Year Mortgage)",
+        "tag": "Real Estate Equity",
+        "description": "Purchase a 3-bedroom home with a $280,000 mortgage ($1,800/mo payment + $350 property tax & maintenance). Adds childcare costs for two children.",
+        "grantsPrerequisiteId": "homeowner",
+        "effects": {
+          "loansToAdd": [
+            {
+              "id": "loan_home_mortgage",
+              "name": "30-Year Fixed Mortgage",
+              "balance": 280000,
+              "apr": 6.2,
+              "minimumPayment": 1780
+            }
+          ],
+          "expensesToAdd": [
+            {
+              "id": "exp_property_tax_ins",
+              "name": "Property Tax & Homeowners Ins",
+              "amount": 380,
+              "isFixed": true
+            },
+            {
+              "id": "exp_kids_childcare",
+              "name": "Childcare, Diapers & Kids",
+              "amount": 1200,
+              "isFixed": true
+            }
+          ],
+          "eventMessage": "Purchased family home! Added 30-year mortgage and childcare costs."
+        }
+      },
+      {
+        "id": "choice_rent_and_invest",
+        "title": "Rent Single-Family Home & Funnel Cash into Index Funds",
+        "tag": "Liquid Wealth Builder",
+        "description": "Lease a spacious suburban home ($1,900/mo) with zero maintenance headaches, aggressively funneling remaining surplus into your brokerage.",
+        "effects": {
+          "expensesToAdd": [
+            {
+              "id": "exp_family_rental",
+              "name": "Family House Rental",
+              "amount": 1900,
+              "isFixed": true
+            },
+            {
+              "id": "exp_kids_childcare",
+              "name": "Childcare, Diapers & Kids",
+              "amount": 1200,
+              "isFixed": true
+            }
+          ],
+          "eventMessage": "Renting family house ($1,900/mo) and focusing surplus into index investing."
+        }
+      }
+    ]
+  },
+  {
+    "id": "ms_age_42",
+    "age": 42,
+    "gapYears": 7,
+    "title": "Mid-Career Prime Earning Years",
+    "narrative": "At age 42, your career hits peak velocity. How do you capitalize on your senior experience?",
+    "choices": [
+      {
+        "id": "choice_executive_raise",
+        "title": "Executive Director / Master Contractor Raise",
+        "tag": "Peak Salary",
+        "description": "Climb into senior leadership. Your personal income jumps to $8,800/mo, maximizing your retirement savings capacity.",
+        "effects": {
+          "incomesToUpdate": [
+            {
+              "id": "inc_1",
+              "name": "Executive / Director Salary",
+              "amount": 8800,
+              "taxRate": 24
+            }
+          ],
+          "eventMessage": "Earned senior executive promotion! Salary increased to $8,800/mo."
+        }
+      },
+      {
+        "id": "choice_start_business",
+        "title": "Launch Independent Consulting / Business Firm",
+        "tag": "High Risk & Equity",
+        "description": "Take out a commercial small business loan ($35,000) to build your own agency. Highly rewarding, but demands tight cash flow control.",
+        "effects": {
+          "incomesToUpdate": [
+            {
+              "id": "inc_1",
+              "name": "Business Owner Revenue",
+              "amount": 9600,
+              "taxRate": 22
+            }
+          ],
+          "loansToAdd": [
+            {
+              "id": "loan_business_startup",
+              "name": "SBA Small Business Loan",
+              "balance": 35000,
+              "apr": 7.8,
+              "minimumPayment": 450
+            }
+          ],
+          "eventMessage": "Launched your business! Revenue is $9,600/mo with a $35k SBA loan."
+        }
+      }
+    ]
+  },
+  {
+    "id": "ms_age_50",
+    "age": 50,
+    "gapYears": 8,
+    "title": "College Tuition & Catch-Up Window",
+    "narrative": "At age 50, your kids are finishing high school, and you enter the official IRS retirement catch-up window.",
+    "choices": [
+      {
+        "id": "choice_fund_college",
+        "title": "Cash-Flow Kids' College Tuition",
+        "tag": "Family Legacy",
+        "description": "Commit $900/mo to ensure your kids graduate college debt-free, giving the next generation a clean start.",
+        "effects": {
+          "expensesToAdd": [
+            {
+              "id": "exp_kids_tuition_cash",
+              "name": "Children's University Tuition",
+              "amount": 900,
+              "isFixed": true
+            }
+          ],
+          "eventMessage": "Funding kids' college tuition ($900/mo) to break the cycle of student debt."
+        }
+      },
+      {
+        "id": "choice_max_retirement",
+        "title": "Prioritize Your Own Retirement Catch-Up",
+        "tag": "Wealth Focus",
+        "description": "Kids use federal scholarships and work-study; you supercharge your retirement and index funds before the clock runs out.",
+        "effects": {
+          "eventMessage": "Prioritized retirement acceleration! Directing all surplus to compound growth."
+        }
+      }
+    ]
+  },
+  {
+    "id": "ms_age_60",
+    "age": 60,
+    "gapYears": 10,
+    "title": "Pre-Retirement Consolidation",
+    "narrative": "Age 60! The countdown to retirement is on. Kids are grown and self-sufficient, childcare expenses drop away, and you position your assets for financial independence.",
+    "choices": [
+      {
+        "id": "choice_debt_free_sprint",
+        "title": "Eliminate All Remaining Liabilities",
+        "tag": "De-Risk",
+        "description": "Channel all excess cash flow into wiping out any remaining loans or mortgages so you can enter retirement 100% debt-free.",
+        "effects": {
+          "eventMessage": "Debt-free sprint initiated! Funneling cash flow to pay off debts."
+        }
+      },
+      {
+        "id": "choice_brokerage_dividend",
+        "title": "Pivot to High-Yield Dividend & Income Portfolio",
+        "tag": "Income Engine",
+        "description": "Shift uninvested capital into cash-flowing assets to generate passive income for your upcoming golden years.",
+        "effects": {
+          "eventMessage": "Portfolio pivoted toward dividend stability."
+        }
+      }
+    ]
+  },
+  {
+    "id": "ms_age_65",
+    "age": 65,
+    "gapYears": 5,
+    "title": "Retirement Celebration & Lifetime Score!",
+    "narrative": "Congratulations! You have reached age 65 and concluded your 50-year financial journey. Let's tally your lifetime net worth, examine the debt traps you survived, and celebrate your generational legacy.",
+    "choices": [
+      {
+        "id": "choice_retire_final",
+        "title": "Step into Financial Independence",
+        "tag": "Finale",
+        "description": "Conclude the simulation, evaluate your lifetime financial decisions, and view your final ranking.",
+        "effects": {
+          "eventMessage": "50-Year Simulation Complete! Reviewing your lifetime net worth."
+        }
+      }
+    ]
+  }
+]

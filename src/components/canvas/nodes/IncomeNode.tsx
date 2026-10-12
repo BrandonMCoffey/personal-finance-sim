@@ -9,6 +9,7 @@ interface IncomeNodeProps {
 		taxAmount: number;
 		taxDeductionBreakdown?: { name: string; amount: number; rate?: number }[];
 		isBalanced: boolean;
+		isFlashing?: boolean;
 	};
 }
 
@@ -41,17 +42,18 @@ export function IncomeNode({ data }: IncomeNodeProps) {
 			borderColor={borderColor}
 			titleColor="text-gray-800"
 			sourceHandle={{ color: "bg-green-500" }}
+			isFlashing={data.isFlashing}
 			headerElement={headerElement}
-			className="w-[185px] h-[105px]"
+			className={data.taxAmount > 0 ? "w-[190px] h-[112px]" : "w-[185px] h-[98px]"}
 		>
-			<div className="flex flex-col w-full mt-2">
+			<div className="flex flex-col w-full mt-1">
 				<div className="flex justify-between items-center text-[10px] text-gray-500">
 					<span>Gross Pay</span>
 					<span>${data.amount.toFixed(2)}</span>
 				</div>
 
 				{data.taxAmount > 0 && (
-					<div className="flex justify-between items-center text-[10px] text-red-500 border-b border-gray-200 pb-1 mb-1">
+					<div className="flex justify-between items-center text-[10px] text-red-500 border-b border-gray-200 pb-0.5 mb-0.5">
 						<span title={breakdownTooltip} className="cursor-help border-b border-dotted border-red-300">
 							{taxesLabel}
 						</span>
@@ -59,7 +61,7 @@ export function IncomeNode({ data }: IncomeNodeProps) {
 					</div>
 				)}
 
-				<div className="flex justify-between items-center mt-1">
+				<div className="flex justify-between items-center mt-0.5">
 					<span className="text-[10px] font-bold text-green-800">Net Pay</span>
 					<span className="text-sm font-bold text-green-600">+${data.netAmount.toFixed(2)}</span>
 				</div>

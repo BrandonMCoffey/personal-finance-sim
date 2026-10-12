@@ -18,19 +18,19 @@
       "yearsSinceLastStage": 0,
       "cooldownRounds": 2,
       "selectionSnippet": {
-        "firstTime": "Hi. Maya Patel here. I'm a Senior Software Engineer pulling in $9,500 a month gross, but I'm privately in a crisis. Between a luxury high-rise apartment lease, leasing a Tesla, and taking a brutal $8,000 margin call loss on crypto options last month, I have almost no liquid emergency cash left.",
-        "returningHelped": "Maya Patel here! You gave me the reality check I desperately needed when I was blowing high-tech money on speculative gambles. I'm hitting another tech career inflection point and need your analytical mind.",
-        "returningSkipped": "Maya Patel checking in again. I reached out when my spending was out of control. I managed to avoid total disaster, but I need real wealth architecture to stop leaking money. Hoping for an opening."
+        "firstTime": "Hi. Maya Patel here. I'm a Senior Software Engineer pulling in $9,500/mo gross, but I made a huge financial blunder. Last month I charged a lavish $4,200 Cabo luxury resort vacation onto my 24.99% travel rewards card. Between high-rise rent, my Tesla lease, and over $90/mo in pure interest compounding, I need a disciplined debt paydown plan to crush this vacation balance immediately.",
+        "returningHelped": "Maya Patel here! You helped me crush that Cabo vacation debt trap years ago. I'm hitting another tech career inflection point and need your analytical mind.",
+        "returningSkipped": "Maya Patel checking in again. I reached out when my vacation credit card debt was spiraling. I need real wealth architecture to stop leaking interest. Hoping for an opening."
       },
       "dialogue": {
-        "greeting": "Everyone at my tech firm brags about crypto gains and angel investing, but nobody talks about being one paycheck away from not covering their luxury rent. I felt so smart writing code, but my personal balance sheet was embarrassing.",
+        "greeting": "Everyone in tech acts like paying $4,200 for a luxury resort vacation is no big deal, but charging it to a 24.99% credit card was reckless. The interest fees are compounding daily. Can we build a budget plan that wipes out this vacation debt without missing rent?",
         "emotion": "Chagrined & Driven",
-        "planApproved": "Seeing the math laid out like a clean software system clicked for me. Capping variable spending, eliminating margin risk, and automating boring index funds is the best decision I've made all year.",
-        "planNeedsWork": "Wait, our variable lifestyle costs are still set so high that a single down month will wipe out the savings buffer."
+        "planApproved": "Seeing the numbers laid out like a clean software system clicked for me. Capping variable dining out and funneling every surplus dollar into crushing that 24.99% vacation card wipes it out in months!",
+        "planNeedsWork": "Wait, our payments to the vacation card are barely above the minimum! At this rate, I'll be paying compound interest on Cabo margaritas for the next five years."
       },
       "lifeEvent": {
-        "title": "Margin Call Speculation Loss",
-        "description": "Maya lost $8,000 in liquid capital after a speculative leveraged crypto options position collapsed, wiping out her buffer.",
+        "title": "Luxury Vacation Debt Trap",
+        "description": "Maya put an extravagant $4,200 Cabo luxury resort vacation on her 24.99% rewards card, and compounding interest is draining her surplus.",
         "type": "debt"
       },
       "financialState": {
@@ -46,7 +46,7 @@
         "cards": [
           {
             "id": "card_maya_metal",
-            "name": "Premium Travel Card",
+            "name": "Cabo Vacation Rewards Card",
             "type": "credit",
             "linkedAccountId": "acc_maya_checking",
             "balance": 4200,
@@ -100,9 +100,46 @@
         "goals": [
           {
             "id": "goal_maya_kill_card",
-            "name": "Eliminate Premium Card Debt",
+            "name": "Pay Off Vacation Card Debt",
             "targetAmount": 4200,
             "targetMonths": 4
+          }
+        ],
+        "transferRules": [
+          {
+            "id": "rule_maya_apt",
+            "sourceId": "acc_maya_checking",
+            "destinationId": "exp_maya_luxury_apt",
+            "amount": 2850,
+            "type": "fixed"
+          },
+          {
+            "id": "rule_maya_tesla",
+            "sourceId": "acc_maya_checking",
+            "destinationId": "exp_maya_tesla_lease",
+            "amount": 750,
+            "type": "fixed"
+          },
+          {
+            "id": "rule_maya_dining",
+            "sourceId": "acc_maya_checking",
+            "destinationId": "exp_maya_dining_social",
+            "amount": 1100,
+            "type": "fixed"
+          },
+          {
+            "id": "rule_maya_subs",
+            "sourceId": "acc_maya_checking",
+            "destinationId": "exp_maya_subscriptions",
+            "amount": 320,
+            "type": "fixed"
+          },
+          {
+            "id": "rule_maya_card",
+            "sourceId": "acc_maya_checking",
+            "destinationId": "card_maya_metal",
+            "amount": 160,
+            "type": "fixed"
           }
         ]
       },

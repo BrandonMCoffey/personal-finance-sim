@@ -9,6 +9,7 @@ interface CardNodeProps {
 		interestPaid: number;
 		apr?: number;
 		isSnapped: boolean;
+		isFlashing?: boolean;
 	};
 }
 
@@ -36,6 +37,7 @@ export function CardNode({ data }: CardNodeProps) {
 			borderColor={borderColor}
 			titleColor="text-white"
 			isSnapped={data.isSnapped}
+			isFlashing={data.isFlashing}
 			targetHandle={isCredit && !data.isSnapped ? { color: handleColor } : undefined}
 			sourceHandle={{ color: handleColor }}
 			headerElement={headerElement}

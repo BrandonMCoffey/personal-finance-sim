@@ -9,6 +9,7 @@ interface InsuranceNodeProps {
 		isCovered: boolean;
 		fundedAmount: number;
 		coveredExpenseIds?: string[];
+		isFlashing?: boolean;
 	};
 }
 
@@ -44,6 +45,7 @@ export function InsuranceNode({ data }: InsuranceNodeProps) {
 			targetHandle={{ color: targetColor }}
 			headerElement={headerElement}
 			className="w-[170px] h-[95px]"
+			isFlashing={data.isFlashing}
 		>
 			<div className="flex flex-col w-full mt-1">
 				<div className="flex justify-between items-center text-[10px] text-gray-600">

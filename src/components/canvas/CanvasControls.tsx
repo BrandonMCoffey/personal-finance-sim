@@ -66,14 +66,6 @@ export function CanvasControls() {
 					)}
 				</>
 			)}
-			{allowedActions.allowedCardTypes?.includes("debit") && (
-				<button
-					onClick={() => handleAddCard("debit")}
-					className="px-3 py-1.5 bg-teal-50 text-teal-700 text-sm font-medium rounded border border-teal-200 hover:bg-teal-100"
-				>
-					+ Debit Card
-				</button>
-			)}
 			{allowedActions.allowedCardTypes?.includes("credit") && (
 				<button
 					onClick={() => handleAddCard("credit")}

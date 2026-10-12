@@ -16,6 +16,7 @@ interface AccountNodeProps {
 		history: { month: number; balance: number; goal: number; in: number; out: number }[];
 		originalBalance?: number;
 		isDeposited?: boolean;
+		isFlashing?: boolean;
 	};
 }
 
@@ -104,7 +105,8 @@ export function AccountNode({ data }: AccountNodeProps) {
 			bgColor={bgColor}
 			borderColor={borderColor}
 			titleColor={titleColor}
-			targetHandle={!isDeposited ? { color: handleColor } : undefined}
+			isFlashing={data.isFlashing}
+			targetHandle={{ color: handleColor }}
 			sourceHandle={{ color: handleColor }}
 			onRename={(newName) => renameAccount(data.id, newName)}
 			headerElement={headerElement}
@@ -112,7 +114,14 @@ export function AccountNode({ data }: AccountNodeProps) {
 			className={data.forecastMonths > 1 && !isDeposited ? "w-[260px] h-[95px]" : "w-[160px] h-[85px]"}
 		>
 			{isDeposited ? (
-				<div className="text-xs font-bold text-gray-500 mt-2">Deposited: ${originalBalance.toFixed(0)}</div>
+				<div className="flex flex-col justify-center flex-1">
+					<div className="text-xs font-bold text-gray-500">Deposited: ${originalBalance.toFixed(0)}</div>
+					{data.forecastBalance > 0 && (
+						<div className="text-[10px] font-semibold text-green-600 mt-0.5">
+							{data.forecastMonths}m: ${data.forecastBalance.toFixed(0)}
+						</div>
+					)}
+				</div>
 			) : (
 				<>
 					<div className={`text-[10px] ${isCash ? "text-green-600/80" : "text-gray-400"}`}>Start: ${data.balance.toFixed(0)}</div>

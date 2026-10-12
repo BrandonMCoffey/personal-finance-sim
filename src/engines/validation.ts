@@ -67,8 +67,16 @@ export function evaluatePlan(
 
 	// 3. Check Goals & Inflation Drag
 	goals.forEach((goal) => {
+		const isConnected = transferRules.some((r) => r.destinationId === goal.id);
+		const isMandatoryGoal = winConditions.goalsFundedWithinMonths?.goalId === goal.id;
+
+		if (!isConnected && !isMandatoryGoal) {
+			feedback.push(`Goal Deprioritized: "${goal.name}" was disconnected to prioritize core financial stability.`);
+			return;
+		}
+
 		const configuredGoalDeadline =
-			winConditions.goalsFundedWithinMonths?.goalId === goal.id ? winConditions.goalsFundedWithinMonths.months : goal.targetMonths;
+			isMandatoryGoal ? winConditions.goalsFundedWithinMonths!.months : goal.targetMonths;
 
 		if (configuredGoalDeadline) {
 			const forecast = generateForecast(
@@ -126,15 +134,18 @@ export function evaluatePlan(
 		}
 	});
 
-	// 4. Check Card Expenses
+	// 4. Check Card Expenses (Checking accounts imply debit cards; cash cannot pay card expenses)
 	expenses.forEach((exp) => {
 		if (exp.requiresCard) {
 			const fundingRule = transferRules.find((r) => r.destinationId === exp.id);
-			if (fundingRule && accounts.some((a) => a.id === fundingRule.sourceId)) {
-				score -= 15;
-				feedback.push(`Payment Error: "${exp.name}" requires a Debit or Credit Card.`);
-				if (!contextualHint)
-					contextualHint = `To pay for ${exp.name}, you must create a Card node, link it to your bank, and route the payment from the Card to the Expense.`;
+			if (fundingRule) {
+				const sourceAcc = accounts.find((a) => a.id === fundingRule.sourceId);
+				if (sourceAcc && sourceAcc.type === "cash") {
+					score -= 15;
+					feedback.push(`Payment Error: "${exp.name}" requires a Debit or Credit Card, and cannot be paid with cash.`);
+					if (!contextualHint)
+						contextualHint = `Link "${exp.name}" to a checking account (which uses a debit card) or a credit card.`;
+				}
 			}
 		}
 	});
@@ -145,6 +156,15 @@ export function evaluatePlan(
 
 	expenses.forEach((expense) => {
 		const baseAmount = expense.defaultAmount !== undefined ? expense.defaultAmount : expense.amount;
+		const isConnected =
+			transferRules.some((r) => r.destinationId === expense.id) ||
+			incomes.some((inc) => inc.routings?.some((r) => r.destinationId === expense.id));
+
+		if (!isConnected && (!expense.isFixed || expense.isCancelable)) {
+			feedback.push(`Expense Reduction: "${expense.name}" ($${baseAmount.toFixed(0)}/mo) was disconnected / canceled.`);
+			return;
+		}
+
 		if (expense.isFixed) {
 			const violation = expenseForecast.find(
 				(snapshot) => snapshot.activeExpenses[expense.id] && (snapshot.expenseProgress[expense.id] ?? 0) < baseAmount - 0.01

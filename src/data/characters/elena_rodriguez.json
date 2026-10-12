@@ -18,19 +18,19 @@
       "yearsSinceLastStage": 0,
       "cooldownRounds": 2,
       "selectionSnippet": {
-        "firstTime": "Hi there... Elena Rodriguez. I just completed my first year as an RN on the medical-surgical floor. My salary looks fine on paper, but between 12-hour night shifts, nursing school loans, and sending $450 every month to help my little brother with college, I'm down to $90 in checking.",
-        "returningHelped": "Elena Rodriguez! You gave me so much peace of mind when I was drowning in night shifts and family obligations. I really need your guidance again for the next chapter.",
-        "returningSkipped": "Hello, Elena Rodriguez again. I reached out a while back when work was overwhelming. I've been pulling extra weekend differentials to stay afloat, but I really need professional guidance."
+        "firstTime": "Hi there... Elena Rodriguez. I just completed my first year as an RN on the night shift. Between student loans and helping my brother, I signed up for 5 separate savings goals and multiple spa and meal delivery subscriptions to cope with stress. I'm spread way too thin and my checking account is down to $90. Can you help me disconnect non-essentials so I can build my core peace fund?",
+        "returningHelped": "Elena Rodriguez! You gave me so much peace of mind when I was drowning in night shifts and too many financial goals. I really need your guidance again for the next chapter.",
+        "returningSkipped": "Hello, Elena Rodriguez again. I reached out when I was overwhelmed by trying to fund too many goals at once. I really need professional guidance to simplify my budget."
       },
       "dialogue": {
-        "greeting": "People assume nurses make easy money. They don't see us drinking vending machine coffee at 3 AM while worrying about nursing loan repayments and family bills back home.",
+        "greeting": "I got caught trying to do everything at once—luxury subscriptions, five different dream savings goals, all while sending money to my brother and paying nursing loans. Which expenses and goals should I disconnect to survive?",
         "emotion": "Exhausted & Compassionate",
-        "planApproved": "Oh wow... having automated boundaries so I can still support my brother without bankrupting myself feels like a miracle. I can sleep after my shift without waking up in a panic.",
-        "planNeedsWork": "Wait, my student loan minimum is completely unpaid here. If that goes into default, my nursing license could be in jeopardy!"
+        "planApproved": "Oh wow... what a weight off my shoulders. Disconnecting those unrealistic goals and canceling luxury subscriptions lets me focus 100% on building my Emergency Peace Fund and protecting my brother.",
+        "planNeedsWork": "Wait, my student loan minimum or apartment rent isn't covered. And I'm still trying to fund too many goals at once! We need to disconnect the unachievable ones."
       },
       "lifeEvent": {
-        "title": "Supporting Sibling College Tuition",
-        "description": "Elena commits $450 per month to keep her younger brother from taking out predatory student loans.",
+        "title": "Goal Overload & Sibling Support",
+        "description": "Elena is overwhelmed trying to fund 5 competing goals and luxury subscriptions alongside supporting her brother's education.",
         "type": "expense"
       },
       "financialState": {
@@ -83,7 +83,7 @@
           },
           {
             "id": "exp_elena_groceries",
-            "name": "Groceries & Scrubs",
+            "name": "Groceries & Essentials",
             "isFixed": false,
             "minValue": 240,
             "defaultAmount": 340
@@ -93,6 +93,30 @@
             "name": "Hospital Parking & Metro",
             "isFixed": true,
             "defaultAmount": 130
+          },
+          {
+            "id": "exp_elena_spa",
+            "name": "Luxury Wellness & Spa Club",
+            "isFixed": false,
+            "isCancelable": true,
+            "minValue": 100,
+            "defaultAmount": 160
+          },
+          {
+            "id": "exp_elena_meal_kits",
+            "name": "Premium Meal Delivery",
+            "isFixed": false,
+            "isCancelable": true,
+            "minValue": 120,
+            "defaultAmount": 180
+          },
+          {
+            "id": "exp_elena_streaming",
+            "name": "Ultra 4K Streaming Bundle",
+            "isFixed": false,
+            "isCancelable": true,
+            "minValue": 30,
+            "defaultAmount": 55
           }
         ],
         "goals": [
@@ -101,6 +125,123 @@
             "name": "Nurse Emergency Peace Fund",
             "targetAmount": 1500,
             "targetMonths": 6
+          },
+          {
+            "id": "goal_elena_paris",
+            "name": "Dream Paris Vacation",
+            "targetAmount": 3000,
+            "targetMonths": 6
+          },
+          {
+            "id": "goal_elena_scrubs",
+            "name": "Designer Scrubs Wardrobe",
+            "targetAmount": 1200,
+            "targetMonths": 4
+          },
+          {
+            "id": "goal_elena_macbook",
+            "name": "New MacBook Pro",
+            "targetAmount": 2000,
+            "targetMonths": 5
+          },
+          {
+            "id": "goal_elena_retreat",
+            "name": "Weekend Wellness Retreat",
+            "targetAmount": 1000,
+            "targetMonths": 4
+          }
+        ],
+        "transferRules": [
+          {
+            "id": "rule_elena_loan",
+            "sourceId": "acc_elena_checking",
+            "destinationId": "loan_elena_nursing_school",
+            "amount": 290,
+            "type": "fixed"
+          },
+          {
+            "id": "rule_elena_apt",
+            "sourceId": "acc_elena_checking",
+            "destinationId": "exp_elena_apartment",
+            "amount": 1100,
+            "type": "fixed"
+          },
+          {
+            "id": "rule_elena_brother",
+            "sourceId": "acc_elena_checking",
+            "destinationId": "exp_elena_brother_support",
+            "amount": 450,
+            "type": "fixed"
+          },
+          {
+            "id": "rule_elena_groceries",
+            "sourceId": "acc_elena_checking",
+            "destinationId": "exp_elena_groceries",
+            "amount": 340,
+            "type": "fixed"
+          },
+          {
+            "id": "rule_elena_transit",
+            "sourceId": "acc_elena_checking",
+            "destinationId": "exp_elena_transport",
+            "amount": 130,
+            "type": "fixed"
+          },
+          {
+            "id": "rule_elena_spa",
+            "sourceId": "acc_elena_checking",
+            "destinationId": "exp_elena_spa",
+            "amount": 160,
+            "type": "fixed"
+          },
+          {
+            "id": "rule_elena_meals",
+            "sourceId": "acc_elena_checking",
+            "destinationId": "exp_elena_meal_kits",
+            "amount": 180,
+            "type": "fixed"
+          },
+          {
+            "id": "rule_elena_streaming",
+            "sourceId": "acc_elena_checking",
+            "destinationId": "exp_elena_streaming",
+            "amount": 55,
+            "type": "fixed"
+          },
+          {
+            "id": "rule_elena_peace",
+            "sourceId": "acc_elena_checking",
+            "destinationId": "goal_elena_peace_fund",
+            "amount": 250,
+            "type": "fixed"
+          },
+          {
+            "id": "rule_elena_paris",
+            "sourceId": "acc_elena_checking",
+            "destinationId": "goal_elena_paris",
+            "amount": 500,
+            "type": "fixed"
+          },
+          {
+            "id": "rule_elena_scrubs",
+            "sourceId": "acc_elena_checking",
+            "destinationId": "goal_elena_scrubs",
+            "amount": 300,
+            "type": "fixed"
+          },
+          {
+            "id": "rule_elena_macbook",
+            "sourceId": "acc_elena_checking",
+            "destinationId": "goal_elena_macbook",
+            "amount": 400,
+            "type": "fixed"
+          },
+          {
+            "id": "rule_elena_retreat",
+            "sourceId": "acc_elena_checking",
+            "destinationId": "goal_elena_retreat",
+            "amount": 250,
+            "type": "fixed"
           }
         ]
       },

@@ -10,6 +10,7 @@ interface LoanNodeProps {
 		minimumPayment: number;
 		forecastBalance: number;
 		interestPaid: number;
+		isFlashing?: boolean;
 	};
 }
 
@@ -25,6 +26,7 @@ export function LoanNode({ data }: LoanNodeProps) {
 			borderColor={isPaidOff ? "border-green-400" : "border-orange-400"}
 			titleColor="text-orange-900"
 			targetHandle={{ color: "bg-orange-500" }}
+			isFlashing={data.isFlashing}
 			onRename={(newName) => renameAccount(data.id, newName)}
 			headerElement={<span className="text-[10px] text-orange-600 font-bold">{data.apr}% APR</span>}
 			className="w-[160px] h-[95px]"
