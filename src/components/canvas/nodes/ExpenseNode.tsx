@@ -53,7 +53,6 @@ export function ExpenseNode({ data }: ExpenseNodeProps) {
 		}
 	}
 
-	const isLocked = Boolean(data.isLocked);
 	const defaultAmt = data.defaultAmount !== undefined ? data.defaultAmount : data.targetAmount;
 	const fundedAmount = incomingRule?.amount || 0;
 	const minRequired = data.minValue || data.targetAmount;
