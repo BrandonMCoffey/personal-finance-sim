@@ -13,7 +13,7 @@ interface AccountNodeProps {
 		forecastMonths: number;
 		accountType: string;
 		apy?: number;
-		history: { month: number; balance: number; goal: number; in: number; out: number }[];
+		history: { month: number; balance: number; goal: number; in: number; out: number; cardOut?: number }[];
 		originalBalance?: number;
 		isDeposited?: boolean;
 		isFlashing?: boolean;
@@ -67,16 +67,29 @@ export function AccountNode({ data }: AccountNodeProps) {
 					const goalEarmark = Math.min(h.goal || 0, totalBalance);
 					const availableBal = totalBalance - goalEarmark;
 
-					const outWidth = (h.out / maxScale) * 100;
+					const cardOut = h.cardOut || 0;
+					const regularOut = Math.max(0, h.out - cardOut);
+
+					const cardWidth = (cardOut / maxScale) * 100;
+					const outWidth = (regularOut / maxScale) * 100;
 					const goalWidth = (goalEarmark / maxScale) * 100;
 					const balWidth = (availableBal / maxScale) * 100;
 					const barColor = isCash ? "bg-green-500" : "bg-blue-400";
+
+					const tooltipParts = [
+						`Month ${h.month}`,
+						`In: $${h.in.toFixed(0)}`,
+						`Expenses: $${regularOut.toFixed(0)}`
+					];
+					if (cardOut > 0) tooltipParts.push(`Credit Card: $${cardOut.toFixed(0)}`);
+					tooltipParts.push(`Goal Alloc: $${goalEarmark.toFixed(0)}`);
+					tooltipParts.push(`End Bal: $${h.balance.toFixed(0)}`);
 
 					return (
 						<div
 							key={h.month}
 							className="flex flex-row items-center w-full h-1.5 hover:opacity-80 transition-opacity cursor-crosshair group relative"
-							title={`Month ${h.month}\nIn: $${h.in.toFixed(0)}\nOut: $${h.out.toFixed(0)}\nGoal Alloc: $${goalEarmark.toFixed(0)}\nEnd Bal: $${h.balance.toFixed(0)}`}
+							title={tooltipParts.join("\n")}
 						>
 							{h.balance < 0 && <div className="absolute -left-1.5 top-1/2 transform -translate-y-1/2 w-1 h-1 bg-red-600 rounded-full" />}
 							{balWidth > 0 && (
@@ -93,8 +106,14 @@ export function AccountNode({ data }: AccountNodeProps) {
 							)}
 							{outWidth > 0 && (
 								<div
-									className={`h-full bg-red-400 ${balWidth === 0 && goalWidth === 0 ? "rounded-sm" : "rounded-r-sm"}`}
+									className={`h-full bg-red-400 ${balWidth === 0 && goalWidth === 0 ? "rounded-l-sm" : ""} ${cardWidth === 0 ? "rounded-r-sm" : ""}`}
 									style={{ width: `${outWidth}%`, minWidth: outWidth > 0 ? "2px" : "0" }}
+								/>
+							)}
+							{cardWidth > 0 && (
+								<div
+									className={`h-full bg-indigo-500 ${balWidth === 0 && goalWidth === 0 && outWidth === 0 ? "rounded-l-sm" : ""} rounded-r-sm`}
+									style={{ width: `${cardWidth}%`, minWidth: cardWidth > 0 ? "2px" : "0" }}
 								/>
 							)}
 						</div>

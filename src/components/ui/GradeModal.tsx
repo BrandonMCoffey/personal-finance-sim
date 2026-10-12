@@ -8,7 +8,20 @@ interface GradeModalProps {
 	onContinue: () => void;
 }
 
-const POSITIVE_FEEDBACK_PREFIXES = ["Great", "Success", "Excellent", "Good habit"];
+const POSITIVE_FEEDBACK_PREFIXES = [
+	"Great",
+	"Success",
+	"Excellent",
+	"Good habit",
+	"Debt Goal Achieved",
+	"Congratulations",
+	"Inflation Protected",
+	"Maximized Benefits",
+	"Retirement Target Met",
+	"Risk Protected",
+	"Goal Deprioritized",
+	"Expense Reduction"
+];
 
 function isPositiveFeedback(message: string) {
 	return POSITIVE_FEEDBACK_PREFIXES.some((prefix) => message.startsWith(prefix));

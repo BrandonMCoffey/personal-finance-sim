@@ -262,4 +262,56 @@ describe("validation engine", () => {
 		expect(reportAllPreOpened.feedback).not.toContain("Great job opening a checking account.");
 		expect(reportAllPreOpened.feedback).not.toContain("Great job opening a savings account.");
 	});
+
+	it("passes debt8 avalanche validation when one card is set to minimum and highest APR card is set to surplus", () => {
+		const accounts: Account[] = [
+			{ id: "acc_01", name: "Primary Checking", type: "checking", balance: 400, apy: 0 }
+		];
+		const cards: Card[] = [
+			{ id: "card_01", name: "Furniture Store Card", type: "credit", linkedAccountId: "", balance: 1500, limit: 3000, apr: 18, minimumPayment: 37.5 },
+			{ id: "card_02", name: "Travel Rewards Card", type: "credit", linkedAccountId: "", balance: 1800, limit: 3000, apr: 24, minimumPayment: 45 }
+		];
+		const incomes: Income[] = [
+			{
+				id: "inc_01",
+				name: "Take-Home Pay",
+				amount: 3000,
+				taxRate: 0,
+				frequency: "monthly",
+				routings: [{ destinationId: "acc_01", amount: 100, type: "percentage" }]
+			}
+		];
+		const expenses: Expense[] = [
+			{ id: "exp_01", name: "Fixed Essentials", isFixed: true, defaultAmount: 2100, amount: 2100 }
+		];
+		const transferRules: TransferRule[] = [
+			{ id: "rule_01", sourceId: "acc_01", destinationId: "exp_01", amount: 2100, type: "fixed" },
+			// Lower APR card (18%) pays minimum:
+			{ id: "rule_02", sourceId: "acc_01", destinationId: "card_01", amount: 0, type: "fixed", paymentMethod: "minimum" },
+			// Higher APR card (24%) targets surplus:
+			{ id: "rule_03", sourceId: "acc_01", destinationId: "card_02", amount: 0, type: "fixed", paymentMethod: "surplus" }
+		];
+		const winConditions: WinConditions = { optimalDebtRouting: "avalanche" };
+
+		const report = evaluatePlan(
+			accounts,
+			incomes,
+			transferRules,
+			[],
+			expenses,
+			cards,
+			[],
+			[],
+			winConditions,
+			[],
+			0,
+			6,
+			["checking"]
+		);
+
+		expect(report.passed).toBe(true);
+		expect(report.score).toBe(100);
+		expect(report.feedback.some((f) => f.includes("Good habit: Satisfied mandatory minimums"))).toBe(true);
+		expect(report.feedback.some((f) => f.includes("avalanche"))).toBe(true);
+	});
 });

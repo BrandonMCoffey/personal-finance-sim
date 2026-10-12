@@ -124,16 +124,17 @@ export function TimelineManager() {
 		applyMilestoneEffects(chosen.effects);
 
 		// 3. Run simulation for the gap years
+		const latestState = useFinanceStore.getState();
 		const gapMonths = currentMilestone.gapYears * 12;
 		const forecast = generateForecast(
-			store.accounts,
-			store.incomes,
-			store.transferRules,
-			store.goals,
-			store.expenses,
-			store.cards,
-			store.loans,
-			store.retirements,
+			latestState.accounts,
+			latestState.incomes,
+			latestState.transferRules,
+			latestState.goals,
+			latestState.expenses,
+			latestState.cards,
+			latestState.loans,
+			latestState.retirements,
 			gapMonths
 		);
 		const endSnapshot = forecast[forecast.length - 1];

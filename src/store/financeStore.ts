@@ -170,6 +170,8 @@ export interface Goal {
 	targetMonths?: number;
 }
 
+export type CardPaymentMethod = "minimum" | "statement" | "surplus" | "custom";
+
 export interface TransferRule {
 	id: string;
 	sourceId: string;
@@ -177,7 +179,7 @@ export interface TransferRule {
 	amount: number;
 	type: "fixed" | "percentage";
 	isAuto?: boolean;
-	paymentMethod?: "minimum" | "statement" | "custom";
+	paymentMethod?: CardPaymentMethod;
 }
 
 export interface Client {
@@ -305,14 +307,14 @@ interface FinanceState {
 		amount?: number,
 		type?: "fixed" | "percentage",
 		isAuto?: boolean,
-		paymentMethod?: "minimum" | "statement" | "custom"
+		paymentMethod?: CardPaymentMethod
 	) => void;
 	updateTransferRule: (
 		ruleId: string,
 		amount: number,
 		type: "fixed" | "percentage",
 		isAuto?: boolean,
-		paymentMethod?: "minimum" | "statement" | "custom"
+		paymentMethod?: CardPaymentMethod
 	) => void;
 	removeTransferRule: (ruleId: string) => void;
 	reorderTransferRules: (sourceId: string, startIndex: number, endIndex: number) => void;
@@ -528,20 +530,25 @@ export const useFinanceStore = create<FinanceState>()((set) => ({
 		}),
 
 	addCard: (name, type, linkedAccountId) =>
-		set((state) => ({
-			cards: [
-				...state.cards,
-				{
-					id: `card_${Date.now()}`,
-					name,
-					type,
-					linkedAccountId,
-					balance: 0,
-					limit: type === "credit" ? 5000 : undefined,
-					apr: type === "credit" ? 19.99 : 0
-				}
-			]
-		})),
+		set((state) => {
+			const existingSameType = state.cards.filter((c) => c.type === type);
+			const defaultName = existingSameType.length === 0 ? name : `${name} ${existingSameType.length + 1}`;
+			return {
+				cards: [
+					...state.cards,
+					{
+						id: `card_${Date.now()}`,
+						name: defaultName,
+						type,
+						linkedAccountId,
+						balance: 0,
+						limit: type === "credit" ? 5000 : undefined,
+						apr: type === "credit" ? 19.99 : 0,
+						minimumPayment: type === "credit" ? 25 : undefined
+					}
+				]
+			};
+		}),
 
 	removeCard: (cardId) =>
 		set((state) => ({
@@ -870,10 +877,10 @@ export const useFinanceStore = create<FinanceState>()((set) => ({
 	applyTimeSkip: (snapshot: any) =>
 		set((state) => {
 			return {
-				accounts: state.accounts.map((a) => ({ ...a, balance: snapshot.accountBalances[a.id] || 0 })),
-				cards: state.cards.map((c) => ({ ...c, balance: snapshot.cardBalances[c.id] || 0 })),
-				loans: state.loans.map((l) => ({ ...l, balance: snapshot.loanBalances[l.id] || 0 })),
-				retirements: state.retirements.map((r) => ({ ...r, balance: snapshot.retirementBalances[r.id] || 0 })),
+				accounts: state.accounts.map((a) => ({ ...a, balance: snapshot.accountBalances[a.id] !== undefined ? snapshot.accountBalances[a.id] : a.balance })),
+				cards: state.cards.map((c) => ({ ...c, balance: snapshot.cardBalances[c.id] !== undefined ? snapshot.cardBalances[c.id] : c.balance })),
+				loans: state.loans.map((l) => ({ ...l, balance: snapshot.loanBalances[l.id] !== undefined ? snapshot.loanBalances[l.id] : l.balance })),
+				retirements: state.retirements.map((r) => ({ ...r, balance: snapshot.retirementBalances[r.id] !== undefined ? snapshot.retirementBalances[r.id] : r.balance })),
 				goals: state.goals.filter((g) => (snapshot.goalProgress[g.id] || 0) < g.targetAmount),
 				transferRules: state.transferRules.filter(
 					(rule) => !state.goals.some((g) => g.id === rule.destinationId && (snapshot.goalProgress[g.id] || 0) >= g.targetAmount)

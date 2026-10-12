@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Panel } from "@xyflow/react";
-import { useFinanceStore } from "../../store/financeStore";
+import { useFinanceStore, type CardPaymentMethod } from "../../store/financeStore";
 
 interface OutputEditorPanelProps {
 	selectedEdgeId: string | null;
@@ -100,7 +100,7 @@ export function OutputEditorPanel({ selectedEdgeId, onClose }: OutputEditorPanel
 					const destCard = cards.find((c) => c.id === destId);
 					const isCreditCard = destCard?.type === "credit";
 					const isChecking = destAccount?.type === "checking";
-					const canAuto = isChecking || !!destAccount || isCreditCard;
+					const canAuto = (isChecking || !!destAccount) && !isCreditCard;
 
 					return (
 						<li
@@ -141,15 +141,16 @@ export function OutputEditorPanel({ selectedEdgeId, onClose }: OutputEditorPanel
 									<select
 										value={item.paymentMethod || "statement"}
 										onChange={(e) => {
-											const method = e.target.value as "statement" | "minimum" | "custom";
+											const method = e.target.value as CardPaymentMethod;
 											if (!isIncome) {
-												updateTransferRule(ruleId, item.amount, item.type, item.isAuto, method);
+												updateTransferRule(ruleId, item.amount, item.type, false, method);
 											}
 										}}
 										className="text-xs border rounded p-1 bg-white cursor-pointer w-28"
 									>
 										<option value="statement">Last Statement</option>
 										<option value="minimum">Minimum</option>
+										<option value="surplus" title="Pay as much as affordable while meeting other minimums">Surplus</option>
 										<option value="custom">Custom</option>
 									</select>
 									{item.paymentMethod === "custom" && (

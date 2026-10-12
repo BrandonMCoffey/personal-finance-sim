@@ -297,7 +297,8 @@ function FlowSandboxInner() {
 					balance: snap.accountBalances[acc.id],
 					goal: snap.accountGoalAllocations[acc.id] || 0,
 					in: snap.accountFlows[acc.id].in,
-					out: snap.accountFlows[acc.id].out
+					out: snap.accountFlows[acc.id].out,
+					cardOut: snap.accountFlows[acc.id].cardOut || 0
 				}));
 
 				return {
@@ -357,6 +358,16 @@ function FlowSandboxInner() {
 			}),
 			...cards.map((card) => {
 				const snap = snappedMap[card.id];
+				const isCredit = card.type === "credit";
+				const m1 = forecasts[0];
+				const month1Payment = m1?.debtPayments?.[card.id] || 0;
+				const statementBalance = card.balance || 0;
+				const minPayment = card.minimumPayment !== undefined
+					? card.minimumPayment
+					: (card.balance > 0 ? Math.min(card.balance, Math.max(25, card.balance * 0.025)) : 0);
+				const isMissingMinimum = isCredit && statementBalance > 0 && month1Payment < minPayment - 0.01;
+				const isUnderStatement = isCredit && statementBalance > 0 && !isMissingMinimum && month1Payment < statementBalance - 0.01;
+
 				return {
 					id: card.id,
 					type: "card",
@@ -368,10 +379,15 @@ function FlowSandboxInner() {
 						name: card.name,
 						type: card.type,
 						forecastBalance: finalSnapshot ? finalSnapshot.cardBalances[card.id] : card.balance,
-						interestPaid: finalSnapshot ? finalSnapshot.cardInterestPaid[card.id] : 0, // <-- Added
+						interestPaid: finalSnapshot ? finalSnapshot.cardInterestPaid[card.id] : 0,
 						apr: card.apr,
 						isSnapped: !!snap,
-						isFlashing: flashingNodeId === card.id
+						isFlashing: flashingNodeId === card.id,
+						isMissingMinimum,
+						isUnderStatement,
+						month1Payment,
+						minPayment,
+						statementBalance
 					}
 				};
 			}),

@@ -326,4 +326,51 @@ describe("forecast engine", () => {
 		expect(m1.retirementBalances["ret1"]).toBe(800);
 		expect(m1.accountBalances["checking"]).toBe(1000);
 	});
+
+	it("reserves other minimum payments when credit card uses surplus payment method", () => {
+		const accounts: Account[] = [
+			{ id: "checking", name: "Checking", type: "checking", balance: 1300, apy: 0 }
+		];
+		const cards: Card[] = [
+			{ id: "card_furn", name: "Furniture Card", type: "credit", linkedAccountId: "checking", balance: 1500, apr: 18, minimumPayment: 37.5 },
+			{ id: "card_trav", name: "Travel Card", type: "credit", linkedAccountId: "checking", balance: 1800, apr: 24, minimumPayment: 45 }
+		];
+		const rules: TransferRule[] = [
+			// Rule 1: Travel card targets surplus (runs first)
+			{ id: "r_surplus", sourceId: "checking", destinationId: "card_trav", amount: 0, type: "fixed", paymentMethod: "surplus" },
+			// Rule 2: Furniture card pays minimum
+			{ id: "r_min", sourceId: "checking", destinationId: "card_furn", amount: 0, type: "fixed", paymentMethod: "minimum" }
+		];
+
+		const snapshots = generateForecast(accounts, [], rules, [], [], cards, [], [], 1);
+		const m1 = snapshots[0];
+
+		// Furniture card minimum ($37.50) is reserved and paid
+		expect(m1.debtPayments["card_furn"]).toBe(37.5);
+		// Travel card takes the remaining $1300 - $37.50 = $1262.50
+		expect(m1.debtPayments["card_trav"]).toBe(1262.5);
+		expect(m1.accountBalances["checking"]).toBe(0);
+	});
+
+	it("tracks cardOut separately from other expenses in accountFlows", () => {
+		const accounts: Account[] = [
+			{ id: "checking", name: "Checking", type: "checking", balance: 1000, apy: 0 }
+		];
+		const expenses: Expense[] = [
+			{ id: "rent", name: "Rent", amount: 500, isFixed: true }
+		];
+		const cards: Card[] = [
+			{ id: "card1", name: "Card 1", type: "credit", linkedAccountId: "checking", balance: 200, apr: 0, minimumPayment: 25 }
+		];
+		const rules: TransferRule[] = [
+			{ id: "r_rent", sourceId: "checking", destinationId: "rent", amount: 500, type: "fixed" },
+			{ id: "r_card", sourceId: "checking", destinationId: "card1", amount: 200, type: "fixed", paymentMethod: "statement" }
+		];
+
+		const snapshots = generateForecast(accounts, [], rules, [], expenses, cards, [], [], 1);
+		const m1 = snapshots[0];
+
+		expect(m1.accountFlows["checking"].out).toBe(700);
+		expect(m1.accountFlows["checking"].cardOut).toBe(200);
+	});
 });
