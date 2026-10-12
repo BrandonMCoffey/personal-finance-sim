@@ -1,0 +1,101 @@
+{
+  "title": "Allowances & Wages",
+  "desc": "Route both an allowance and a paycheck successfully.",
+  "to-teach": "Track and route different income frequencies.",
+  "subCategoryIndex": 1,
+  "forecastMonths": 3,
+  "hints": [
+    "Allowance is currently routing to cash, while your tutoring wage is unrouted.",
+    "Connect both income sources to Checking to support your recurring payments."
+  ],
+  "client": {
+    "name": "Chris",
+    "description": "Chris receives family assistance and a campus job paycheck, but money keeps ending up as physical cash.",
+    "prompt": "I want all my money consolidated in one checking account so I can pay my subscriptions without carrying cash.",
+    "portraitId": "chris_01"
+  },
+  "startingState": {
+    "accounts": [
+      {
+        "id": "acc_01",
+        "name": "Student Checking",
+        "type": "checking",
+        "balance": 20,
+        "apy": 0
+      },
+      {
+        "id": "acc_02",
+        "name": "Physical Wallet",
+        "type": "cash",
+        "balance": 0,
+        "apy": 0
+      }
+    ],
+    "income": [
+      {
+        "id": "inc_01",
+        "name": "Family Support",
+        "amount": 300,
+        "taxRate": 0,
+        "frequency": "monthly",
+        "routings": [
+          {
+            "destinationId": "acc_02",
+            "amount": 100,
+            "type": "percentage"
+          }
+        ]
+      },
+      {
+        "id": "inc_02",
+        "name": "Tutoring Job",
+        "amount": 600,
+        "taxRate": 0,
+        "frequency": "monthly",
+        "routings": []
+      }
+    ],
+    "expenses": [
+      {
+        "id": "exp_01",
+        "name": "Campus Meal Plan",
+        "isFixed": true,
+        "defaultAmount": 500
+      },
+      {
+        "id": "exp_02",
+        "name": "Textbooks & Subscriptions",
+        "isFixed": true,
+        "defaultAmount": 250
+      }
+    ],
+    "transferRules": [
+      {
+        "id": "rule_01",
+        "sourceId": "acc_01",
+        "destinationId": "exp_01",
+        "amount": 500,
+        "type": "fixed"
+      },
+      {
+        "id": "rule_02",
+        "sourceId": "acc_01",
+        "destinationId": "exp_02",
+        "amount": 250,
+        "type": "fixed"
+      }
+    ]
+  },
+  "allowedActions": {
+    "canCreateAccounts": false,
+    "canDeleteAccounts": false,
+    "allowedAccountTypes": [],
+    "allowedCardTypes": []
+  },
+  "winConditions": {
+    "requiredAccounts": [
+      "checking"
+    ],
+    "maxCashBalance": 0
+  }
+}

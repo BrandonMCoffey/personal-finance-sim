@@ -1,0 +1,94 @@
+{
+  "title": "Principal vs Interest",
+  "desc": "Adjust your routing to pay off a card faster.",
+  "to-teach": "Route extra income to high-interest debt.",
+  "subCategoryIndex": 1,
+  "forecastMonths": 6,
+  "hints": [
+    "Your current payment of $60 barely reduces the $1,800 principal balance.",
+    "Increase payments to $350 monthly to clear the card before the 6-month forecast ends."
+  ],
+  "client": {
+    "name": "Casey",
+    "description": "Casey wants to see the visual difference on the forecast chart between paying the bare minimum versus aggressive principal payments.",
+    "prompt": "I want to watch the forecast line drop to zero! How much extra do I need to send every month to kill this $1,800 debt?",
+    "portraitId": "casey_01"
+  },
+  "startingState": {
+    "accounts": [
+      {
+        "id": "acc_01",
+        "name": "Main Checking",
+        "type": "checking",
+        "balance": 300,
+        "apy": 0
+      }
+    ],
+    "cards": [
+      {
+        "id": "card_01",
+        "name": "Bank Card",
+        "type": "credit",
+        "linkedAccountId": "",
+        "balance": 1800,
+        "limit": 3000,
+        "apr": 21
+      }
+    ],
+    "income": [
+      {
+        "id": "inc_01",
+        "name": "Net Wages",
+        "amount": 2500,
+        "taxRate": 0,
+        "frequency": "monthly",
+        "routings": [
+          {
+            "destinationId": "acc_01",
+            "amount": 100,
+            "type": "percentage"
+          }
+        ]
+      }
+    ],
+    "expenses": [
+      {
+        "id": "exp_01",
+        "name": "Fixed Essentials",
+        "isFixed": true,
+        "requiresCard": false,
+        "defaultAmount": 1700
+      }
+    ],
+    "transferRules": [
+      {
+        "id": "rule_01",
+        "sourceId": "acc_01",
+        "destinationId": "exp_01",
+        "amount": 1700,
+        "type": "fixed"
+      },
+      {
+        "id": "rule_02",
+        "sourceId": "acc_01",
+        "destinationId": "card_01",
+        "amount": 60,
+        "type": "fixed"
+      }
+    ]
+  },
+  "allowedActions": {
+    "canCreateAccounts": false,
+    "canDeleteAccounts": false,
+    "allowedAccountTypes": [],
+    "allowedCardTypes": []
+  },
+  "winConditions": {
+    "requiredAccounts": [
+      "checking"
+    ],
+    "debtPaidOff": [
+      "card_01"
+    ]
+  }
+}

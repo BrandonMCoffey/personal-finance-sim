@@ -1,0 +1,109 @@
+{
+  "title": "Drowning in Interest",
+  "desc": "Combat a 24% APR by aggressively paying down the principal.",
+  "to-teach": "Stop debt growth by increasing payments.",
+  "subCategoryIndex": 1,
+  "forecastMonths": 6,
+  "hints": [
+    "You have $600 in monthly surplus that is sitting idle in checking.",
+    "Route $400 of that surplus toward the credit card to pay it off within 4 months."
+  ],
+  "client": {
+    "name": "Sarah",
+    "description": "Sarah has a $1,500 credit card balance accumulating finance charges at 24.99% APR.",
+    "prompt": "The interest charges on my card are eating away at my progress. How can I use my extra income to knock it out fast?",
+    "portraitId": "sarah_01"
+  },
+  "startingState": {
+    "accounts": [
+      {
+        "id": "acc_01",
+        "name": "Main Checking",
+        "type": "checking",
+        "balance": 400,
+        "apy": 0
+      }
+    ],
+    "cards": [
+      {
+        "id": "card_01",
+        "name": "Department Store Card",
+        "type": "credit",
+        "linkedAccountId": "",
+        "balance": 1500,
+        "limit": 2500,
+        "apr": 24.99
+      }
+    ],
+    "income": [
+      {
+        "id": "inc_01",
+        "name": "Salary",
+        "amount": 2600,
+        "taxRate": 0,
+        "frequency": "monthly",
+        "routings": [
+          {
+            "destinationId": "acc_01",
+            "amount": 100,
+            "type": "percentage"
+          }
+        ]
+      }
+    ],
+    "expenses": [
+      {
+        "id": "exp_01",
+        "name": "Rent and Utilities",
+        "isFixed": true,
+        "requiresCard": false,
+        "defaultAmount": 1800
+      },
+      {
+        "id": "exp_02",
+        "name": "Groceries",
+        "isFixed": false,
+        "minValue": 150,
+        "requiresCard": false,
+        "defaultAmount": 200
+      }
+    ],
+    "transferRules": [
+      {
+        "id": "rule_01",
+        "sourceId": "acc_01",
+        "destinationId": "exp_01",
+        "amount": 1800,
+        "type": "fixed"
+      },
+      {
+        "id": "rule_02",
+        "sourceId": "acc_01",
+        "destinationId": "exp_02",
+        "amount": 200,
+        "type": "fixed"
+      },
+      {
+        "id": "rule_03",
+        "sourceId": "acc_01",
+        "destinationId": "card_01",
+        "amount": 45,
+        "type": "fixed"
+      }
+    ]
+  },
+  "allowedActions": {
+    "canCreateAccounts": false,
+    "canDeleteAccounts": false,
+    "allowedAccountTypes": [],
+    "allowedCardTypes": []
+  },
+  "winConditions": {
+    "requiredAccounts": [
+      "checking"
+    ],
+    "debtPaidOff": [
+      "card_01"
+    ]
+  }
+}

@@ -1,0 +1,86 @@
+{
+  "title": "Budget Busters",
+  "desc": "Adjust your budget mid-month after an unplanned spending spree.",
+  "to-teach": "Reduce future variable spending to recover.",
+  "subCategoryIndex": 4,
+  "forecastMonths": 3,
+  "hints": [
+    "A past shopping spree drained your checking balance down to $20.",
+    "Lower your discretionary variable spending to its minimum value until your balance recovers."
+  ],
+  "client": {
+    "name": "Casey",
+    "description": "Casey had an impulse shopping splurge last week and now risks bouncing checks on basic utilities.",
+    "prompt": "I overspent on clothes and now my account is down to $20. How do I balance my flexible spending so my utilities don't bounce?",
+    "portraitId": "casey_01"
+  },
+  "startingState": {
+    "accounts": [
+      {
+        "id": "acc_01",
+        "name": "Main Checking",
+        "type": "checking",
+        "balance": 20,
+        "apy": 0
+      }
+    ],
+    "income": [
+      {
+        "id": "inc_01",
+        "name": "Salary",
+        "amount": 2000,
+        "taxRate": 0,
+        "frequency": "monthly",
+        "routings": [
+          {
+            "destinationId": "acc_01",
+            "amount": 100,
+            "type": "percentage"
+          }
+        ]
+      }
+    ],
+    "expenses": [
+      {
+        "id": "exp_01",
+        "name": "Fixed Bills",
+        "isFixed": true,
+        "defaultAmount": 1400
+      },
+      {
+        "id": "exp_02",
+        "name": "Flexible Shopping",
+        "isFixed": false,
+        "minValue": 200,
+        "defaultAmount": 580
+      }
+    ],
+    "transferRules": [
+      {
+        "id": "rule_01",
+        "sourceId": "acc_01",
+        "destinationId": "exp_01",
+        "amount": 1400,
+        "type": "fixed"
+      },
+      {
+        "id": "rule_02",
+        "sourceId": "acc_01",
+        "destinationId": "exp_02",
+        "amount": 580,
+        "type": "fixed"
+      }
+    ]
+  },
+  "allowedActions": {
+    "canCreateAccounts": false,
+    "canDeleteAccounts": false,
+    "allowedAccountTypes": [],
+    "allowedCardTypes": []
+  },
+  "winConditions": {
+    "requiredAccounts": [
+      "checking"
+    ]
+  }
+}

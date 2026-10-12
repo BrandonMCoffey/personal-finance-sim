@@ -1,0 +1,105 @@
+{
+  "title": "The True Cost",
+  "desc": "Calculate the actual cost of a 'low weekly payment' scheme.",
+  "to-teach": "Avoid loans with deceptive fee structures.",
+  "subCategoryIndex": 4,
+  "forecastMonths": 6,
+  "hints": [
+    "A 'rent-to-own' appliance plan charges deceptive weekly finance fees equating to an 85% APR.",
+    "Accelerate monthly payments from Checking to clear the remaining balance in 3 months rather than dragging it out over years."
+  ],
+  "client": {
+    "name": "Sam",
+    "description": "Sam signed up for a rent-to-own living room set advertised as '$25/week' without calculating the annualized finance fee.",
+    "prompt": "I thought paying $25 a week was a great deal, but I've already paid double what the furniture is worth! How do I wipe this out?",
+    "portraitId": "sam_01"
+  },
+  "startingState": {
+    "accounts": [
+      {
+        "id": "acc_01",
+        "name": "Main Checking",
+        "type": "checking",
+        "balance": 350,
+        "apy": 0
+      }
+    ],
+    "loans": [
+      {
+        "id": "loan_01",
+        "name": "Rent-to-Own Contract",
+        "balance": 900,
+        "apr": 85,
+        "minimumPayment": 110
+      }
+    ],
+    "income": [
+      {
+        "id": "inc_01",
+        "name": "Paycheck",
+        "amount": 2500,
+        "taxRate": 0,
+        "frequency": "monthly",
+        "routings": [
+          {
+            "destinationId": "acc_01",
+            "amount": 100,
+            "type": "percentage"
+          }
+        ]
+      }
+    ],
+    "expenses": [
+      {
+        "id": "exp_01",
+        "name": "Core Living",
+        "isFixed": true,
+        "defaultAmount": 1700
+      },
+      {
+        "id": "exp_02",
+        "name": "Flexible Spending",
+        "isFixed": false,
+        "minValue": 200,
+        "defaultAmount": 400
+      }
+    ],
+    "transferRules": [
+      {
+        "id": "rule_01",
+        "sourceId": "acc_01",
+        "destinationId": "exp_01",
+        "amount": 1700,
+        "type": "fixed"
+      },
+      {
+        "id": "rule_02",
+        "sourceId": "acc_01",
+        "destinationId": "exp_02",
+        "amount": 400,
+        "type": "fixed"
+      },
+      {
+        "id": "rule_03",
+        "sourceId": "acc_01",
+        "destinationId": "loan_01",
+        "amount": 110,
+        "type": "fixed"
+      }
+    ]
+  },
+  "allowedActions": {
+    "canCreateAccounts": false,
+    "canDeleteAccounts": false,
+    "allowedAccountTypes": [],
+    "allowedCardTypes": []
+  },
+  "winConditions": {
+    "requiredAccounts": [
+      "checking"
+    ],
+    "debtPaidOff": [
+      "loan_01"
+    ]
+  }
+}

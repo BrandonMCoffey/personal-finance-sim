@@ -6,14 +6,28 @@ import { generateForecast } from "../../engines/forecast";
 const COLORS = ["#3b82f6", "#10b981", "#8b5cf6", "#f59e0b", "#ef4444"];
 
 export function ForecastPanel() {
-	const { accounts, incomes, transferRules, goals, expenses, cards, loans, retirements, forecastMonths } = useFinanceStore();
+	const { accounts, incomes, transferRules, goals, expenses, cards, loans, retirements, insurances, inflationRate, forecastMonths } = useFinanceStore();
 
-	const chartData = useMemo(() => {
-		const snapshots = generateForecast(accounts, incomes, transferRules, goals, expenses, cards, loans, retirements, forecastMonths);
+	const { chartData, finalSnapshot } = useMemo(() => {
+		const snapshots = generateForecast(
+			accounts,
+			incomes,
+			transferRules,
+			goals,
+			expenses,
+			cards,
+			loans,
+			retirements,
+			forecastMonths,
+			insurances,
+			inflationRate
+		);
 		const useAnnualAggregation = forecastMonths > 60;
+		const finalSnap = snapshots[snapshots.length - 1];
 
+		let points: any[] = [];
 		if (!useAnnualAggregation) {
-			return snapshots.map((snap) => {
+			points = snapshots.map((snap) => {
 				const dataPoint: any = { timeLabel: `M${snap.month}` };
 				accounts.forEach((acc) => {
 					dataPoint[acc.name] = snap.accountBalances[acc.id] || 0;
@@ -48,9 +62,10 @@ export function ForecastPanel() {
 				});
 				annualData.push(dataPoint);
 			}
-			return annualData;
+			points = annualData;
 		}
-	}, [accounts, incomes, transferRules, goals, expenses, cards, loans, retirements, forecastMonths]);
+		return { chartData: points, finalSnapshot: finalSnap };
+	}, [accounts, incomes, transferRules, goals, expenses, cards, loans, retirements, insurances, inflationRate, forecastMonths]);
 
 	return (
 		<div className="flex flex-col h-full">
@@ -84,9 +99,20 @@ export function ForecastPanel() {
 									activeDot={{ r: 6 }}
 								/>
 							))}
+							{retirements.map((ret) => (
+								<Line
+									key={ret.id}
+									type="monotone"
+									dataKey={ret.name}
+									stroke="#059669"
+									strokeWidth={2}
+									dot={{ r: 4, strokeWidth: 0 }}
+									activeDot={{ r: 6 }}
+								/>
+							))}
 							{cards
 								.filter((c) => c.type === "credit")
-								.map((card, _index) => (
+								.map((card) => (
 									<Line
 										key={card.id}
 										type="monotone"
@@ -98,6 +124,18 @@ export function ForecastPanel() {
 										activeDot={{ r: 6 }}
 									/>
 								))}
+							{loans.map((loan) => (
+								<Line
+									key={loan.id}
+									type="monotone"
+									dataKey={loan.name}
+									stroke="#ea580c"
+									strokeWidth={2}
+									strokeDasharray="4 4"
+									dot={{ r: 4, strokeWidth: 0 }}
+									activeDot={{ r: 6 }}
+								/>
+							))}
 						</LineChart>
 					</ResponsiveContainer>
 				</div>
@@ -109,8 +147,7 @@ export function ForecastPanel() {
 					<div>
 						<h3 className="text-sm font-semibold text-gray-700 mb-2">Goal Trajectory</h3>
 						{goals.map((goal) => {
-							const finalSnap = generateForecast(accounts, incomes, transferRules, goals, expenses, cards, loans, retirements, forecastMonths).pop();
-							const finalAmount = finalSnap?.goalProgress[goal.id] || 0;
+							const finalAmount = finalSnapshot?.goalProgress[goal.id] || 0;
 							const isFunded = finalAmount >= goal.targetAmount;
 
 							return (
@@ -138,22 +175,24 @@ export function ForecastPanel() {
 					<div>
 						<h3 className="text-sm font-semibold text-gray-700 mb-2">Monthly Expenses</h3>
 						{expenses.map((exp) => {
-							const finalSnap = generateForecast(accounts, incomes, transferRules, goals, expenses, cards, loans, retirements, forecastMonths).pop();
-							const fundedAmount = finalSnap?.expenseProgress[exp.id] || 0;
-							const isFunded = fundedAmount >= exp.amount;
+							const fundedAmount = finalSnapshot?.expenseProgress[exp.id] || 0;
+							const baseAmt = exp.defaultAmount !== undefined ? exp.defaultAmount : exp.amount;
+							const minNeeded = exp.minValue !== undefined ? exp.minValue : baseAmt;
+							const isFunded = fundedAmount >= minNeeded;
+							const maxAmt = exp.maxAmount !== undefined ? exp.maxAmount : baseAmt * 1.5;
 
 							return (
 								<div key={exp.id} className="p-3 bg-white rounded border border-red-100 shadow-sm text-sm mb-2">
 									<div className="flex justify-between mb-1">
 										<span className="font-medium text-gray-800">{exp.name}</span>
 										<span className={isFunded ? "text-green-600 font-bold" : "text-red-500 font-medium"}>
-											${fundedAmount.toFixed(0)} /${exp.amount}
+											${fundedAmount.toFixed(0)} / ${maxAmt.toFixed(0)}
 										</span>
 									</div>
 									<div className="w-full bg-gray-100 rounded-full h-1.5">
 										<div
 											className={`h-1.5 rounded-full ${isFunded ? "bg-green-500" : "bg-red-400"}`}
-											style={{ width: `${Math.min((fundedAmount / exp.amount) * 100, 100)}%` }}
+											style={{ width: `${Math.min((fundedAmount / maxAmt) * 100, 100)}%` }}
 										></div>
 									</div>
 								</div>

@@ -1,0 +1,100 @@
+{
+  "title": "Title Loan Trap",
+  "desc": "Pay off a collateralized loan before the vehicle is lost.",
+  "to-teach": "Prioritize loans that threaten physical assets.",
+  "subCategoryIndex": 4,
+  "forecastMonths": 4,
+  "hints": [
+    "Failing to pay the auto title loan risks vehicle repossession, which would eliminate commuting ability.",
+    "Pay minimums on uncollateralized credit cards and send all remaining surplus to the title loan."
+  ],
+  "client": {
+    "name": "Elena",
+    "description": "Elena took out a high-rate title loan using her car as collateral and risks repossession if the note is unpaid.",
+    "prompt": "If I miss payments on my title loan, they will take my car! How do I prioritize this loan over my unsecured credit cards?",
+    "portraitId": "elena_01"
+  },
+  "startingState": {
+    "accounts": [
+      {
+        "id": "acc_01",
+        "name": "Operating Checking",
+        "type": "checking",
+        "balance": 400,
+        "apy": 0
+      }
+    ],
+    "loans": [
+      {
+        "id": "loan_01",
+        "name": "Auto Title Loan",
+        "balance": 1200,
+        "apr": 120,
+        "minimumPayment": 200
+      }
+    ],
+    "cards": [
+      {
+        "id": "card_01",
+        "name": "Store Card",
+        "type": "credit",
+        "linkedAccountId": "",
+        "balance": 800,
+        "limit": 2000,
+        "apr": 20
+      }
+    ],
+    "income": [
+      {
+        "id": "inc_01",
+        "name": "Income",
+        "amount": 2900,
+        "taxRate": 0,
+        "frequency": "monthly",
+        "routings": [
+          {
+            "destinationId": "acc_01",
+            "amount": 100,
+            "type": "percentage"
+          }
+        ]
+      }
+    ],
+    "expenses": [
+      {
+        "id": "exp_01",
+        "name": "Housing & Utilities",
+        "isFixed": true,
+        "defaultAmount": 1900
+      }
+    ],
+    "transferRules": [
+      {
+        "id": "rule_01",
+        "sourceId": "acc_01",
+        "destinationId": "exp_01",
+        "amount": 1900,
+        "type": "fixed"
+      },
+      {
+        "id": "rule_02",
+        "sourceId": "acc_01",
+        "destinationId": "card_01",
+        "amount": 40,
+        "type": "fixed"
+      }
+    ]
+  },
+  "allowedActions": {
+    "canCreateAccounts": false,
+    "canDeleteAccounts": false,
+    "allowedAccountTypes": [],
+    "allowedCardTypes": []
+  },
+  "winConditions": {
+    "requiredAccounts": [
+      "checking"
+    ],
+    "optimalDebtRouting": "avalanche"
+  }
+}

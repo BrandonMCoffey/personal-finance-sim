@@ -6,7 +6,7 @@ export interface LifeEvent {
 	action: (store: any) => void;
 }
 
-export function rollForLifeEvent(currentAge: number, _: any): LifeEvent | null {
+export function rollForLifeEvent(currentAge: number): LifeEvent | null {
 	const roll = Math.random();
 
 	if (roll > 0.25) return null;

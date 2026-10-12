@@ -7,28 +7,64 @@ export interface CategoryDef {
 
 export const CATEGORIES: CategoryDef[] = [
 	{
-		id: "foundations",
-		title: "Financial Foundations",
+		id: "earning",
+		title: "Earning & Income",
+		icon: "💵",
+		subCategories: [
+			"Gross vs. Net Pay",
+			"Tracking Cash Flow",
+			"Fixed vs. Variable Expenses",
+			"The 50/30/20 Rule",
+			"Unplanned Spending"
+		]
+	},
+	{
+		id: "saving",
+		title: "Saving & Goal Setting",
 		icon: "🏦",
-		subCategories: ["Cash Flow", "Saving for Goals"]
+		subCategories: [
+			"Emergency Funds",
+			"Short-Term Goals",
+			"Account Types",
+			"Automation",
+			"Exponential Growth"
+		]
 	},
 	{
 		id: "debt",
-		title: "Credit & Debt",
+		title: "Credit & Debt Management",
 		icon: "💳",
-		subCategories: ["Managing Credit Cards"]
+		subCategories: [
+			"Understanding Credit Cards",
+			"Minimum Payments",
+			"The Debt Avalanche",
+			"The Debt Snowball",
+			"Managing Loans"
+		]
 	},
 	{
 		id: "investing",
-		title: "Investing & Retirement",
+		title: "Investing & Wealth Building",
 		icon: "📈",
-		subCategories: ["Retirement", "Wealth Building"]
+		subCategories: [
+			"The Employer Match",
+			"Brokerage Basics",
+			"Retirement Planning",
+			"Inflation & Purchasing Power",
+			"Asset Allocation"
+		]
 	},
 	{
-		id: "life",
-		title: "Life Events & Taxes",
+		id: "protecting",
+		title: "Protecting & Life Events",
 		icon: "🏠",
-		subCategories: []
+		subCategories: [
+			"Insurance Basics",
+			"Major Purchases (Housing)",
+			"Major Purchases (Vehicles)",
+			"Income Shocks",
+			"Predatory Lending"
+		]
 	}
 ];
 

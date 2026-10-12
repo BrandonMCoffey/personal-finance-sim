@@ -1,0 +1,99 @@
+{
+  "title": "Rent vs Mortgage",
+  "desc": "Compare a fixed rent expense with a mortgage and maintenance.",
+  "to-teach": "Budget for mortgage and maintenance expenses.",
+  "subCategoryIndex": 1,
+  "forecastMonths": 6,
+  "hints": [
+    "A mortgage is only part of homeownership; recurring home maintenance ($300) must also be funded.",
+    "Route $1,600 to Mortgage and $300 to Home Maintenance, trimming variable spending to maintain solvency."
+  ],
+  "client": {
+    "name": "Taylor",
+    "description": "Taylor transitioned from renting ($1,400/mo) to owning a home, but forgot that repairs and maintenance are now out of pocket.",
+    "prompt": "My mortgage is $1,600 and ongoing maintenance averages $300. How do I balance my budget now that my housing costs rose?",
+    "portraitId": "taylor_01"
+  },
+  "startingState": {
+    "accounts": [
+      {
+        "id": "acc_01",
+        "name": "Primary Checking",
+        "type": "checking",
+        "balance": 800,
+        "apy": 0
+      }
+    ],
+    "income": [
+      {
+        "id": "inc_01",
+        "name": "Wages",
+        "amount": 3200,
+        "taxRate": 0,
+        "frequency": "monthly",
+        "routings": [
+          {
+            "destinationId": "acc_01",
+            "amount": 100,
+            "type": "percentage"
+          }
+        ]
+      }
+    ],
+    "expenses": [
+      {
+        "id": "exp_01",
+        "name": "Mortgage Principal & Interest",
+        "isFixed": true,
+        "defaultAmount": 1600
+      },
+      {
+        "id": "exp_02",
+        "name": "Home Maintenance Reserve",
+        "isFixed": true,
+        "defaultAmount": 300
+      },
+      {
+        "id": "exp_03",
+        "name": "Discretionary Lifestyle",
+        "isFixed": false,
+        "minValue": 700,
+        "defaultAmount": 1500
+      }
+    ],
+    "transferRules": [
+      {
+        "id": "rule_01",
+        "sourceId": "acc_01",
+        "destinationId": "exp_01",
+        "amount": 1600,
+        "type": "fixed"
+      },
+      {
+        "id": "rule_02",
+        "sourceId": "acc_01",
+        "destinationId": "exp_02",
+        "amount": 300,
+        "type": "fixed"
+      },
+      {
+        "id": "rule_03",
+        "sourceId": "acc_01",
+        "destinationId": "exp_03",
+        "amount": 1500,
+        "type": "fixed"
+      }
+    ]
+  },
+  "allowedActions": {
+    "canCreateAccounts": false,
+    "canDeleteAccounts": false,
+    "allowedAccountTypes": [],
+    "allowedCardTypes": []
+  },
+  "winConditions": {
+    "requiredAccounts": [
+      "checking"
+    ]
+  }
+}

@@ -9,6 +9,10 @@ export function CanvasControls() {
 
 	const addedCount = accounts.length - initialAccountCount;
 	const canAddMoreAccounts = allowedActions.maxNewAccounts === undefined || addedCount < allowedActions.maxNewAccounts;
+	const hasAccountActions = canAddMoreAccounts && allowedActions.canCreateAccounts && (allowedActions.allowedAccountTypes?.length ?? 0) > 0;
+	const hasCardActions = Boolean(allowedActions.allowedCardTypes && allowedActions.allowedCardTypes.length > 0);
+
+	if (!hasAccountActions && !hasCardActions) return null;
 
 	const handleAddAccount = (type: AccountType) => {
 		const defaultName = `${type.charAt(0).toUpperCase() + type.slice(1)} ${accounts.length + 1}`;

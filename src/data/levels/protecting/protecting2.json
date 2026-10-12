@@ -1,0 +1,93 @@
+{
+  "title": "The Fender Bender",
+  "desc": "Pay a car insurance deductible instead of the full repair cost.",
+  "to-teach": "Cover an insurance deductible from savings.",
+  "subCategoryIndex": 0,
+  "forecastMonths": 5,
+  "hints": [
+    "Car insurance covers the collision damage, but your policy requires a $500 deductible in Month 2.",
+    "Transfer $500 from your liquid savings account to checking to absorb the deductible cost."
+  ],
+  "client": {
+    "name": "David",
+    "description": "David was in a minor accident; auto insurance will cover the body shop bill minus his comprehensive deductible.",
+    "prompt": "My auto insurance covers the repair, but I have a $500 deductible due in Month 2. How do I route funds so checking doesn't bounce?",
+    "portraitId": "david_01"
+  },
+  "startingState": {
+    "accounts": [
+      {
+        "id": "acc_01",
+        "name": "Main Checking",
+        "type": "checking",
+        "balance": 300,
+        "apy": 0
+      },
+      {
+        "id": "acc_02",
+        "name": "Emergency Savings",
+        "type": "savings",
+        "balance": 1500,
+        "apy": 4
+      }
+    ],
+    "income": [
+      {
+        "id": "inc_01",
+        "name": "Salary",
+        "amount": 2600,
+        "taxRate": 0,
+        "frequency": "monthly",
+        "routings": [
+          {
+            "destinationId": "acc_01",
+            "amount": 100,
+            "type": "percentage"
+          }
+        ]
+      }
+    ],
+    "expenses": [
+      {
+        "id": "exp_01",
+        "name": "Core Living",
+        "isFixed": true,
+        "defaultAmount": 2300
+      },
+      {
+        "id": "exp_02",
+        "name": "Auto Insurance Deductible",
+        "isFixed": true,
+        "occurrenceMonth": 2,
+        "defaultAmount": 500
+      }
+    ],
+    "transferRules": [
+      {
+        "id": "rule_01",
+        "sourceId": "acc_01",
+        "destinationId": "exp_01",
+        "amount": 2300,
+        "type": "fixed"
+      },
+      {
+        "id": "rule_02",
+        "sourceId": "acc_01",
+        "destinationId": "exp_02",
+        "amount": 500,
+        "type": "fixed"
+      }
+    ]
+  },
+  "allowedActions": {
+    "canCreateAccounts": false,
+    "canDeleteAccounts": false,
+    "allowedAccountTypes": [],
+    "allowedCardTypes": []
+  },
+  "winConditions": {
+    "requiredAccounts": [
+      "checking"
+    ]
+  }
+}

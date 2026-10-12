@@ -1,0 +1,511 @@
+{
+  "id": "david_kim",
+  "name": "David Kim",
+  "bio": "General remodeling contractor and carpenter, balancing the unpredictable billing cycles of construction projects, tool investments, physical body wear-and-tear, and building a multi-crew business.",
+  "avatarEmoji": "🔨",
+  "portraitId": "portrait_david",
+  "traits": [
+    "resilient",
+    "pragmatic",
+    "blue-collar-pride"
+  ],
+  "stages": [
+    {
+      "stageId": "david_stage_1",
+      "stageTitle": "The Work Van Transmission & Client Float",
+      "age": 33,
+      "occupation": "Independent Renovation Contractor",
+      "yearsSinceLastStage": 0,
+      "cooldownRounds": 2,
+      "selectionSnippet": {
+        "firstTime": "Hey. David Kim here. I do residential kitchens and baths. A client is withholding a $12,000 final milestone check over a paint dispute, and this morning the transmission dropped right out of my Ford work van on the highway ($2,800 estimate). I have material lumber bills due Friday and only $400 in checking.",
+        "returningHelped": "David Kim here! You pulled me out of the fire when my work van died years ago. I've expanded to a 3-man crew and need your sharp eye on our cash flow.",
+        "returningSkipped": "David Kim again. I stopped by when my work van transmission blew out. I had to scrape through with expensive credit card advances back then, but I really need an advisor now."
+      },
+      "dialogue": {
+        "greeting": "In the trades, everybody thinks contractors are getting rich. They don't see the weeks where you front $15,000 in tile and cabinets on credit cards while homeowners take two months to release checks.",
+        "emotion": "Gritty & Overworked",
+        "planApproved": "That's real peace of mind. Getting that transmission paid off and setting up an escrow account for client materials means I won't lose sleep over supply house bills.",
+        "planNeedsWork": "Wait, our supply house credit line isn't covered here. If 84 Lumber cuts off my commercial credit, my crew can't work on Monday."
+      },
+      "lifeEvent": {
+        "title": "Commercial Van Transmission Blowout",
+        "description": "David's primary work truck suffered complete transmission failure, requiring an immediate $2,800 repair bill.",
+        "type": "debt"
+      },
+      "financialState": {
+        "accounts": [
+          {
+            "id": "acc_david_checking",
+            "name": "Contractor Checking",
+            "type": "checking",
+            "balance": 400,
+            "apy": 0.01
+          }
+        ],
+        "cards": [
+          {
+            "id": "card_david_supply",
+            "name": "Supply House Credit Line",
+            "type": "credit",
+            "linkedAccountId": "acc_david_checking",
+            "balance": 2800,
+            "apr": 22,
+            "minimumPayment": 110
+          }
+        ],
+        "income": [
+          {
+            "id": "inc_david_draw",
+            "name": "Contractor Invoices (Avg)",
+            "amount": 4600,
+            "taxRate": 15,
+            "frequency": "monthly",
+            "routings": [
+              {
+                "destinationId": "acc_david_checking",
+                "amount": 100,
+                "type": "percentage"
+              }
+            ]
+          }
+        ],
+        "expenses": [
+          {
+            "id": "exp_david_rent",
+            "name": "Family Rental Home",
+            "isFixed": true,
+            "defaultAmount": 1400
+          },
+          {
+            "id": "exp_david_materials",
+            "name": "Job Consumables & Blades",
+            "isFixed": false,
+            "minValue": 300,
+            "defaultAmount": 450
+          },
+          {
+            "id": "exp_david_groceries",
+            "name": "Groceries & Household",
+            "isFixed": false,
+            "minValue": 400,
+            "defaultAmount": 550
+          },
+          {
+            "id": "exp_david_truck_gas",
+            "name": "Truck Fuel & Commercial Ins",
+            "isFixed": true,
+            "defaultAmount": 380
+          }
+        ],
+        "goals": [
+          {
+            "id": "goal_david_tool_escrow",
+            "name": "Materials Escrow Buffer",
+            "targetAmount": 2500,
+            "targetMonths": 5
+          }
+        ]
+      },
+      "winConditions": {
+        "requiredAccounts": [
+          "savings"
+        ],
+        "goalsFundedWithinMonths": {
+          "goalId": "goal_david_tool_escrow",
+          "months": 5
+        },
+        "optimalDebtRouting": "avalanche"
+      },
+      "allowedActions": {
+        "canCreateAccounts": true,
+        "canDeleteAccounts": true,
+        "allowedAccountTypes": [
+          "checking",
+          "savings"
+        ],
+        "allowedCardTypes": [
+          "debit",
+          "credit"
+        ]
+      }
+    },
+    {
+      "stageId": "david_stage_2",
+      "stageTitle": "Herniated Disc & The Disability Reality Check",
+      "age": 38,
+      "occupation": "Remodeling General Contractor",
+      "yearsSinceLastStage": 5,
+      "cooldownRounds": 2,
+      "selectionSnippet": {
+        "firstTime": "David Kim here. I'm 38. Last month while hoisting a cast-iron clawfoot tub upstairs, my L4-L5 disc herniated. I couldn't walk for three weeks. I realized with terrifying clarity that if my body gives out, our family has zero income. I need to transition off manual labor into management and secure own-occupation disability insurance.",
+        "returningHelped": "David Kim! That materials escrow you set up saved my business when a client withheld payments. But a serious back injury just benched me for a month. It was a wake-up call. I need your guidance to buy proper disability coverage and step off the tools.",
+        "returningSkipped": "David Kim here again. Missed connecting with you previously. A bad back injury showed me how vulnerable a contractor's income is without proper safety nets. Need your help restructuring."
+      },
+      "dialogue": {
+        "greeting": "Lying on an MRI table staring at the ceiling, wondering how my family eats if I can't lift sheetrock anymore... that will humble any tough guy. I have to start thinking like a business owner, not just a set of hands.",
+        "emotion": "Sobered & Determined",
+        "planApproved": "This is huge for my family. The disability insurance policy is active, our emergency reserve is insulated, and we have a path to hire a lead carpenter so I can focus on estimating.",
+        "planNeedsWork": "Wait, our disability insurance policy wasn't funded in the plan! If my back gives out again, we have zero safety net."
+      },
+      "lifeEvent": {
+        "title": "Severe Workplace Back Injury",
+        "description": "David suffered a herniated disc on a remodel job site, exposing an urgent need for disability insurance protection.",
+        "type": "insurance"
+      },
+      "financialState": {
+        "accounts": [
+          {
+            "id": "acc_david_checking",
+            "name": "Business Checking",
+            "type": "checking",
+            "balance": 2800,
+            "apy": 0.05
+          },
+          {
+            "id": "acc_david_savings",
+            "name": "Contractor Safety Net",
+            "type": "savings",
+            "balance": 6500,
+            "apy": 3.4
+          }
+        ],
+        "income": [
+          {
+            "id": "inc_david_gc_income",
+            "name": "General Contracting Draw",
+            "amount": 6200,
+            "taxRate": 18,
+            "frequency": "monthly",
+            "routings": [
+              {
+                "destinationId": "acc_david_checking",
+                "amount": 100,
+                "type": "percentage"
+              }
+            ]
+          }
+        ],
+        "expenses": [
+          {
+            "id": "exp_david_rent",
+            "name": "Family Home Rent",
+            "isFixed": true,
+            "defaultAmount": 1650
+          },
+          {
+            "id": "exp_david_physical_therapy",
+            "name": "Physical Therapy & Meds",
+            "isFixed": true,
+            "defaultAmount": 280
+          },
+          {
+            "id": "exp_david_family_living",
+            "name": "Groceries & Household",
+            "isFixed": false,
+            "minValue": 550,
+            "defaultAmount": 750
+          },
+          {
+            "id": "exp_david_truck_fleet",
+            "name": "Trucks & Commercial Gas",
+            "isFixed": true,
+            "defaultAmount": 480
+          }
+        ],
+        "insurances": [
+          {
+            "id": "ins_david_disability",
+            "name": "Contractor Own-Occ Disability",
+            "premium": 140,
+            "deductible": 0
+          }
+        ],
+        "goals": [
+          {
+            "id": "goal_david_emergency_boost",
+            "name": "3-Month Living Reserve",
+            "targetAmount": 4500,
+            "targetMonths": 6
+          }
+        ]
+      },
+      "winConditions": {
+        "requireInsuranceCoverage": true,
+        "goalsFundedWithinMonths": {
+          "goalId": "goal_david_emergency_boost",
+          "months": 6
+        }
+      },
+      "allowedActions": {
+        "canCreateAccounts": true,
+        "canDeleteAccounts": true,
+        "allowedAccountTypes": [
+          "checking",
+          "savings",
+          "brokerage"
+        ],
+        "allowedCardTypes": [
+          "debit",
+          "credit"
+        ]
+      }
+    },
+    {
+      "stageId": "david_stage_3",
+      "stageTitle": "Stepping Off The Tools & General Contracting Firm",
+      "age": 44,
+      "occupation": "Commercial & Residential Construction Firm Owner",
+      "yearsSinceLastStage": 6,
+      "cooldownRounds": 3,
+      "selectionSnippet": {
+        "firstTime": "David Kim here at 44. I successfully stepped off the tools and run Kim Construction Group with two full-time crew leads and 6 subcontractors. I'm bidding on commercial tenant-improvement projects. I need help establishing a formal SEP-IRA and managing escrow retainage.",
+        "returningHelped": "David Kim! That disability policy and emergency buffer you designed literally saved our family when I transitioned away from manual labor. Today, Kim Construction runs multiple simultaneous residential and commercial jobs! I want to set up an aggressive retirement plan for my wife and me.",
+        "returningSkipped": "David Kim here. Over the years I grew my crew into an established contracting firm. I want a trusted advisor to help manage our high-volume seasonal cash flows and retirement."
+      },
+      "dialogue": {
+        "greeting": "Showing up to a job site wearing clean boots and a clipboard instead of a 30-pound tool belt felt strange at first. But my crew respects the leadership, and my back hasn't flared up in two years.",
+        "emotion": "Proud & Strategic",
+        "planApproved": "This blueprint is rock-solid. Commercial liability is tied down, retainage escrow is protected, and our SEP-IRA is capturing real retirement wealth for the first time in my life.",
+        "planNeedsWork": "Wait, our commercial umbrella insurance premium was omitted. With 8 guys on scaffolding, a liability lapse would bankrupt the company."
+      },
+      "lifeEvent": {
+        "title": "Commercial General Contracting Scale",
+        "description": "David scaled Kim Construction into larger commercial projects, bringing higher revenues and larger escrow requirements.",
+        "type": "income"
+      },
+      "financialState": {
+        "accounts": [
+          {
+            "id": "acc_david_checking",
+            "name": "Master Operating Checking",
+            "type": "checking",
+            "balance": 5200,
+            "apy": 0.05
+          },
+          {
+            "id": "acc_david_savings",
+            "name": "Escrow Retainage Reserve",
+            "type": "savings",
+            "balance": 18000,
+            "apy": 3.9
+          }
+        ],
+        "income": [
+          {
+            "id": "inc_david_business_draw",
+            "name": "General Contractor Draw",
+            "amount": 8500,
+            "taxRate": 22,
+            "frequency": "monthly",
+            "routings": [
+              {
+                "destinationId": "acc_david_checking",
+                "amount": 100,
+                "type": "percentage"
+              }
+            ]
+          }
+        ],
+        "expenses": [
+          {
+            "id": "exp_david_mortgage",
+            "name": "Home Mortgage & Escrow",
+            "isFixed": true,
+            "defaultAmount": 2400
+          },
+          {
+            "id": "exp_david_family_living",
+            "name": "Family Groceries & College Support",
+            "isFixed": false,
+            "minValue": 800,
+            "defaultAmount": 1100
+          },
+          {
+            "id": "exp_david_vehicles",
+            "name": "Truck Fleet & Commercial Fuel",
+            "isFixed": true,
+            "defaultAmount": 620
+          },
+          {
+            "id": "exp_david_utilities",
+            "name": "Home & Shop Utilities",
+            "isFixed": true,
+            "defaultAmount": 320
+          }
+        ],
+        "insurances": [
+          {
+            "id": "ins_david_commercial_umbrella",
+            "name": "Commercial Umbrella Policy",
+            "premium": 180,
+            "deductible": 1000
+          }
+        ],
+        "retirements": [
+          {
+            "id": "ret_david_sep",
+            "name": "Owner SEP-IRA",
+            "type": "roth_ira",
+            "balance": 45000,
+            "expectedApy": 7.5,
+            "employerMatchPercent": 0
+          }
+        ],
+        "goals": [
+          {
+            "id": "goal_david_sep_boost",
+            "name": "Max SEP-IRA Milestone",
+            "targetAmount": 6000,
+            "targetMonths": 6
+          }
+        ]
+      },
+      "winConditions": {
+        "requireInsuranceCoverage": true,
+        "goalsFundedWithinMonths": {
+          "goalId": "goal_david_sep_boost",
+          "months": 6
+        }
+      },
+      "allowedActions": {
+        "canCreateAccounts": true,
+        "canDeleteAccounts": true,
+        "allowedAccountTypes": [
+          "checking",
+          "savings",
+          "brokerage"
+        ],
+        "allowedCardTypes": [
+          "debit",
+          "credit"
+        ]
+      }
+    },
+    {
+      "stageId": "david_stage_4",
+      "stageTitle": "Succession Buyout & Retirement Horizon",
+      "age": 52,
+      "occupation": "Senior Construction Partner & Mentor",
+      "yearsSinceLastStage": 8,
+      "cooldownRounds": 3,
+      "selectionSnippet": {
+        "firstTime": "David Kim here at 52. My longtime foreman is buying out my 60% stake in Kim Construction over a 5-year seller financing note. I'm transitioning out of daily operations, and I need a conservative capital preservation strategy for my retirement portfolio.",
+        "returningHelped": "David Kim! From a broken-down work van at 33 to structuring the succession buyout of Kim Construction to my foreman today—you helped me build a lasting business that supported dozens of families. Now I need your wisdom to prepare for retirement.",
+        "returningSkipped": "David Kim here. I've reached the point where I'm stepping down from contracting and selling the firm. Looking for your expertise on post-business retirement structuring."
+      },
+      "dialogue": {
+        "greeting": "Handing the keys to the company truck and the master shop over to my foreman, who started as an apprentice 12 years ago... I couldn't hold back the tears. We built something honest with our hands.",
+        "emotion": "Deeply Fulfilled & Serene",
+        "planApproved": "This is the retirement freedom I worked 30 years with a hammer to earn. Debt is zero, our portfolio yields steady cash flow, and our home is safe.",
+        "planNeedsWork": "Wait, our taxable brokerage and low-risk yields aren't allocated properly to outpace inflation in retirement."
+      },
+      "lifeEvent": {
+        "title": "Business Succession Seller Buyout",
+        "description": "David finalized a structured succession buyout note, receiving monthly principal and interest payouts as he transitions into retirement.",
+        "type": "income"
+      },
+      "financialState": {
+        "accounts": [
+          {
+            "id": "acc_david_checking",
+            "name": "Retirement Operating Checking",
+            "type": "checking",
+            "balance": 6000,
+            "apy": 0.05
+          },
+          {
+            "id": "acc_david_treasury",
+            "name": "Treasury Safety Reserve",
+            "type": "savings",
+            "balance": 40000,
+            "apy": 4.2
+          }
+        ],
+        "income": [
+          {
+            "id": "inc_david_buyout_note",
+            "name": "Succession Buyout Payout & Consulting",
+            "amount": 9200,
+            "taxRate": 20,
+            "frequency": "monthly",
+            "routings": [
+              {
+                "destinationId": "acc_david_checking",
+                "amount": 100,
+                "type": "percentage"
+              }
+            ]
+          }
+        ],
+        "expenses": [
+          {
+            "id": "exp_david_home_upkeep",
+            "name": "Home Maintenance & Property Taxes",
+            "isFixed": true,
+            "defaultAmount": 1400
+          },
+          {
+            "id": "exp_david_lifestyle",
+            "name": "Living Expenses & Grandkids",
+            "isFixed": false,
+            "minValue": 900,
+            "defaultAmount": 1200
+          },
+          {
+            "id": "exp_david_utilities",
+            "name": "Vehicles & Utilities",
+            "isFixed": true,
+            "defaultAmount": 420
+          }
+        ],
+        "insurances": [
+          {
+            "id": "ins_david_med_bridge",
+            "name": "Comprehensive Health & Long-Term Care",
+            "premium": 280,
+            "deductible": 500
+          }
+        ],
+        "retirements": [
+          {
+            "id": "ret_david_nest_egg",
+            "name": "Master Retirement Portfolio",
+            "type": "401k",
+            "balance": 260000,
+            "expectedApy": 7,
+            "employerMatchPercent": 0
+          }
+        ],
+        "goals": [
+          {
+            "id": "goal_david_safe_brokerage",
+            "name": "Conservative Index Brokerage",
+            "targetAmount": 7000,
+            "targetMonths": 6
+          }
+        ]
+      },
+      "winConditions": {
+        "requireInsuranceCoverage": true,
+        "goalsFundedWithinMonths": {
+          "goalId": "goal_david_safe_brokerage",
+          "months": 6
+        }
+      },
+      "allowedActions": {
+        "canCreateAccounts": true,
+        "canDeleteAccounts": true,
+        "allowedAccountTypes": [
+          "checking",
+          "savings",
+          "brokerage"
+        ],
+        "allowedCardTypes": [
+          "debit",
+          "credit"
+        ]
+      }
+    }
+  ]
+}

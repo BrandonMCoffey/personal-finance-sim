@@ -1,0 +1,66 @@
+{
+  "title": "First Job Cash",
+  "desc": "Set up direct deposit from your new part-time job.",
+  "to-teach": "Route income directly to a checking account.",
+  "subCategoryIndex": 1,
+  "forecastMonths": 3,
+  "hints": [
+    "Your checking account balance is zero and bills are pulling from it.",
+    "Route 100% of your job income directly to the Main Checking account."
+  ],
+  "client": {
+    "name": "Sam",
+    "description": "Sam just started working at a cafe and has paychecks coming in unallocated while bills fail to clear.",
+    "prompt": "I see my wage node, but none of the money is going to my checking account to pay my bills!",
+    "portraitId": "sam_01"
+  },
+  "startingState": {
+    "accounts": [
+      {
+        "id": "acc_01",
+        "name": "Main Checking",
+        "type": "checking",
+        "balance": 50,
+        "apy": 0
+      }
+    ],
+    "income": [
+      {
+        "id": "inc_01",
+        "name": "Cafe Wages",
+        "amount": 1200,
+        "taxRate": 0,
+        "frequency": "monthly",
+        "routings": []
+      }
+    ],
+    "expenses": [
+      {
+        "id": "exp_01",
+        "name": "Phone & Transit",
+        "isFixed": true,
+        "defaultAmount": 400
+      }
+    ],
+    "transferRules": [
+      {
+        "id": "rule_01",
+        "sourceId": "acc_01",
+        "destinationId": "exp_01",
+        "amount": 400,
+        "type": "fixed"
+      }
+    ]
+  },
+  "allowedActions": {
+    "canCreateAccounts": false,
+    "canDeleteAccounts": false,
+    "allowedAccountTypes": [],
+    "allowedCardTypes": []
+  },
+  "winConditions": {
+    "requiredAccounts": [
+      "checking"
+    ]
+  }
+}

@@ -1,0 +1,82 @@
+{
+  "title": "The Nest Egg",
+  "desc": "Build a retirement balance over a multi-year forecast simulation.",
+  "to-teach": "Grow retirement balances over long periods.",
+  "subCategoryIndex": 2,
+  "forecastMonths": 24,
+  "hints": [
+    "A 24-month horizon lets 7% compounding show measurable growth.",
+    "Route 15% ($600) of Salary directly to the 401k and confirm checking remains solvent."
+  ],
+  "client": {
+    "name": "Taylor",
+    "description": "Taylor wants to see their 401k portfolio balance compound over a 24-month horizon.",
+    "prompt": "Can we model a 24-month forecast where I commit 15% of my wages to my 401k so I can see the total grow?",
+    "portraitId": "taylor_01"
+  },
+  "startingState": {
+    "accounts": [
+      {
+        "id": "acc_01",
+        "name": "Checking Account",
+        "type": "checking",
+        "balance": 1200,
+        "apy": 0
+      }
+    ],
+    "retirements": [
+      {
+        "id": "ret_01",
+        "name": "Company 401k",
+        "type": "401k",
+        "balance": 5000,
+        "expectedApy": 7,
+        "employerMatchPercent": 3
+      }
+    ],
+    "income": [
+      {
+        "id": "inc_01",
+        "name": "Salary",
+        "amount": 4000,
+        "taxRate": 15,
+        "frequency": "monthly",
+        "routings": [
+          {
+            "destinationId": "acc_01",
+            "amount": 100,
+            "type": "percentage"
+          }
+        ]
+      }
+    ],
+    "expenses": [
+      {
+        "id": "exp_01",
+        "name": "Rent & Necessities",
+        "isFixed": true,
+        "defaultAmount": 2400
+      }
+    ],
+    "transferRules": [
+      {
+        "id": "rule_01",
+        "sourceId": "acc_01",
+        "destinationId": "exp_01",
+        "amount": 2400,
+        "type": "fixed"
+      }
+    ]
+  },
+  "allowedActions": {
+    "canCreateAccounts": false,
+    "canDeleteAccounts": false,
+    "allowedAccountTypes": [],
+    "allowedCardTypes": []
+  },
+  "winConditions": {
+    "requiredAccounts": [],
+    "requireRetirementMatch": true,
+    "minRetirementBalance": 20000
+  }
+}

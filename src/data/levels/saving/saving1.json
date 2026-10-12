@@ -1,0 +1,101 @@
+{
+  "title": "Rainy Day Fund",
+  "desc": "Open a savings account and start an emergency fund.",
+  "to-teach": "Open savings and fund emergency goal.",
+  "subCategoryIndex": 0,
+  "forecastMonths": 6,
+  "hints": [
+    "Spawn a savings account from the Actions menu.",
+    "Route $200 per month from Main Checking into your savings account to reach the $1,000 goal in 5 months."
+  ],
+  "client": {
+    "name": "David",
+    "description": "David has stable cash flow but keeps all his leftover money in checking, where it tends to get spent.",
+    "prompt": "I want to start a rainy day fund so I don't panic when an unexpected bill hits. How should I set this up?",
+    "portraitId": "david_01"
+  },
+  "startingState": {
+    "accounts": [
+      {
+        "id": "acc_01",
+        "name": "Main Checking",
+        "type": "checking",
+        "balance": 500,
+        "apy": 0
+      }
+    ],
+    "income": [
+      {
+        "id": "inc_01",
+        "name": "Wages",
+        "amount": 2500,
+        "taxRate": 0,
+        "frequency": "monthly",
+        "routings": [
+          {
+            "destinationId": "acc_01",
+            "amount": 100,
+            "type": "percentage"
+          }
+        ]
+      }
+    ],
+    "expenses": [
+      {
+        "id": "exp_01",
+        "name": "Rent & Bills",
+        "isFixed": true,
+        "defaultAmount": 1800
+      },
+      {
+        "id": "exp_02",
+        "name": "Groceries",
+        "isFixed": false,
+        "minValue": 300,
+        "defaultAmount": 400
+      }
+    ],
+    "goals": [
+      {
+        "id": "goal_01",
+        "name": "Rainy Day Fund",
+        "targetAmount": 1000,
+        "targetMonths": 5
+      }
+    ],
+    "transferRules": [
+      {
+        "id": "rule_01",
+        "sourceId": "acc_01",
+        "destinationId": "exp_01",
+        "amount": 1800,
+        "type": "fixed"
+      },
+      {
+        "id": "rule_02",
+        "sourceId": "acc_01",
+        "destinationId": "exp_02",
+        "amount": 400,
+        "type": "fixed"
+      }
+    ]
+  },
+  "allowedActions": {
+    "canCreateAccounts": true,
+    "canDeleteAccounts": false,
+    "maxNewAccounts": 1,
+    "allowedAccountTypes": [
+      "savings"
+    ],
+    "allowedCardTypes": []
+  },
+  "winConditions": {
+    "requiredAccounts": [
+      "savings"
+    ],
+    "goalsFundedWithinMonths": {
+      "goalId": "goal_01",
+      "months": 5
+    }
+  }
+}

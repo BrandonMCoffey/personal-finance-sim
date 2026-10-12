@@ -6,6 +6,7 @@ interface ExpenseNodeProps {
 		id: string;
 		name: string;
 		targetAmount: number;
+		maxAmount?: number;
 		currentAmount: number;
 		isFixed: boolean;
 		minValue?: number;
@@ -13,6 +14,7 @@ interface ExpenseNodeProps {
 		frequency?: number;
 		occurrenceMonth?: number;
 		isActiveThisMonth?: boolean;
+		isLocked?: boolean;
 	};
 }
 
@@ -49,9 +51,10 @@ export function ExpenseNode({ data }: ExpenseNodeProps) {
 		}
 	}
 
+	const isLocked = Boolean(data.isLocked);
 	const fundedAmount = incomingRule?.amount || 0;
 	const minRequired = data.minValue || data.targetAmount;
-	const sliderMax = data.isFixed ? data.targetAmount : data.targetAmount * 1.5;
+	const sliderMax = data.maxAmount !== undefined ? data.maxAmount : data.targetAmount * 1.5;
 	const fillPercentage = incomingRule ? Math.min((fundedAmount / sliderMax) * 100, 100) : 0;
 
 	const cRedLight = [239, 68, 68];
@@ -81,12 +84,12 @@ export function ExpenseNode({ data }: ExpenseNodeProps) {
 	if (data.occurrenceMonth) timingLabel = `Month ${data.occurrenceMonth}`;
 	else if (data.frequency && data.frequency > 1) timingLabel = `Every ${data.frequency} Mos`;
 
-	const amountText = data.isFixed ? `$${data.targetAmount.toFixed(0)}` : `$${data.currentAmount.toFixed(0)} / $${data.targetAmount.toFixed(0)}`;
+	const amountText = `$${data.currentAmount.toFixed(0)} / $${sliderMax.toFixed(0)}`;
 
 	return (
 		<BaseNode
 			title={data.name}
-			subtitle={data.isFixed ? "FIXED" : undefined}
+			subtitle={data.isFixed ? "FIXED" : data.isLocked ? "LOCKED" : undefined}
 			bgColor={data.isActiveThisMonth ? "bg-white" : "bg-gray-50"}
 			borderColor={`border-[rgba(${currentRgb},0.5)]`}
 			titleColor={`text-[rgb(${currentRgb})]`}
@@ -105,7 +108,7 @@ export function ExpenseNode({ data }: ExpenseNodeProps) {
 						min="0"
 						max={sliderMax}
 						value={incomingRule.amount}
-						disabled={data.isFixed}
+						disabled={isLocked}
 						onChange={(e) => {
 							if (isIncomeRule) updateIncomeRoute(sourceId, data.id, Number(e.target.value), "fixed");
 							else updateTransferRule(incomingRule.id, Number(e.target.value), "fixed");
@@ -113,13 +116,13 @@ export function ExpenseNode({ data }: ExpenseNodeProps) {
 						style={{
 							background: `linear-gradient(to right, rgb(${currentRgb}) ${fillPercentage}%, rgba(0,0,0,0.1) ${fillPercentage}%)`
 						}}
-						className={`nodrag nopan expense-slider w-full h-1.5 rounded-full appearance-none outline-none ${data.isFixed ? "cursor-not-allowed opacity-90" : "cursor-pointer"}`}
+						className={`nodrag nopan expense-slider w-full h-1.5 rounded-full appearance-none outline-none ${isLocked ? "cursor-not-allowed opacity-90" : "cursor-pointer"}`}
 					/>
 				) : (
 					<div className="w-full bg-red-100 rounded-full h-1.5">
 						<div
 							className="h-1.5 rounded-full transition-all duration-300"
-							style={{ width: `${Math.min((data.currentAmount / data.targetAmount) * 100, 100)}%`, backgroundColor: `rgb(${cRed.join(",")})` }}
+							style={{ width: `${Math.min((data.currentAmount / sliderMax) * 100, 100)}%`, backgroundColor: `rgb(${cRed.join(",")})` }}
 						></div>
 					</div>
 				)}

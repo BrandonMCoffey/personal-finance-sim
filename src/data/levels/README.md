@@ -45,7 +45,7 @@ Populates the initial React Flow canvas. Every node requires a unique id.
   - Example: { "id": "inc_01", "name": "Salary", "amount": 4000, "taxRate": 20, "frequency": "monthly", "routings": [ { "destinationId": "acc_01", "amount": 100, "type": "percentage", "isAuto": false } ] }
 - Expenses
   - Notes: Variable expenses must set "isFixed": false and provide a "minValue". "occurrenceMonth" makes an expense trigger only on a specific month (e.g., an emergency car repair).
-  - Example: { "id": "exp_01", "name": "Groceries", "amount": 800, "isFixed": false, "minValue": 400, "requiresCard": true, "frequency": 1, "occurrenceMonth": 1 }
+  - Example: { "id": "exp_01", "name": "Groceries", "defaultAmount": 800, "isFixed": false, "minValue": 400, "requiresCard": true, "frequency": 1, "occurrenceMonth": 1 }
 - Goals
   - Example: { "id": "goal_01", "name": "Vacation", "targetAmount": 2000, "targetMonths": 6 }
 - Cards

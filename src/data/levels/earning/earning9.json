@@ -1,0 +1,86 @@
+{
+  "title": "Entertainment Cuts",
+  "desc": "Reduce non-essential variable expenses to balance the monthly budget.",
+  "to-teach": "Reduce variable spending to balance budget.",
+  "subCategoryIndex": 2,
+  "forecastMonths": 3,
+  "hints": [
+    "Your fixed expenses are $1,800 against $2,200 of income.",
+    "Lower your non-essential entertainment allocation so total expenses do not exceed $2,200."
+  ],
+  "client": {
+    "name": "Avery",
+    "description": "Avery has locked-in apartment and auto payments, but spending on games and concerts causes monthly overdrafts.",
+    "prompt": "I can't change my lease or car note. Which category should I cut so my balance stops dropping?",
+    "portraitId": "avery_01"
+  },
+  "startingState": {
+    "accounts": [
+      {
+        "id": "acc_01",
+        "name": "Checking Account",
+        "type": "checking",
+        "balance": 200,
+        "apy": 0
+      }
+    ],
+    "income": [
+      {
+        "id": "inc_01",
+        "name": "Income",
+        "amount": 2200,
+        "taxRate": 0,
+        "frequency": "monthly",
+        "routings": [
+          {
+            "destinationId": "acc_01",
+            "amount": 100,
+            "type": "percentage"
+          }
+        ]
+      }
+    ],
+    "expenses": [
+      {
+        "id": "exp_01",
+        "name": "Fixed Obligations",
+        "isFixed": true,
+        "defaultAmount": 1800
+      },
+      {
+        "id": "exp_02",
+        "name": "Entertainment & Outings",
+        "isFixed": false,
+        "minValue": 200,
+        "defaultAmount": 600
+      }
+    ],
+    "transferRules": [
+      {
+        "id": "rule_01",
+        "sourceId": "acc_01",
+        "destinationId": "exp_01",
+        "amount": 1800,
+        "type": "fixed"
+      },
+      {
+        "id": "rule_02",
+        "sourceId": "acc_01",
+        "destinationId": "exp_02",
+        "amount": 600,
+        "type": "fixed"
+      }
+    ]
+  },
+  "allowedActions": {
+    "canCreateAccounts": false,
+    "canDeleteAccounts": false,
+    "allowedAccountTypes": [],
+    "allowedCardTypes": []
+  },
+  "winConditions": {
+    "requiredAccounts": [
+      "checking"
+    ]
+  }
+}

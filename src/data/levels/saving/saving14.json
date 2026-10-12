@@ -1,0 +1,95 @@
+{
+  "title": "Doubling Pennies",
+  "desc": "Use a high APY account to double your small savings.",
+  "to-teach": "Utilize high APY to reach savings goals faster.",
+  "subCategoryIndex": 4,
+  "forecastMonths": 12,
+  "hints": [
+    "The client starts with $4,000 in seed capital inside zero-yield cash.",
+    "Open a savings account, transfer the cash into it, and deposit $300 monthly to clear $8,000."
+  ],
+  "client": {
+    "name": "Riley",
+    "description": "Riley has initial seed capital sitting dormant in paper cash and wants to reach an $8,000 threshold within a year.",
+    "prompt": "I have $4,000 cash saved up. How can an interest-bearing account help me reach $8,000 over 12 months?",
+    "portraitId": "riley_01"
+  },
+  "startingState": {
+    "accounts": [
+      {
+        "id": "acc_01",
+        "name": "Safe Deposit Cash",
+        "type": "cash",
+        "balance": 4000,
+        "apy": 0
+      },
+      {
+        "id": "acc_02",
+        "name": "Checking Account",
+        "type": "checking",
+        "balance": 500,
+        "apy": 0
+      }
+    ],
+    "income": [
+      {
+        "id": "inc_01",
+        "name": "Net Wages",
+        "amount": 2500,
+        "taxRate": 0,
+        "frequency": "monthly",
+        "routings": [
+          {
+            "destinationId": "acc_02",
+            "amount": 100,
+            "type": "percentage"
+          }
+        ]
+      }
+    ],
+    "expenses": [
+      {
+        "id": "exp_01",
+        "name": "Standard Expenses",
+        "isFixed": true,
+        "defaultAmount": 2100
+      }
+    ],
+    "goals": [
+      {
+        "id": "goal_01",
+        "name": "Doubled Savings",
+        "targetAmount": 8000,
+        "targetMonths": 12
+      }
+    ],
+    "transferRules": [
+      {
+        "id": "rule_01",
+        "sourceId": "acc_02",
+        "destinationId": "exp_01",
+        "amount": 2100,
+        "type": "fixed"
+      }
+    ]
+  },
+  "allowedActions": {
+    "canCreateAccounts": true,
+    "canDeleteAccounts": false,
+    "maxNewAccounts": 1,
+    "allowedAccountTypes": [
+      "savings"
+    ],
+    "allowedCardTypes": []
+  },
+  "winConditions": {
+    "requiredAccounts": [
+      "savings"
+    ],
+    "maxCashBalance": 0,
+    "goalsFundedWithinMonths": {
+      "goalId": "goal_01",
+      "months": 12
+    }
+  }
+}

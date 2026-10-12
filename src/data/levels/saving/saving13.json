@@ -1,0 +1,87 @@
+{
+  "title": "Time is Money",
+  "desc": "See how early savings grow over a long projection.",
+  "to-teach": "Maximize forecast time to grow compound savings.",
+  "subCategoryIndex": 4,
+  "forecastMonths": 12,
+  "hints": [
+    "A 12-month timeline allows compound interest to accelerate asset accumulation.",
+    "Open a savings account with 5% APY and route $500 monthly from checking."
+  ],
+  "client": {
+    "name": "Jordan",
+    "description": "Jordan wants to see how setting aside consistent savings over a full year compounds over time.",
+    "prompt": "I want to forecast a full year of savings at 5% APY to see how compound growth builds my balance.",
+    "portraitId": "jordan_01"
+  },
+  "startingState": {
+    "accounts": [
+      {
+        "id": "acc_01",
+        "name": "Main Checking",
+        "type": "checking",
+        "balance": 1000,
+        "apy": 0
+      }
+    ],
+    "income": [
+      {
+        "id": "inc_01",
+        "name": "Salary",
+        "amount": 3200,
+        "taxRate": 0,
+        "frequency": "monthly",
+        "routings": [
+          {
+            "destinationId": "acc_01",
+            "amount": 100,
+            "type": "percentage"
+          }
+        ]
+      }
+    ],
+    "expenses": [
+      {
+        "id": "exp_01",
+        "name": "Living Costs",
+        "isFixed": true,
+        "defaultAmount": 2500
+      }
+    ],
+    "goals": [
+      {
+        "id": "goal_01",
+        "name": "One Year Reserve",
+        "targetAmount": 6000,
+        "targetMonths": 12
+      }
+    ],
+    "transferRules": [
+      {
+        "id": "rule_01",
+        "sourceId": "acc_01",
+        "destinationId": "exp_01",
+        "amount": 2500,
+        "type": "fixed"
+      }
+    ]
+  },
+  "allowedActions": {
+    "canCreateAccounts": true,
+    "canDeleteAccounts": false,
+    "maxNewAccounts": 1,
+    "allowedAccountTypes": [
+      "savings"
+    ],
+    "allowedCardTypes": []
+  },
+  "winConditions": {
+    "requiredAccounts": [
+      "savings"
+    ],
+    "goalsFundedWithinMonths": {
+      "goalId": "goal_01",
+      "months": 12
+    }
+  }
+}

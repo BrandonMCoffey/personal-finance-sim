@@ -1,0 +1,90 @@
+{
+  "title": "Two Cards, One Income",
+  "desc": "Choose which of two credit cards to pay down aggressively.",
+  "to-teach": "Route excess funds to highest APR.",
+  "subCategoryIndex": 2,
+  "forecastMonths": 6,
+  "hints": [
+    "The Travel Rewards Card sits at 24% APR while the Furniture Card is at 18% APR.",
+    "Route minimum required payments to both, then allocate the remaining surplus to the Travel Rewards Card."
+  ],
+  "client": {
+    "name": "Marcus",
+    "description": "Marcus is dividing his extra payments 50/50 between two cards instead of targeting the highest rate.",
+    "prompt": "I've been splitting my extra cash evenly across both cards, but my friends say I'm losing money on interest.",
+    "portraitId": "marcus_01"
+  },
+  "startingState": {
+    "accounts": [
+      {
+        "id": "acc_01",
+        "name": "Primary Checking",
+        "type": "checking",
+        "balance": 400,
+        "apy": 0
+      }
+    ],
+    "cards": [
+      {
+        "id": "card_01",
+        "name": "Furniture Store Card",
+        "type": "credit",
+        "linkedAccountId": "",
+        "balance": 1500,
+        "limit": 3000,
+        "apr": 18
+      },
+      {
+        "id": "card_02",
+        "name": "Travel Rewards Card",
+        "type": "credit",
+        "linkedAccountId": "",
+        "balance": 1800,
+        "limit": 3000,
+        "apr": 24
+      }
+    ],
+    "income": [
+      {
+        "id": "inc_01",
+        "name": "Take-Home Pay",
+        "amount": 3000,
+        "taxRate": 0,
+        "frequency": "monthly",
+        "routings": [
+          {
+            "destinationId": "acc_01",
+            "amount": 100,
+            "type": "percentage"
+          }
+        ]
+      }
+    ],
+    "expenses": [
+      {
+        "id": "exp_01",
+        "name": "Fixed Essentials",
+        "isFixed": true,
+        "defaultAmount": 2100
+      }
+    ],
+    "transferRules": [
+      {
+        "id": "rule_01",
+        "sourceId": "acc_01",
+        "destinationId": "exp_01",
+        "amount": 2100,
+        "type": "fixed"
+      }
+    ]
+  },
+  "allowedActions": {
+    "canCreateAccounts": false,
+    "canDeleteAccounts": false,
+    "allowedAccountTypes": [],
+    "allowedCardTypes": []
+  },
+  "winConditions": {
+    "optimalDebtRouting": "avalanche"
+  }
+}

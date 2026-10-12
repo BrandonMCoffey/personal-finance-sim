@@ -1,0 +1,101 @@
+{
+  "title": "The Down Payment",
+  "desc": "Create a sinking fund specifically for a house down payment.",
+  "to-teach": "Save for a large down payment.",
+  "subCategoryIndex": 1,
+  "forecastMonths": 12,
+  "hints": [
+    "Your home purchase goal requires $6,000 over 12 months ($500/month).",
+    "Open a high-yield savings account and route $500 monthly from checking directly into it."
+  ],
+  "client": {
+    "name": "Alex",
+    "description": "Alex is planning to buy a first home next year and needs to build a dedicated down payment cache.",
+    "prompt": "I want to save $6,000 for a home down payment over the next 12 months. How do I automate this without touching my rent money?",
+    "portraitId": "alex_01"
+  },
+  "startingState": {
+    "accounts": [
+      {
+        "id": "acc_01",
+        "name": "Main Checking",
+        "type": "checking",
+        "balance": 1000,
+        "apy": 0
+      }
+    ],
+    "income": [
+      {
+        "id": "inc_01",
+        "name": "Monthly Salary",
+        "amount": 3500,
+        "taxRate": 0,
+        "frequency": "monthly",
+        "routings": [
+          {
+            "destinationId": "acc_01",
+            "amount": 100,
+            "type": "percentage"
+          }
+        ]
+      }
+    ],
+    "expenses": [
+      {
+        "id": "exp_01",
+        "name": "Current Rent",
+        "isFixed": true,
+        "defaultAmount": 1800
+      },
+      {
+        "id": "exp_02",
+        "name": "Living Essentials",
+        "isFixed": false,
+        "minValue": 600,
+        "defaultAmount": 800
+      }
+    ],
+    "goals": [
+      {
+        "id": "goal_01",
+        "name": "House Down Payment",
+        "targetAmount": 6000,
+        "targetMonths": 12
+      }
+    ],
+    "transferRules": [
+      {
+        "id": "rule_01",
+        "sourceId": "acc_01",
+        "destinationId": "exp_01",
+        "amount": 1800,
+        "type": "fixed"
+      },
+      {
+        "id": "rule_02",
+        "sourceId": "acc_01",
+        "destinationId": "exp_02",
+        "amount": 800,
+        "type": "fixed"
+      }
+    ]
+  },
+  "allowedActions": {
+    "canCreateAccounts": true,
+    "canDeleteAccounts": false,
+    "maxNewAccounts": 1,
+    "allowedAccountTypes": [
+      "savings"
+    ],
+    "allowedCardTypes": []
+  },
+  "winConditions": {
+    "requiredAccounts": [
+      "savings"
+    ],
+    "goalsFundedWithinMonths": {
+      "goalId": "goal_01",
+      "months": 12
+    }
+  }
+}

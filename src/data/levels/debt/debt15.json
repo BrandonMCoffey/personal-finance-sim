@@ -1,0 +1,121 @@
+{
+  "title": "Loan vs Credit",
+  "desc": "Understand the difference between installment loans and revolving credit.",
+  "to-teach": "Manage both installment and revolving debt.",
+  "subCategoryIndex": 4,
+  "forecastMonths": 6,
+  "hints": [
+    "The car loan minimum is $250, while the credit card charges 23% APR on its revolving balance.",
+    "Pay the fixed $250 car loan payment and direct any extra monthly cash toward the revolving credit card."
+  ],
+  "client": {
+    "name": "Elena",
+    "description": "Elena has both a fixed installment auto loan and a revolving credit card balance and needs to balance both properly.",
+    "prompt": "I have an auto loan payment and a credit card balance. How do I keep my car in good standing while attacking my high-interest card?",
+    "portraitId": "elena_01"
+  },
+  "startingState": {
+    "accounts": [
+      {
+        "id": "acc_01",
+        "name": "Main Checking",
+        "type": "checking",
+        "balance": 500,
+        "apy": 0
+      }
+    ],
+    "loans": [
+      {
+        "id": "loan_01",
+        "name": "Car Loan",
+        "balance": 8500,
+        "apr": 5.9,
+        "minimumPayment": 250
+      }
+    ],
+    "cards": [
+      {
+        "id": "card_01",
+        "name": "Revolving Card",
+        "type": "credit",
+        "linkedAccountId": "",
+        "balance": 1600,
+        "limit": 3000,
+        "apr": 23
+      }
+    ],
+    "income": [
+      {
+        "id": "inc_01",
+        "name": "Salary",
+        "amount": 3100,
+        "taxRate": 0,
+        "frequency": "monthly",
+        "routings": [
+          {
+            "destinationId": "acc_01",
+            "amount": 100,
+            "type": "percentage"
+          }
+        ]
+      }
+    ],
+    "expenses": [
+      {
+        "id": "exp_01",
+        "name": "Housing",
+        "isFixed": true,
+        "defaultAmount": 1800
+      },
+      {
+        "id": "exp_02",
+        "name": "Food & Gas",
+        "isFixed": false,
+        "minValue": 300,
+        "defaultAmount": 400
+      }
+    ],
+    "transferRules": [
+      {
+        "id": "rule_01",
+        "sourceId": "acc_01",
+        "destinationId": "exp_01",
+        "amount": 1800,
+        "type": "fixed"
+      },
+      {
+        "id": "rule_02",
+        "sourceId": "acc_01",
+        "destinationId": "exp_02",
+        "amount": 400,
+        "type": "fixed"
+      },
+      {
+        "id": "rule_03",
+        "sourceId": "acc_01",
+        "destinationId": "loan_01",
+        "amount": 250,
+        "type": "fixed"
+      },
+      {
+        "id": "rule_04",
+        "sourceId": "acc_01",
+        "destinationId": "card_01",
+        "amount": 50,
+        "type": "fixed"
+      }
+    ]
+  },
+  "allowedActions": {
+    "canCreateAccounts": false,
+    "canDeleteAccounts": false,
+    "allowedAccountTypes": [],
+    "allowedCardTypes": []
+  },
+  "winConditions": {
+    "requiredAccounts": [
+      "checking"
+    ],
+    "optimalDebtRouting": "avalanche"
+  }
+}

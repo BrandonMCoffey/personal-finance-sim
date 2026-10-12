@@ -1,0 +1,90 @@
+{
+  "title": "Quick Wins",
+  "desc": "Pay off the smallest debt balance first for a psychological win.",
+  "to-teach": "Target the smallest balance debt first.",
+  "subCategoryIndex": 3,
+  "forecastMonths": 6,
+  "hints": [
+    "Under the snowball method, order debts by balance size: Card 1 ($400) is smaller than Card 2 ($2,500).",
+    "Pay minimum on Card 2 and direct all surplus into Card 1 until it clears."
+  ],
+  "client": {
+    "name": "Jordan",
+    "description": "Jordan feels overwhelmed by multiple bills and needs the psychological momentum of clearing an entire account.",
+    "prompt": "I want to eliminate accounts completely so I have fewer bills to track each month. How do I do the snowball method?",
+    "portraitId": "jordan_01"
+  },
+  "startingState": {
+    "accounts": [
+      {
+        "id": "acc_01",
+        "name": "Main Checking",
+        "type": "checking",
+        "balance": 300,
+        "apy": 0
+      }
+    ],
+    "cards": [
+      {
+        "id": "card_01",
+        "name": "Small Medical Card",
+        "type": "credit",
+        "linkedAccountId": "",
+        "balance": 400,
+        "limit": 1000,
+        "apr": 16
+      },
+      {
+        "id": "card_02",
+        "name": "Large Balance Card",
+        "type": "credit",
+        "linkedAccountId": "",
+        "balance": 2500,
+        "limit": 5000,
+        "apr": 21
+      }
+    ],
+    "income": [
+      {
+        "id": "inc_01",
+        "name": "Net Income",
+        "amount": 2700,
+        "taxRate": 0,
+        "frequency": "monthly",
+        "routings": [
+          {
+            "destinationId": "acc_01",
+            "amount": 100,
+            "type": "percentage"
+          }
+        ]
+      }
+    ],
+    "expenses": [
+      {
+        "id": "exp_01",
+        "name": "Fixed Necessities",
+        "isFixed": true,
+        "defaultAmount": 1900
+      }
+    ],
+    "transferRules": [
+      {
+        "id": "rule_01",
+        "sourceId": "acc_01",
+        "destinationId": "exp_01",
+        "amount": 1900,
+        "type": "fixed"
+      }
+    ]
+  },
+  "allowedActions": {
+    "canCreateAccounts": false,
+    "canDeleteAccounts": false,
+    "allowedAccountTypes": [],
+    "allowedCardTypes": []
+  },
+  "winConditions": {
+    "optimalDebtRouting": "snowball"
+  }
+}

@@ -19,7 +19,7 @@ export function TimelineManager() {
 		setCurrentYear((prev) => prev + 1);
 		setCurrentAge((prev) => prev + 1);
 
-		const triggeredEvent = rollForLifeEvent(currentAge + 1, store);
+		const triggeredEvent = rollForLifeEvent(currentAge + 1);
 		if (triggeredEvent) {
 			triggeredEvent.action(store);
 			setActiveEvent(triggeredEvent);

@@ -1,0 +1,86 @@
+{
+  "title": "Reduced Hours",
+  "desc": "Rebalance your budget when your variable income drops unexpectedly.",
+  "to-teach": "Lower variable spending when income drops.",
+  "subCategoryIndex": 3,
+  "forecastMonths": 4,
+  "hints": [
+    "Monthly income was reduced from $2,500 down to $1,800.",
+    "Cut flexible dining down to its $200 minimum so fixed rent of $1,500 can clear without overdrafting."
+  ],
+  "client": {
+    "name": "Casey",
+    "description": "Casey had hourly shifts cut at work, reducing monthly income by nearly 30%.",
+    "prompt": "My work hours were cut and I make $1,800 instead of $2,500. How do I cut my flexible spending so I can still afford rent?",
+    "portraitId": "casey_01"
+  },
+  "startingState": {
+    "accounts": [
+      {
+        "id": "acc_01",
+        "name": "Main Checking",
+        "type": "checking",
+        "balance": 200,
+        "apy": 0
+      }
+    ],
+    "income": [
+      {
+        "id": "inc_01",
+        "name": "Hourly Wages",
+        "amount": 1800,
+        "taxRate": 0,
+        "frequency": "monthly",
+        "routings": [
+          {
+            "destinationId": "acc_01",
+            "amount": 100,
+            "type": "percentage"
+          }
+        ]
+      }
+    ],
+    "expenses": [
+      {
+        "id": "exp_01",
+        "name": "Rent & Power",
+        "isFixed": true,
+        "defaultAmount": 1500
+      },
+      {
+        "id": "exp_02",
+        "name": "Flexible Dining",
+        "isFixed": false,
+        "minValue": 200,
+        "defaultAmount": 600
+      }
+    ],
+    "transferRules": [
+      {
+        "id": "rule_01",
+        "sourceId": "acc_01",
+        "destinationId": "exp_01",
+        "amount": 1500,
+        "type": "fixed"
+      },
+      {
+        "id": "rule_02",
+        "sourceId": "acc_01",
+        "destinationId": "exp_02",
+        "amount": 600,
+        "type": "fixed"
+      }
+    ]
+  },
+  "allowedActions": {
+    "canCreateAccounts": false,
+    "canDeleteAccounts": false,
+    "allowedAccountTypes": [],
+    "allowedCardTypes": []
+  },
+  "winConditions": {
+    "requiredAccounts": [
+      "checking"
+    ]
+  }
+}

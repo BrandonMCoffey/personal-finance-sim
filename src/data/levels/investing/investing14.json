@@ -1,0 +1,84 @@
+{
+  "title": "The Balanced Portfolio",
+  "desc": "Spread your funds between checking, savings, and a brokerage.",
+  "to-teach": "Diversify funds across multiple account types.",
+  "subCategoryIndex": 4,
+  "forecastMonths": 6,
+  "hints": [
+    "A resilient financial architecture uses checking for operations, savings for safety, and brokerage for growth.",
+    "Open a brokerage account and split your monthly surplus: $300 to Savings and $400 to Brokerage."
+  ],
+  "client": {
+    "name": "Casey",
+    "description": "Casey wants a balanced three-account structure covering bills, cash safety, and long-term asset growth.",
+    "prompt": "I want to divide my monthly cash flow across bills, emergency cash, and long-term investing. How should I set this up?",
+    "portraitId": "casey_01"
+  },
+  "startingState": {
+    "accounts": [
+      {
+        "id": "acc_01",
+        "name": "Operating Checking",
+        "type": "checking",
+        "balance": 1000,
+        "apy": 0
+      },
+      {
+        "id": "acc_02",
+        "name": "High-Yield Savings",
+        "type": "savings",
+        "balance": 3000,
+        "apy": 4.5
+      }
+    ],
+    "income": [
+      {
+        "id": "inc_01",
+        "name": "Wages",
+        "amount": 3400,
+        "taxRate": 15,
+        "frequency": "monthly",
+        "routings": [
+          {
+            "destinationId": "acc_01",
+            "amount": 100,
+            "type": "percentage"
+          }
+        ]
+      }
+    ],
+    "expenses": [
+      {
+        "id": "exp_01",
+        "name": "Bills & Housing",
+        "isFixed": true,
+        "defaultAmount": 2190
+      }
+    ],
+    "transferRules": [
+      {
+        "id": "rule_01",
+        "sourceId": "acc_01",
+        "destinationId": "exp_01",
+        "amount": 2190,
+        "type": "fixed"
+      }
+    ]
+  },
+  "allowedActions": {
+    "canCreateAccounts": true,
+    "canDeleteAccounts": false,
+    "maxNewAccounts": 1,
+    "allowedAccountTypes": [
+      "brokerage"
+    ],
+    "allowedCardTypes": []
+  },
+  "winConditions": {
+    "requiredAccounts": [
+      "checking",
+      "savings",
+      "brokerage"
+    ]
+  }
+}

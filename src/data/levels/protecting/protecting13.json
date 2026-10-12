@@ -1,0 +1,98 @@
+{
+  "title": "Payday Peril",
+  "desc": "Rescue a client trapped in a 400% APR payday loan.",
+  "to-teach": "Aggressively eliminate predatory high-interest debt.",
+  "subCategoryIndex": 4,
+  "forecastMonths": 4,
+  "hints": [
+    "A 400% APR payday loan will spiral out of control if left unpaid for even a single month.",
+    "Cut all non-essential flexible spending to minimums and route $600 immediately to eliminate the payday loan."
+  ],
+  "client": {
+    "name": "Sarah",
+    "description": "Sarah took out a short-term payday loan with a predatory 399% APR that is compounding rapidly.",
+    "prompt": "I took out a $500 payday loan and the interest fees are astronomical! How do I direct every spare dollar to kill this immediately?",
+    "portraitId": "sarah_01"
+  },
+  "startingState": {
+    "accounts": [
+      {
+        "id": "acc_01",
+        "name": "Main Checking",
+        "type": "checking",
+        "balance": 250,
+        "apy": 0
+      }
+    ],
+    "loans": [
+      {
+        "id": "loan_01",
+        "name": "Payday Advance",
+        "balance": 500,
+        "apr": 399,
+        "minimumPayment": 150
+      }
+    ],
+    "income": [
+      {
+        "id": "inc_01",
+        "name": "Salary",
+        "amount": 2600,
+        "taxRate": 0,
+        "frequency": "monthly",
+        "routings": [
+          {
+            "destinationId": "acc_01",
+            "amount": 100,
+            "type": "percentage"
+          }
+        ]
+      }
+    ],
+    "expenses": [
+      {
+        "id": "exp_01",
+        "name": "Rent",
+        "isFixed": true,
+        "defaultAmount": 1500
+      },
+      {
+        "id": "exp_02",
+        "name": "Flexible Discretionary",
+        "isFixed": false,
+        "minValue": 200,
+        "defaultAmount": 700
+      }
+    ],
+    "transferRules": [
+      {
+        "id": "rule_01",
+        "sourceId": "acc_01",
+        "destinationId": "exp_01",
+        "amount": 1500,
+        "type": "fixed"
+      },
+      {
+        "id": "rule_02",
+        "sourceId": "acc_01",
+        "destinationId": "exp_02",
+        "amount": 700,
+        "type": "fixed"
+      }
+    ]
+  },
+  "allowedActions": {
+    "canCreateAccounts": false,
+    "canDeleteAccounts": false,
+    "allowedAccountTypes": [],
+    "allowedCardTypes": []
+  },
+  "winConditions": {
+    "requiredAccounts": [
+      "checking"
+    ],
+    "debtPaidOff": [
+      "loan_01"
+    ]
+  }
+}

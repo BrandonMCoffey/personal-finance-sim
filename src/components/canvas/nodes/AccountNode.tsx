@@ -7,7 +7,9 @@ interface AccountNodeProps {
 		name: string;
 		balance: number;
 		forecastBalance: number;
+		realForecastBalance?: number;
 		interestEarned: number;
+		inflationDrag?: number;
 		forecastMonths: number;
 		accountType: string;
 		apy?: number;
@@ -120,6 +122,14 @@ export function AccountNode({ data }: AccountNodeProps) {
 					{data.interestEarned > 0 && (
 						<div className="text-[9px] font-bold text-green-500 bg-green-50 px-1 py-0.5 rounded w-fit mt-1 border border-green-100">
 							Earned: +${data.interestEarned.toFixed(2)}
+						</div>
+					)}
+					{data.inflationDrag !== undefined && data.inflationDrag > 0 && (
+						<div
+							className="text-[9px] font-bold text-amber-700 bg-amber-50 px-1 py-0.5 rounded w-fit mt-1 border border-amber-200"
+							title={`Purchasing power loss: Real value is $${(data.realForecastBalance ?? data.forecastBalance).toFixed(0)}`}
+						>
+							Inflation Drag: -${data.inflationDrag.toFixed(2)}
 						</div>
 					)}
 				</>

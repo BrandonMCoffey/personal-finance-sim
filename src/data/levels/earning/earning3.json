@@ -1,0 +1,80 @@
+{
+  "title": "Missing Money",
+  "desc": "Fix an overdraft caused by budgeting with gross income.",
+  "to-teach": "Budget using net pay, not gross pay.",
+  "subCategoryIndex": 0,
+  "forecastMonths": 3,
+  "hints": [
+    "A $3,500 gross paycheck with a 15% tax deduction yields $2,975 net.",
+    "Trim your flexible dining and entertainment spending so total outflows stay under $2,975."
+  ],
+  "client": {
+    "name": "Taylor",
+    "description": "Taylor budgeted fixed and flexible expenses against gross pay, leaving checking balances in a persistent deficit.",
+    "prompt": "I calculated my bills to be $3,200 because I make $3,500, but money seems to vanish every payday!",
+    "portraitId": "taylor_01"
+  },
+  "startingState": {
+    "accounts": [
+      {
+        "id": "acc_01",
+        "name": "Checking Account",
+        "type": "checking",
+        "balance": 100,
+        "apy": 0
+      }
+    ],
+    "income": [
+      {
+        "id": "inc_01",
+        "name": "Monthly Wages",
+        "amount": 3500,
+        "taxRate": 15,
+        "frequency": "monthly",
+        "routings": []
+      }
+    ],
+    "expenses": [
+      {
+        "id": "exp_01",
+        "name": "Fixed Rent & Utilities",
+        "isFixed": true,
+        "defaultAmount": 2100
+      },
+      {
+        "id": "exp_02",
+        "name": "Dining & Subscriptions",
+        "isFixed": false,
+        "minValue": 600,
+        "defaultAmount": 1100
+      }
+    ],
+    "transferRules": [
+      {
+        "id": "rule_01",
+        "sourceId": "acc_01",
+        "destinationId": "exp_01",
+        "amount": 2100,
+        "type": "fixed"
+      },
+      {
+        "id": "rule_02",
+        "sourceId": "acc_01",
+        "destinationId": "exp_02",
+        "amount": 1100,
+        "type": "fixed"
+      }
+    ]
+  },
+  "allowedActions": {
+    "canCreateAccounts": false,
+    "canDeleteAccounts": false,
+    "allowedAccountTypes": [],
+    "allowedCardTypes": []
+  },
+  "winConditions": {
+    "requiredAccounts": [
+      "checking"
+    ]
+  }
+}

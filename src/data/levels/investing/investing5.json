@@ -1,0 +1,75 @@
+{
+  "title": "Excess Cash Flow",
+  "desc": "Route leftover monthly cash into a brokerage for higher returns.",
+  "to-teach": "Invest excess cash flow into brokerages.",
+  "subCategoryIndex": 1,
+  "forecastMonths": 12,
+  "hints": [
+    "Your net monthly surplus after living expenses is $1,000.",
+    "Open a brokerage account and set an automatic monthly transfer of $1,000 from Checking."
+  ],
+  "client": {
+    "name": "Elena",
+    "description": "Elena has $1,000 sitting idle every month in a 0% checking account after all bills are covered.",
+    "prompt": "I have $1,000 left over every month. I don't want it sitting in a 0% checking account, I want to invest it!",
+    "portraitId": "elena_01"
+  },
+  "startingState": {
+    "accounts": [
+      {
+        "id": "acc_01",
+        "name": "Checking",
+        "type": "checking",
+        "balance": 2000,
+        "apy": 0
+      }
+    ],
+    "income": [
+      {
+        "id": "inc_01",
+        "name": "Income",
+        "amount": 6000,
+        "taxRate": 25,
+        "frequency": "monthly",
+        "routings": [
+          {
+            "destinationId": "acc_01",
+            "amount": 100,
+            "type": "percentage"
+          }
+        ]
+      }
+    ],
+    "expenses": [
+      {
+        "id": "exp_01",
+        "name": "Expenses",
+        "isFixed": true,
+        "defaultAmount": 3500
+      }
+    ],
+    "transferRules": [
+      {
+        "id": "rule_01",
+        "sourceId": "acc_01",
+        "destinationId": "exp_01",
+        "amount": 3500,
+        "type": "fixed"
+      }
+    ]
+  },
+  "allowedActions": {
+    "canCreateAccounts": true,
+    "canDeleteAccounts": false,
+    "maxNewAccounts": 1,
+    "allowedAccountTypes": [
+      "brokerage"
+    ],
+    "allowedCardTypes": []
+  },
+  "winConditions": {
+    "requiredAccounts": [
+      "brokerage"
+    ]
+  }
+}

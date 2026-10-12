@@ -1,0 +1,68 @@
+{
+  "title": "Cash to Bank",
+  "desc": "Move unsecure cash into a bank checking account.",
+  "to-teach": "Transfer physical cash to a bank account.",
+  "subCategoryIndex": 2,
+  "forecastMonths": 3,
+  "hints": [
+    "Unsecured cash cannot pay electronic bills and risks loss.",
+    "Open a checking account and transfer your physical cash balance into it."
+  ],
+  "client": {
+    "name": "Sam",
+    "description": "Sam keeps all earnings in physical cash, making bill payments risky and leaving cash vulnerable.",
+    "prompt": "I keep all my money in paper cash at home, but I need to pay my internet bill electronically. How do I secure this?",
+    "portraitId": "sam_01"
+  },
+  "startingState": {
+    "accounts": [
+      {
+        "id": "acc_01",
+        "name": "Physical Cash",
+        "type": "cash",
+        "balance": 1200,
+        "apy": 0
+      }
+    ],
+    "income": [
+      {
+        "id": "inc_01",
+        "name": "Part-Time Job",
+        "amount": 800,
+        "taxRate": 0,
+        "frequency": "monthly",
+        "routings": [
+          {
+            "destinationId": "acc_01",
+            "amount": 100,
+            "type": "percentage"
+          }
+        ]
+      }
+    ],
+    "expenses": [
+      {
+        "id": "exp_01",
+        "name": "Internet & Phone",
+        "isFixed": true,
+        "defaultAmount": 150
+      }
+    ],
+    "transferRules": []
+  },
+  "allowedActions": {
+    "canCreateAccounts": true,
+    "canDeleteAccounts": false,
+    "maxNewAccounts": 1,
+    "allowedAccountTypes": [
+      "checking"
+    ],
+    "allowedCardTypes": []
+  },
+  "winConditions": {
+    "requiredAccounts": [
+      "checking"
+    ],
+    "maxCashBalance": 0
+  }
+}

@@ -1,22 +1,29 @@
-import type { Account, Income, TransferRule, Goal, Expense, Card, Loan, Retirement } from "../store/financeStore";
+import type { Account, Income, TransferRule, Goal, Expense, Card, Loan, Retirement, Insurance } from "../store/financeStore";
+import { calculateIncomeTaxes } from "../store/financeStore";
 
 export interface MonthlySnapshot {
 	month: number;
 	accountBalances: Record<string, number>;
+	realAccountBalances: Record<string, number>;
 	accountFlows: Record<string, { in: number; out: number }>;
 	accountGoalAllocations: Record<string, number>;
 	cardBalances: Record<string, number>;
 	loanBalances: Record<string, number>;
 	retirementBalances: Record<string, number>;
 	goalProgress: Record<string, number>;
+	realGoalProgress: Record<string, number>;
 	expenseProgress: Record<string, number>;
 	activeExpenses: Record<string, boolean>;
+	insuranceCoverage: Record<string, boolean>;
+	insuranceCoveredAmounts: Record<string, number>;
 	goalHitMonths: Record<string, number>;
 	accountInterestEarned: Record<string, number>;
 	cardInterestPaid: Record<string, number>;
 	loanInterestPaid: Record<string, number>;
 	retirementEmployerMatch: Record<string, number>;
 	incomeTaxesPaid: Record<string, number>;
+	inflationDrag: Record<string, number>;
+	debtPayments: Record<string, number>;
 }
 
 export function generateForecast(
@@ -28,7 +35,9 @@ export function generateForecast(
 	cards: Card[],
 	loans: Loan[] = [],
 	retirements: Retirement[] = [],
-	monthsToProject: number = 6
+	monthsToProject: number = 6,
+	insurances: Insurance[] = [],
+	inflationRate: number = 0
 ): MonthlySnapshot[] {
 	const snapshots: MonthlySnapshot[] = [];
 
@@ -46,6 +55,7 @@ export function generateForecast(
 	let cumLoanInterest: Record<string, number> = {};
 	let cumRetMatch: Record<string, number> = {};
 	let cumTaxesPaid: Record<string, number> = {};
+	let cumInflationDrag: Record<string, number> = {};
 
 	goals.forEach((g) => {
 		goalProgress[g.id] = 0;
@@ -54,6 +64,7 @@ export function generateForecast(
 		currentBalances[acc.id] = acc.balance;
 		currentGoalEarmarks[acc.id] = 0;
 		cumAccInterest[acc.id] = 0;
+		cumInflationDrag[acc.id] = 0;
 	});
 	cards.forEach((card) => {
 		currentCardBalances[card.id] = card.balance || 0;
@@ -72,9 +83,11 @@ export function generateForecast(
 	});
 
 	transferRules.forEach((rule) => {
-		if (accounts.some((a) => a.id === rule.sourceId) && accounts.some((a) => a.id === rule.destinationId)) {
-			const depositAmount = currentBalances[rule.sourceId];
-			currentBalances[rule.destinationId] += depositAmount;
+		const sourceAcc = accounts.find((a) => a.id === rule.sourceId);
+		const destAcc = accounts.find((a) => a.id === rule.destinationId);
+		if (sourceAcc?.type === "cash" && destAcc && destAcc.type !== "cash") {
+			const depositAmount = currentBalances[rule.sourceId] || 0;
+			currentBalances[rule.destinationId] = (currentBalances[rule.destinationId] || 0) + depositAmount;
 			currentBalances[rule.sourceId] = 0;
 		}
 	});
@@ -88,13 +101,47 @@ export function generateForecast(
 		const monthlyExpenseProgress: Record<string, number> = {};
 		const activeExpenses: Record<string, boolean> = {};
 		const monthlyFlows: Record<string, { in: number; out: number }> = {};
+		const monthlyInsuranceCoverage: Record<string, boolean> = {};
+		const monthlyInsuranceCoveredAmounts: Record<string, number> = {};
+		const monthlyInsuranceContributions: Record<string, number> = {};
+		const monthlyDebtPayments: Record<string, number> = {};
+
+		cards.forEach((c) => (monthlyDebtPayments[c.id] = 0));
+		loans.forEach((l) => (monthlyDebtPayments[l.id] = 0));
 
 		const monthlyAccInterest = { ...cumAccInterest };
 		const monthlyCardInterest = { ...cumCardInterest };
 		const monthlyLoanInterest = { ...cumLoanInterest };
 		const monthlyRetMatch = { ...cumRetMatch };
 		const monthlyTaxesPaid = { ...cumTaxesPaid };
+		const monthlyInflationDrag = { ...cumInflationDrag };
 
+		// Track insurance premium funding
+		insurances.forEach((ins) => {
+			monthlyInsuranceContributions[ins.id] = 0;
+			// Calculate incoming transfer rules to insurance
+			const directTransfer = transferRules
+				.filter((r) => r.destinationId === ins.id)
+				.reduce((sum, r) => {
+					if (r.type === "fixed") return sum + r.amount;
+					const src = accounts.find((a) => a.id === r.sourceId);
+					return sum + (src ? Math.max(0, src.balance) * (r.amount / 100) : 0);
+				}, 0);
+			const incomeTransfer = incomes
+				.flatMap((inc) => {
+					const { netAmount } = calculateIncomeTaxes(inc.amount, inc.taxRate, inc.taxDeductions);
+					return (inc.routings || []).map((r) => ({ netAmount, r }));
+				})
+				.filter(({ r }) => r.destinationId === ins.id)
+				.reduce((sum, { netAmount, r }) => sum + (r.type === "fixed" ? r.amount : netAmount * (r.amount / 100)), 0);
+
+			const totalPremiumFunding = directTransfer + incomeTransfer;
+			monthlyInsuranceCoverage[ins.id] = totalPremiumFunding >= ins.premium - 0.01;
+		});
+
+		// Determine effective expense requirements (accounting for insurance deductible capping on occurrence months)
+		const effectiveExpenseTargets: Record<string, number> = {};
+		const effectiveExpenseMaxes: Record<string, number> = {};
 		expenses.forEach((e) => {
 			let isActive = true;
 			if (e.occurrenceMonth && m !== e.occurrenceMonth) isActive = false;
@@ -102,7 +149,29 @@ export function generateForecast(
 
 			activeExpenses[e.id] = isActive;
 			monthlyExpenseProgress[e.id] = 0;
+			monthlyInsuranceCoveredAmounts[e.id] = 0;
+
+			const baseAmt = e.defaultAmount !== undefined ? e.defaultAmount : e.amount;
+			let targetAmount = baseAmt;
+			const maxAmount = e.maxAmount !== undefined ? e.maxAmount : baseAmt * 1.5;
+			let effectiveMax = maxAmount;
+
+			if (isActive && e.occurrenceMonth && m === e.occurrenceMonth) {
+				const coveringPolicy = insurances.find(
+					(ins) =>
+						monthlyInsuranceCoverage[ins.id] &&
+						(!ins.coveredExpenseIds || ins.coveredExpenseIds.length === 0 || ins.coveredExpenseIds.includes(e.id))
+				);
+				if (coveringPolicy) {
+					targetAmount = Math.min(e.amount, coveringPolicy.deductible);
+					effectiveMax = Math.min(maxAmount, coveringPolicy.deductible);
+					monthlyInsuranceCoveredAmounts[e.id] = Math.max(0, e.amount - coveringPolicy.deductible);
+				}
+			}
+			effectiveExpenseTargets[e.id] = targetAmount;
+			effectiveExpenseMaxes[e.id] = effectiveMax;
 		});
+
 		accounts.forEach((a) => {
 			monthlyFlows[a.id] = { in: 0, out: 0 };
 		});
@@ -113,8 +182,17 @@ export function generateForecast(
 				monthlyFlows[destId].in += amount;
 				return amount;
 			} else if (nextLoanBalances[destId] !== undefined) {
-				nextLoanBalances[destId] -= amount;
-				return amount;
+				const currentOwed = Math.max(0, nextLoanBalances[destId]);
+				const accepted = Math.min(amount, currentOwed);
+				nextLoanBalances[destId] = currentOwed - accepted;
+				monthlyDebtPayments[destId] = (monthlyDebtPayments[destId] || 0) + accepted;
+				return accepted;
+			} else if (nextCardBalances[destId] !== undefined) {
+				const currentOwed = Math.max(0, nextCardBalances[destId]);
+				const accepted = Math.min(amount, currentOwed);
+				nextCardBalances[destId] = currentOwed - accepted;
+				monthlyDebtPayments[destId] = (monthlyDebtPayments[destId] || 0) + accepted;
+				return accepted;
 			} else if (nextRetirementBalances[destId] !== undefined) {
 				const retirement = retirements.find((r) => r.id === destId);
 				let matchAmount = 0;
@@ -125,26 +203,37 @@ export function generateForecast(
 				monthlyRetMatch[destId] += matchAmount;
 				return amount;
 			} else if (monthlyExpenseProgress[destId] !== undefined) {
-				const expense = expenses.find((e) => e.id === destId)!;
 				const isActive = activeExpenses[destId];
-				const needed = isActive ? Math.max(0, expense.amount - monthlyExpenseProgress[destId]) : 0;
+				const maxAllowed = effectiveExpenseMaxes[destId] ?? effectiveExpenseTargets[destId] ?? 0;
+				const needed = isActive ? Math.max(0, maxAllowed - monthlyExpenseProgress[destId]) : 0;
 				const accepted = Math.min(amount, needed);
 				monthlyExpenseProgress[destId] += accepted;
 				return accepted;
+			} else if (insurances.some((i) => i.id === destId)) {
+				monthlyInsuranceContributions[destId] = (monthlyInsuranceContributions[destId] || 0) + amount;
+				return amount;
 			}
 			return 0;
 		};
 
-		// 1. Process Income
+		// 1. Process Income with Granular Tax Deductions
 		incomes.forEach((income) => {
-			let taxAmount = income.taxRate ? income.amount * (income.taxRate / 100) : 0;
-			monthlyTaxesPaid[income.id] += taxAmount;
-			let available = income.amount - taxAmount;
+			const { totalTax, netAmount } = calculateIncomeTaxes(income.amount, income.taxRate, income.taxDeductions);
+			monthlyTaxesPaid[income.id] += totalTax;
+			let available = netAmount;
 
 			if (income.routings && income.routings.length > 0) {
 				income.routings.forEach((route, idx) => {
 					const isLast = idx === income.routings!.length - 1;
-					let intended = isLast ? Math.max(0, available) : route.type === "fixed" ? route.amount : income.amount * (route.amount / 100);
+					const isSingle = income.routings!.length === 1;
+					let intended =
+						isSingle && route.isAuto
+							? (route.type === "percentage" ? netAmount * (route.amount / 100) : Math.max(0, available))
+							: isLast && !route.isAuto
+							? Math.max(0, available)
+							: route.type === "fixed"
+							? route.amount
+							: netAmount * (route.amount / 100);
 					const acceptedAmount = Math.max(0, Math.min(intended, available));
 					const accepted = applyTransfer(route.destinationId, acceptedAmount, true);
 					available -= accepted;
@@ -174,12 +263,30 @@ export function generateForecast(
 				const sourceBal = nextBalances[rule.sourceId];
 				if (sourceBal === undefined) return;
 
-				let transferAmount = rule.type === "fixed" ? rule.amount : Math.max(0, sourceBal) * (rule.amount / 100);
+				const outgoingRules = transferRules.filter(
+					(r) => r.sourceId === rule.sourceId && !goals.some((g) => g.id === r.destinationId)
+				);
+				const isSingleRule = outgoingRules.length === 1;
+
+				let transferAmount =
+					isSingleRule && rule.isAuto
+						? Math.max(0, sourceBal)
+						: rule.type === "fixed"
+						? rule.amount
+						: Math.max(0, sourceBal) * (rule.amount / 100);
 				if (transferAmount > 0) {
-					nextBalances[rule.sourceId] -= transferAmount;
-					monthlyFlows[rule.sourceId].out += transferAmount;
-					if (destCard && destCard.type === "credit") nextCardBalances[destCard.id] -= transferAmount;
-					else applyTransfer(rule.destinationId, transferAmount);
+					if (destCard && destCard.type === "credit") {
+						const currentOwed = Math.max(0, nextCardBalances[destCard.id]);
+						const accepted = Math.min(transferAmount, currentOwed);
+						nextCardBalances[destCard.id] -= accepted;
+						monthlyDebtPayments[destCard.id] = (monthlyDebtPayments[destCard.id] || 0) + accepted;
+						nextBalances[rule.sourceId] -= accepted;
+						monthlyFlows[rule.sourceId].out += accepted;
+					} else {
+						const accepted = applyTransfer(rule.destinationId, transferAmount);
+						nextBalances[rule.sourceId] -= accepted;
+						monthlyFlows[rule.sourceId].out += accepted;
+					}
 				}
 			}
 		});
@@ -241,23 +348,66 @@ export function generateForecast(
 			}
 		});
 
+		// 5. Process Inflation Mechanics (Purchasing Power Drag)
+		const realBalances: Record<string, number> = {};
+		const realGoalProgress: Record<string, number> = {};
+
+		if (inflationRate > 0) {
+			const monthlyInflationDragRate = (inflationRate / 100) / 12;
+			accounts.forEach((acc) => {
+				if (acc.type === "cash" || (acc.type === "checking" && (acc.apy || 0) <= 0.01)) {
+					const drag = Math.max(0, nextBalances[acc.id]) * monthlyInflationDragRate;
+					monthlyInflationDrag[acc.id] = (monthlyInflationDrag[acc.id] || 0) + drag;
+				}
+				realBalances[acc.id] = Math.max(0, nextBalances[acc.id] - (monthlyInflationDrag[acc.id] || 0));
+			});
+
+			goals.forEach((goal) => {
+				const attachedRules = transferRules.filter((r) => goals.some((g) => g.id === r.destinationId));
+				const isFundedFromBeatingInflation = attachedRules.every((r) => {
+					const src = accounts.find((a) => a.id === r.sourceId);
+					return src && src.apy >= inflationRate;
+				});
+
+				if (isFundedFromBeatingInflation && attachedRules.length > 0) {
+					realGoalProgress[goal.id] = goalProgress[goal.id];
+				} else {
+					const cumulativeDiscount = Math.pow(1 - monthlyInflationDragRate, m);
+					realGoalProgress[goal.id] = goalProgress[goal.id] * cumulativeDiscount;
+				}
+			});
+		} else {
+			accounts.forEach((acc) => {
+				realBalances[acc.id] = nextBalances[acc.id];
+			});
+			goals.forEach((goal) => {
+				realGoalProgress[goal.id] = goalProgress[goal.id];
+			});
+		}
+
 		snapshots.push({
 			month: m,
 			accountBalances: nextBalances,
+			realAccountBalances: realBalances,
 			accountFlows: monthlyFlows,
 			accountGoalAllocations: { ...monthlyGoalEarmarks },
 			cardBalances: nextCardBalances,
 			loanBalances: nextLoanBalances,
 			retirementBalances: nextRetirementBalances,
 			goalProgress: { ...goalProgress },
+			realGoalProgress: { ...realGoalProgress },
 			expenseProgress: { ...monthlyExpenseProgress },
 			activeExpenses: { ...activeExpenses },
+			insuranceCoverage: { ...monthlyInsuranceCoverage },
+			insuranceCoveredAmounts: { ...monthlyInsuranceCoveredAmounts },
 			goalHitMonths: { ...goalHitMonths },
 			accountInterestEarned: { ...monthlyAccInterest },
 			cardInterestPaid: { ...monthlyCardInterest },
 			loanInterestPaid: { ...monthlyLoanInterest },
 			retirementEmployerMatch: { ...monthlyRetMatch },
-			incomeTaxesPaid: { ...monthlyTaxesPaid }
+			incomeTaxesPaid: { ...monthlyTaxesPaid },
+			inflationDrag: { ...monthlyInflationDrag },
+			debtPayments: { ...monthlyDebtPayments }
 		});
 
 		currentBalances = nextBalances;
@@ -271,7 +421,9 @@ export function generateForecast(
 		cumLoanInterest = monthlyLoanInterest;
 		cumRetMatch = monthlyRetMatch;
 		cumTaxesPaid = monthlyTaxesPaid;
+		cumInflationDrag = monthlyInflationDrag;
 	}
 
 	return snapshots;
 }
+

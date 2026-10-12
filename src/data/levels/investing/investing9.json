@@ -1,0 +1,87 @@
+{
+  "title": "Catching Up",
+  "desc": "Aggressively fund a retirement account to make up for lost time.",
+  "to-teach": "Route high percentages to retirement accounts.",
+  "subCategoryIndex": 2,
+  "forecastMonths": 12,
+  "hints": [
+    "Your current checking balance is strong, and expenses are relatively low.",
+    "Increase retirement contributions from 5% up to 20% ($1,000/month) to accelerate your balance."
+  ],
+  "client": {
+    "name": "Casey",
+    "description": "Casey started saving for retirement late and wants to allocate 20% of income toward retirement catch-up.",
+    "prompt": "I didn't save anything in my 20s. I want to route 20% of my income into retirement to make up for lost time!",
+    "portraitId": "casey_01"
+  },
+  "startingState": {
+    "accounts": [
+      {
+        "id": "acc_01",
+        "name": "Primary Checking",
+        "type": "checking",
+        "balance": 3000,
+        "apy": 0
+      }
+    ],
+    "retirements": [
+      {
+        "id": "ret_01",
+        "name": "Catch-Up 401k",
+        "type": "401k",
+        "balance": 2000,
+        "expectedApy": 7,
+        "employerMatchPercent": 4
+      }
+    ],
+    "income": [
+      {
+        "id": "inc_01",
+        "name": "Gross Salary",
+        "amount": 5000,
+        "taxRate": 18,
+        "frequency": "monthly",
+        "routings": [
+          {
+            "destinationId": "acc_01",
+            "amount": 95,
+            "type": "percentage"
+          },
+          {
+            "destinationId": "ret_01",
+            "amount": 5,
+            "type": "percentage"
+          }
+        ]
+      }
+    ],
+    "expenses": [
+      {
+        "id": "exp_01",
+        "name": "Core Living",
+        "isFixed": true,
+        "defaultAmount": 2600
+      }
+    ],
+    "transferRules": [
+      {
+        "id": "rule_01",
+        "sourceId": "acc_01",
+        "destinationId": "exp_01",
+        "amount": 2600,
+        "type": "fixed"
+      }
+    ]
+  },
+  "allowedActions": {
+    "canCreateAccounts": false,
+    "canDeleteAccounts": false,
+    "allowedAccountTypes": [],
+    "allowedCardTypes": []
+  },
+  "winConditions": {
+    "requiredAccounts": [],
+    "requireRetirementMatch": true,
+    "minRetirementBalance": 14000
+  }
+}

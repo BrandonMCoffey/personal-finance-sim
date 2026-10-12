@@ -1,0 +1,82 @@
+{
+  "title": "Market Entry",
+  "desc": "Open a brokerage account for money you won't need soon.",
+  "to-teach": "Open a brokerage account for investing.",
+  "subCategoryIndex": 1,
+  "forecastMonths": 12,
+  "hints": [
+    "Open a brokerage account from the Actions menu.",
+    "Route $500 monthly from checking into the new brokerage account."
+  ],
+  "client": {
+    "name": "Elena",
+    "description": "Elena has fully funded her cash emergency reserve and wants to begin investing excess cash flow.",
+    "prompt": "I already have an emergency fund set aside. How do I open a brokerage account to start investing my monthly extra cash?",
+    "portraitId": "elena_01"
+  },
+  "startingState": {
+    "accounts": [
+      {
+        "id": "acc_01",
+        "name": "Main Checking",
+        "type": "checking",
+        "balance": 2500,
+        "apy": 0
+      },
+      {
+        "id": "acc_02",
+        "name": "Emergency Savings",
+        "type": "savings",
+        "balance": 10000,
+        "apy": 4
+      }
+    ],
+    "income": [
+      {
+        "id": "inc_01",
+        "name": "Monthly Salary",
+        "amount": 4200,
+        "taxRate": 15,
+        "frequency": "monthly",
+        "routings": [
+          {
+            "destinationId": "acc_01",
+            "amount": 100,
+            "type": "percentage"
+          }
+        ]
+      }
+    ],
+    "expenses": [
+      {
+        "id": "exp_01",
+        "name": "Living Expenses",
+        "isFixed": true,
+        "defaultAmount": 2500
+      }
+    ],
+    "transferRules": [
+      {
+        "id": "rule_01",
+        "sourceId": "acc_01",
+        "destinationId": "exp_01",
+        "amount": 2500,
+        "type": "fixed"
+      }
+    ]
+  },
+  "allowedActions": {
+    "canCreateAccounts": true,
+    "canDeleteAccounts": false,
+    "maxNewAccounts": 1,
+    "allowedAccountTypes": [
+      "brokerage"
+    ],
+    "allowedCardTypes": []
+  },
+  "winConditions": {
+    "requiredAccounts": [
+      "brokerage"
+    ]
+  }
+}

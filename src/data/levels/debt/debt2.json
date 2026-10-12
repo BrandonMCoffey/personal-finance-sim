@@ -1,34 +1,100 @@
 {
-	"forecastMonths": 6,
-	"hints": [
-		"The Debt Avalanche method saves you the most money by attacking the highest interest rate first.",
-		"Route the minimum payment to your Car Loan and Store Card, and dump all remaining income into the High-Interest Visa."
-	],
-	"client": {
-		"name": "Sarah",
-		"description": "Sarah has $1,500 of extra income each month to throw at her debt, but doesn't know which one to pay first.",
-		"prompt": "Should I pay off my smallest card first, or attack the one with the crazy 25% APR?",
-		"portraitId": "sarah_01"
-	},
-	"startingState": {
-		"accounts": [{ "id": "acc_01", "name": "Checking", "type": "checking", "balance": 500.0, "apy": 0.0 }],
-		"income": [
-			{
-				"id": "inc_01",
-				"name": "Income",
-				"amount": 1500.0,
-				"taxRate": 0,
-				"frequency": "monthly",
-				"routings": [{ "destinationId": "acc_01", "amount": 100, "type": "percentage" }]
-			}
-		],
-		"cards": [
-			{ "id": "card_01", "name": "Store Card", "type": "credit", "linkedAccountId": "", "balance": 800.0, "apr": 15.0 },
-			{ "id": "card_02", "name": "High-Interest Visa", "type": "credit", "linkedAccountId": "", "balance": 3000.0, "apr": 25.99 }
-		],
-		"loans": [{ "id": "loan_01", "name": "Car Loan", "balance": 12000.0, "apr": 6.5, "minimumPayment": 300.0 }],
-		"expenses": []
-	},
-	"allowedActions": { "canCreateAccounts": false, "canDeleteAccounts": false, "allowedAccountTypes": [] },
-	"winConditions": { "optimalDebtRouting": "avalanche" }
+  "title": "The Credit Limit",
+  "desc": "Ensure your spending doesn't exceed the card's maximum limit.",
+  "to-teach": "Keep balance below the credit limit.",
+  "subCategoryIndex": 0,
+  "forecastMonths": 3,
+  "hints": [
+    "The card limit is $1,000, but monthly flexible expenses total $1,200.",
+    "Reduce variable shopping to under $1,000 to prevent maxing out the card."
+  ],
+  "client": {
+    "name": "Alex",
+    "description": "Alex has a starter credit card with a strict $1,000 credit limit and risks running into rejected transactions.",
+    "prompt": "My credit card has a $1,000 ceiling, but my planned expenses keep crossing it. How do I keep it under the limit?",
+    "portraitId": "alex_01"
+  },
+  "startingState": {
+    "accounts": [
+      {
+        "id": "acc_01",
+        "name": "Main Checking",
+        "type": "checking",
+        "balance": 800,
+        "apy": 0
+      }
+    ],
+    "cards": [
+      {
+        "id": "card_01",
+        "name": "Starter Card",
+        "type": "credit",
+        "linkedAccountId": "",
+        "balance": 200,
+        "limit": 1000,
+        "apr": 24
+      }
+    ],
+    "income": [
+      {
+        "id": "inc_01",
+        "name": "Wages",
+        "amount": 2200,
+        "taxRate": 0,
+        "frequency": "monthly",
+        "routings": [
+          {
+            "destinationId": "acc_01",
+            "amount": 100,
+            "type": "percentage"
+          }
+        ]
+      }
+    ],
+    "expenses": [
+      {
+        "id": "exp_01",
+        "name": "Apartment Utilities",
+        "isFixed": true,
+        "requiresCard": false,
+        "defaultAmount": 300
+      },
+      {
+        "id": "exp_02",
+        "name": "Lifestyle Shopping",
+        "isFixed": false,
+        "minValue": 500,
+        "requiresCard": true,
+        "defaultAmount": 1000
+      }
+    ],
+    "transferRules": [
+      {
+        "id": "rule_01",
+        "sourceId": "acc_01",
+        "destinationId": "exp_01",
+        "amount": 300,
+        "type": "fixed"
+      },
+      {
+        "id": "rule_02",
+        "sourceId": "card_01",
+        "destinationId": "exp_02",
+        "amount": 1000,
+        "type": "fixed"
+      }
+    ]
+  },
+  "allowedActions": {
+    "canCreateAccounts": false,
+    "canDeleteAccounts": false,
+    "allowedAccountTypes": [],
+    "allowedCardTypes": []
+  },
+  "winConditions": {
+    "requiredAccounts": [
+      "checking"
+    ],
+    "maxDebtBalance": 1000
+  }
 }

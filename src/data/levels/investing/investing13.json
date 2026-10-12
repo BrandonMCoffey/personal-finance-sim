@@ -1,0 +1,95 @@
+{
+  "title": "Don't Go Broke",
+  "desc": "Balance investing heavily with maintaining a liquid emergency fund.",
+  "to-teach": "Maintain liquidity while investing excess funds.",
+  "subCategoryIndex": 4,
+  "forecastMonths": 6,
+  "hints": [
+    "Investing 100% of excess funds leaves zero cash buffer for emergencies.",
+    "Open a savings account, maintain at least $3,000 for emergencies, and direct only the remaining surplus to your brokerage."
+  ],
+  "client": {
+    "name": "Jordan",
+    "description": "Jordan pushed every spare dollar into stocks, leaving checking empty and risking overdrafts if an unexpected expense hits.",
+    "prompt": "I invested everything I had, and now my checking account is near zero! How do I balance liquid savings and market investing?",
+    "portraitId": "jordan_01"
+  },
+  "startingState": {
+    "accounts": [
+      {
+        "id": "acc_01",
+        "name": "Main Checking",
+        "type": "checking",
+        "balance": 1500,
+        "apy": 0
+      },
+      {
+        "id": "acc_02",
+        "name": "Investment Brokerage",
+        "type": "brokerage",
+        "balance": 5000,
+        "apy": 8
+      }
+    ],
+    "income": [
+      {
+        "id": "inc_01",
+        "name": "Salary",
+        "amount": 3600,
+        "taxRate": 15,
+        "frequency": "monthly",
+        "routings": [
+          {
+            "destinationId": "acc_01",
+            "amount": 100,
+            "type": "percentage"
+          }
+        ]
+      }
+    ],
+    "expenses": [
+      {
+        "id": "exp_01",
+        "name": "Core Living",
+        "isFixed": true,
+        "defaultAmount": 2200
+      }
+    ],
+    "goals": [
+      {
+        "id": "goal_01",
+        "name": "Liquid Emergency Reserve",
+        "targetAmount": 3000,
+        "targetMonths": 6
+      }
+    ],
+    "transferRules": [
+      {
+        "id": "rule_01",
+        "sourceId": "acc_01",
+        "destinationId": "exp_01",
+        "amount": 2200,
+        "type": "fixed"
+      }
+    ]
+  },
+  "allowedActions": {
+    "canCreateAccounts": true,
+    "canDeleteAccounts": false,
+    "maxNewAccounts": 1,
+    "allowedAccountTypes": [
+      "savings"
+    ],
+    "allowedCardTypes": []
+  },
+  "winConditions": {
+    "requiredAccounts": [
+      "savings",
+      "brokerage"
+    ],
+    "goalsFundedWithinMonths": {
+      "goalId": "goal_01",
+      "months": 6
+    }
+  }
+}

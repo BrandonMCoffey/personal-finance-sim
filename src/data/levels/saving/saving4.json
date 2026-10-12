@@ -1,0 +1,87 @@
+{
+  "title": "The New PC",
+  "desc": "Save up for a new computer over three months.",
+  "to-teach": "Reach a short-term savings target.",
+  "subCategoryIndex": 1,
+  "forecastMonths": 4,
+  "hints": [
+    "You need $1,200 in 3 months ($400/month).",
+    "Open a savings account and transfer $400 every month from checking."
+  ],
+  "client": {
+    "name": "Sam",
+    "description": "Sam has a part-time job and needs to systematically save for a workstation upgrade.",
+    "prompt": "I need $1,200 for a new PC in 3 months. Can you help me set up a dedicated account and monthly routing?",
+    "portraitId": "sam_01"
+  },
+  "startingState": {
+    "accounts": [
+      {
+        "id": "acc_01",
+        "name": "Checking Account",
+        "type": "checking",
+        "balance": 100,
+        "apy": 0
+      }
+    ],
+    "income": [
+      {
+        "id": "inc_01",
+        "name": "Part-Time Pay",
+        "amount": 1100,
+        "taxRate": 0,
+        "frequency": "monthly",
+        "routings": [
+          {
+            "destinationId": "acc_01",
+            "amount": 100,
+            "type": "percentage"
+          }
+        ]
+      }
+    ],
+    "expenses": [
+      {
+        "id": "exp_01",
+        "name": "Transport & Food",
+        "isFixed": true,
+        "defaultAmount": 600
+      }
+    ],
+    "goals": [
+      {
+        "id": "goal_01",
+        "name": "New PC",
+        "targetAmount": 1200,
+        "targetMonths": 3
+      }
+    ],
+    "transferRules": [
+      {
+        "id": "rule_01",
+        "sourceId": "acc_01",
+        "destinationId": "exp_01",
+        "amount": 600,
+        "type": "fixed"
+      }
+    ]
+  },
+  "allowedActions": {
+    "canCreateAccounts": true,
+    "canDeleteAccounts": false,
+    "maxNewAccounts": 1,
+    "allowedAccountTypes": [
+      "savings"
+    ],
+    "allowedCardTypes": []
+  },
+  "winConditions": {
+    "requiredAccounts": [
+      "savings"
+    ],
+    "goalsFundedWithinMonths": {
+      "goalId": "goal_01",
+      "months": 3
+    }
+  }
+}

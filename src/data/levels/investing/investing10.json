@@ -1,0 +1,76 @@
+{
+  "title": "Silent Tax",
+  "desc": "Observe how cash loses value when inflation outpaces bank APY.",
+  "to-teach": "Invest to beat the inflation rate.",
+  "subCategoryIndex": 3,
+  "forecastMonths": 12,
+  "hints": [
+    "With a 4% inflation rate, leaving all funds in 0% checking diminishes purchasing power over time.",
+    "Open a brokerage account yielding 8% APY and transfer idle reserves to outpace inflation."
+  ],
+  "client": {
+    "name": "Sarah",
+    "description": "Sarah keeps $10,000 sitting in checking, unaware that annual inflation is silently eroding her purchasing power.",
+    "prompt": "My savings aren't growing at all in checking, and rising prices make it feel like I have less money. How do I beat inflation?",
+    "portraitId": "sarah_01"
+  },
+  "startingState": {
+    "inflationRate": 4,
+    "accounts": [
+      {
+        "id": "acc_01",
+        "name": "Everyday Checking",
+        "type": "checking",
+        "balance": 10000,
+        "apy": 0
+      }
+    ],
+    "income": [
+      {
+        "id": "inc_01",
+        "name": "Salary",
+        "amount": 3500,
+        "taxRate": 15,
+        "frequency": "monthly",
+        "routings": [
+          {
+            "destinationId": "acc_01",
+            "amount": 100,
+            "type": "percentage"
+          }
+        ]
+      }
+    ],
+    "expenses": [
+      {
+        "id": "exp_01",
+        "name": "Living Expenses",
+        "isFixed": true,
+        "defaultAmount": 2200
+      }
+    ],
+    "transferRules": [
+      {
+        "id": "rule_01",
+        "sourceId": "acc_01",
+        "destinationId": "exp_01",
+        "amount": 2200,
+        "type": "fixed"
+      }
+    ]
+  },
+  "allowedActions": {
+    "canCreateAccounts": true,
+    "canDeleteAccounts": false,
+    "maxNewAccounts": 1,
+    "allowedAccountTypes": [
+      "brokerage"
+    ],
+    "allowedCardTypes": []
+  },
+  "winConditions": {
+    "requiredAccounts": [
+      "brokerage"
+    ]
+  }
+}

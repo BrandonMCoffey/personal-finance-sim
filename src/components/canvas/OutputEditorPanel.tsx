@@ -17,6 +17,7 @@ export function OutputEditorPanel({ selectedEdgeId, onClose }: OutputEditorPanel
 		cards,
 		loans,
 		retirements,
+		insurances,
 		updateIncomeRoute,
 		removeIncomeRoute,
 		reorderIncomeRoutes,
@@ -90,6 +91,7 @@ export function OutputEditorPanel({ selectedEdgeId, onClose }: OutputEditorPanel
 						expenses.find((e) => e.id === destId)?.name ||
 						loans.find((l) => l.id === destId)?.name ||
 						retirements.find((r) => r.id === destId)?.name ||
+						insurances.find((i) => i.id === destId)?.name ||
 						"Unknown";
 
 					const isGoal = goals.some((g) => g.id === destId);

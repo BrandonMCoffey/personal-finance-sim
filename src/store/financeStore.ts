@@ -3,12 +3,103 @@ import { create } from "zustand";
 // --- Type Definitions ---
 export type AccountType = "cash" | "checking" | "savings" | "credit" | "bank" | "brokerage";
 
+export interface TaxBracket {
+	rate: number;
+	upTo?: number;
+	max?: number;
+	min?: number;
+}
+
+export interface TaxDeduction {
+	name: string;
+	rate?: number;
+	limit?: number;
+	wageCap?: number;
+	amount?: number;
+	fixedAmount?: number;
+	type?: "flat" | "bracket" | "fixed" | "fica";
+	brackets?: TaxBracket[];
+}
+
+export function calculateIncomeTaxes(
+	grossAmount: number,
+	taxRateOrDeductions?: number | TaxDeduction[],
+	taxDeductionsParam?: TaxDeduction[]
+): {
+	totalTax: number;
+	netAmount: number;
+	netPay: number;
+	breakdown: { name: string; amount: number; rate?: number }[];
+} {
+	let taxDeductions: TaxDeduction[] | undefined;
+	let fallbackRate = 0;
+
+	if (Array.isArray(taxRateOrDeductions)) {
+		taxDeductions = taxRateOrDeductions;
+	} else {
+		fallbackRate = taxRateOrDeductions || 0;
+		taxDeductions = taxDeductionsParam;
+	}
+
+	if (taxDeductions && taxDeductions.length > 0) {
+		const breakdown: { name: string; amount: number; rate?: number }[] = [];
+		let totalTax = 0;
+
+		taxDeductions.forEach((deduction) => {
+			let deductionAmount = 0;
+			const fixedVal = deduction.fixedAmount ?? deduction.amount;
+
+			if (deduction.type === "bracket" || (deduction.brackets && deduction.brackets.length > 0)) {
+				const brackets = deduction.brackets || [];
+				let prevLimit = 0;
+				for (const bracket of brackets) {
+					const rawCap = bracket.upTo ?? bracket.max;
+					const minVal = bracket.min !== undefined ? (bracket.min > grossAmount * 4 ? bracket.min / 12 : bracket.min) : prevLimit;
+					const bracketCap =
+						rawCap !== undefined ? (rawCap > grossAmount * 4 ? rawCap / 12 : rawCap) : Infinity;
+
+					if (grossAmount > minVal) {
+						const taxableInBracket = Math.min(grossAmount - minVal, bracketCap - minVal);
+						if (taxableInBracket > 0) {
+							deductionAmount += taxableInBracket * (bracket.rate / 100);
+						}
+					}
+					prevLimit = bracketCap;
+					if (grossAmount <= bracketCap) break;
+				}
+				breakdown.push({ name: deduction.name, amount: deductionAmount });
+			} else if (fixedVal !== undefined) {
+				deductionAmount = fixedVal;
+				breakdown.push({ name: deduction.name, amount: deductionAmount });
+			} else if (deduction.rate !== undefined) {
+				const rawLimit = deduction.limit ?? deduction.wageCap;
+				const limit =
+					rawLimit !== undefined ? (rawLimit > grossAmount * 4 ? rawLimit / 12 : rawLimit) : Infinity;
+				const taxableBase = Math.min(grossAmount, limit);
+				deductionAmount = taxableBase * (deduction.rate / 100);
+				breakdown.push({ name: deduction.name, amount: deductionAmount, rate: deduction.rate });
+			}
+			totalTax += deductionAmount;
+		});
+
+		const netAmount = Math.max(0, grossAmount - totalTax);
+		return { totalTax, netAmount, netPay: netAmount, breakdown };
+	}
+
+	const totalTax = grossAmount * (fallbackRate / 100);
+	const netAmount = Math.max(0, grossAmount - totalTax);
+	const breakdown = fallbackRate > 0 ? [{ name: "Standard Tax", amount: totalTax, rate: fallbackRate }] : [];
+	return { totalTax, netAmount, netPay: netAmount, breakdown };
+}
+
 export interface AllowedActions {
 	canCreateAccounts: boolean;
 	canDeleteAccounts: boolean;
 	allowedAccountTypes: AccountType[];
 	maxNewAccounts?: number;
 	allowedCardTypes?: ("debit" | "credit")[];
+	lockExpenses?: boolean;
+	lockPreconfiguredRules?: boolean;
 }
 
 export interface Account {
@@ -27,6 +118,7 @@ export interface Card {
 	balance: number;
 	limit?: number;
 	apr?: number;
+	minimumPayment?: number;
 }
 
 export interface Loan {
@@ -35,6 +127,14 @@ export interface Loan {
 	balance: number;
 	apr: number;
 	minimumPayment: number;
+}
+
+export interface Insurance {
+	id: string;
+	name: string;
+	premium: number;
+	deductible: number;
+	coveredExpenseIds?: string[];
 }
 
 export interface Retirement {
@@ -58,6 +158,7 @@ export interface Income {
 	name: string;
 	amount: number;
 	taxRate?: number;
+	taxDeductions?: TaxDeduction[];
 	frequency: string;
 	routings: IncomeRoute[];
 }
@@ -83,12 +184,32 @@ export interface Client {
 	description: string;
 	prompt: string;
 	portraitId: string;
+	avatarEmoji?: string;
+	emotion?: string;
+	occupation?: string;
+	age?: number;
+	stageTitle?: string;
+	lifeEvent?: {
+		title: string;
+		description: string;
+		type: string;
+	};
+	characterId?: string;
+	stageId?: string;
+	dialogue?: {
+		greeting: string;
+		emotion: string;
+		planApproved: string;
+		planNeedsWork: string;
+	};
 }
 
 export interface Expense {
 	id: string;
 	name: string;
 	amount: number;
+	defaultAmount?: number;
+	maxAmount?: number;
 	isFixed: boolean;
 	minValue?: number;
 	requiresCard?: boolean;
@@ -108,6 +229,11 @@ export interface WinConditions {
 		description: string;
 	}[];
 	optimalDebtRouting?: "avalanche" | "snowball";
+	requireInsuranceCoverage?: boolean;
+	maxDebtBalance?: number;
+	debtPaidOff?: string[];
+	requireRetirementMatch?: boolean;
+	minRetirementBalance?: number;
 }
 
 // --- Store Interface ---
@@ -117,12 +243,15 @@ interface FinanceState {
 	levelId: string | null;
 	isAllUnlocked: boolean;
 	category: string;
+	toTeach?: string;
+	inflationRate: number;
 	hints: string[];
 	client: Client | null;
 	expenses: Expense[];
 	accounts: Account[];
 	cards: Card[];
 	loans: Loan[];
+	insurances: Insurance[];
 	retirements: Retirement[];
 	incomes: Income[];
 	goals: Goal[];
@@ -145,6 +274,8 @@ interface FinanceState {
 	removeCard: (cardId: string) => void;
 	updateCardLink: (cardId: string, accountId: string) => void;
 	addLoan: (name: string, balance: number, apr: number, minimumPayment: number) => void;
+	addInsurance: (name: string, premium: number, deductible: number, coveredExpenseIds?: string[]) => void;
+	removeInsurance: (insuranceId: string) => void;
 	addRetirement: (name: string, balance: number, expectedApy: number, employerMatchPercent: number) => void;
 
 	addIncomeRoute: (incomeId: string, destinationId: string, defaultAmount?: number, defaultType?: "fixed" | "percentage", isAuto?: boolean) => void;
@@ -162,7 +293,7 @@ interface FinanceState {
 		name: string,
 		amount: number,
 		isFixed: boolean,
-		options?: { minValue?: number; requiresCard?: boolean; frequency?: number; occurrenceMonth?: number }
+		options?: { maxAmount?: number; minValue?: number; requiresCard?: boolean; frequency?: number; occurrenceMonth?: number }
 	) => void;
 	addIncome: (name: string, amount: number, taxRate: number, frequency: string) => void;
 	applyTimeSkip: (newState: any) => void;
@@ -171,17 +302,20 @@ interface FinanceState {
 // --- Zustand Implementation ---
 export const useFinanceStore = create<FinanceState>()((set) => ({
 	currentScreen: "main_menu",
-	levelScores: JSON.parse(localStorage.getItem("finance_scores") || "{}"),
-	isAllUnlocked: localStorage.getItem("finance_unlocked") === "true",
+	levelScores: typeof localStorage !== "undefined" ? JSON.parse(localStorage.getItem("finance_scores") || "{}") : {},
+	isAllUnlocked: typeof localStorage !== "undefined" && localStorage.getItem("finance_unlocked") === "true",
 
 	levelId: null,
 	category: "budgeting",
+	toTeach: undefined,
+	inflationRate: 0,
 	hints: [],
 	client: null,
 	expenses: [],
 	accounts: [],
 	cards: [],
 	loans: [],
+	insurances: [],
 	retirements: [],
 	incomes: [],
 	goals: [],
@@ -197,13 +331,17 @@ export const useFinanceStore = create<FinanceState>()((set) => ({
 		set((state) => {
 			const currentHigh = state.levelScores[levelId] || 0;
 			const newScores = { ...state.levelScores, [levelId]: Math.max(currentHigh, score) };
-			localStorage.setItem("finance_scores", JSON.stringify(newScores));
+			if (typeof localStorage !== "undefined") {
+				localStorage.setItem("finance_scores", JSON.stringify(newScores));
+			}
 			return { levelScores: newScores };
 		}),
 
 	unlockAllLevels: () =>
 		set(() => {
-			localStorage.setItem("finance_unlocked", "true");
+			if (typeof localStorage !== "undefined") {
+				localStorage.setItem("finance_unlocked", "true");
+			}
 			return { isAllUnlocked: true };
 		}),
 
@@ -215,23 +353,55 @@ export const useFinanceStore = create<FinanceState>()((set) => ({
 		}),
 
 	loadLevel: (levelData: any) =>
-		set((_) => {
-			const rawAccounts = levelData.startingState?.accounts || [];
+		set(() => {
+			const rawAccounts = (levelData.startingState?.accounts || []).filter((a: any) => a.type !== "insurance");
 			const isChecking = (destId: string) => rawAccounts.some((a: any) => a.id === destId && a.type === "checking");
+
+			const rawInsurances: Insurance[] = [
+				...(levelData.startingState?.insurances || levelData.startingState?.insurance || []),
+				...(levelData.startingState?.accounts || []).filter((a: any) => a.type === "insurance"),
+				...(levelData.startingState?.expenses || []).filter((e: any) => e.type === "insurance" || e.premium !== undefined)
+			].map((ins: any, idx: number) => ({
+				id: ins.id || `ins_${idx + 1}`,
+				name: ins.name || "Insurance Policy",
+				premium: ins.premium !== undefined ? ins.premium : ins.amount || 100,
+				deductible: ins.deductible !== undefined ? ins.deductible : 500,
+				coveredExpenseIds: ins.coveredExpenseIds
+			}));
 
 			return {
 				levelId: levelData.id,
 				category: levelData.category || "budgeting",
+				toTeach: levelData["to-teach"] || levelData.toTeach || levelData.desc || "",
+				inflationRate: levelData.startingState?.inflationRate || 0,
+				insurances: rawInsurances,
 				hints: levelData.hints || [],
 				client: levelData.client || null,
-				expenses: (levelData.startingState?.expenses || []).map((exp: any) => ({
-					...exp,
-					requiresCard: exp.requiresCard || false,
-					frequency: exp.frequency || 1,
-					occurrenceMonth: exp.occurrenceMonth
-				})),
+				expenses: (levelData.startingState?.expenses || [])
+					.filter((exp: any) => exp.type !== "insurance" && exp.premium === undefined)
+					.map((exp: any) => {
+						const defaultAmount = exp.defaultAmount !== undefined ? exp.defaultAmount : (exp.amount || 0);
+						const maxAmount = exp.maxAmount !== undefined ? exp.maxAmount : defaultAmount * 1.5;
+						return {
+							...exp,
+							amount: defaultAmount,
+							defaultAmount,
+							maxAmount,
+							requiresCard: exp.requiresCard || false,
+							frequency: exp.frequency || 1,
+							occurrenceMonth: exp.occurrenceMonth
+						};
+					}),
 				accounts: rawAccounts,
-				cards: levelData.startingState?.cards || [],
+				cards: (levelData.startingState?.cards || []).map((card: any) => ({
+					...card,
+					minimumPayment:
+						card.minimumPayment !== undefined
+							? card.minimumPayment
+							: card.type === "credit" && card.balance > 0
+								? Math.min(card.balance, Math.max(25, card.balance * 0.025))
+								: 0
+				})),
 				loans: levelData.startingState?.loans || [],
 				retirements: (levelData.startingState?.retirements || []).map((ret: any) => ({
 					...ret,
@@ -240,6 +410,7 @@ export const useFinanceStore = create<FinanceState>()((set) => ({
 				incomes: (levelData.startingState?.income || []).map((inc: any) => ({
 					...inc,
 					taxRate: inc.taxRate || 0,
+					taxDeductions: inc.taxDeductions || [],
 					routings: inc.routings
 						? inc.routings.map((r: any) => ({
 								destinationId: r.destinationId,
@@ -327,6 +498,20 @@ export const useFinanceStore = create<FinanceState>()((set) => ({
 	addLoan: (name, balance, apr, minimumPayment) =>
 		set((state) => ({
 			loans: [...state.loans, { id: `loan_${Date.now()}`, name, balance, apr, minimumPayment }]
+		})),
+
+	addInsurance: (name, premium, deductible, coveredExpenseIds) =>
+		set((state) => ({
+			insurances: [
+				...state.insurances,
+				{ id: `ins_${Date.now()}`, name, premium, deductible, coveredExpenseIds }
+			]
+		})),
+
+	removeInsurance: (insuranceId) =>
+		set((state) => ({
+			insurances: state.insurances.filter((i) => i.id !== insuranceId),
+			transferRules: state.transferRules.filter((r) => r.destinationId !== insuranceId && r.sourceId !== insuranceId)
 		})),
 
 	addRetirement: (name, balance, expectedApy, employerMatchPercent) =>
@@ -430,10 +615,24 @@ export const useFinanceStore = create<FinanceState>()((set) => ({
 			return { transferRules: [...otherRules, ...newSourceRules] };
 		}),
 
-	addExpense: (name, amount, isFixed, options) =>
-		set((state) => ({
-			expenses: [...state.expenses, { id: `exp_${Date.now()}`, name, amount, isFixed, ...options }]
-		})),
+	addExpense: (name, defaultAmount, isFixed, options) =>
+		set((state) => {
+			const maxAmount = options?.maxAmount !== undefined ? options.maxAmount : defaultAmount * 1.5;
+			return {
+				expenses: [
+					...state.expenses,
+					{
+						id: `exp_${Date.now()}`,
+						name,
+						amount: defaultAmount,
+						defaultAmount,
+						maxAmount,
+						isFixed,
+						...options
+					}
+				]
+			};
+		}),
 
 	addIncome: (name, amount, taxRate, frequency) =>
 		set((state) => ({

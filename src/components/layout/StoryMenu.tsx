@@ -1,104 +1,320 @@
 import { useEffect, useState } from "react";
 import { useFinanceStore } from "../../store/financeStore";
 import { useStoryStore } from "../../store/storyStore";
-import { generateInitialCharacters, applyTimeSkipDeviation } from "../../engines/storyEngine";
+import { buildStoryLevel } from "../../engines/storyEngine";
+import { CHARACTER_DEFINITIONS } from "../../data/characters";
 
 export function StoryMenu() {
 	const { setCurrentScreen, loadLevel } = useFinanceStore();
-	const { roundNumber, characterPool, setActiveCharacter, addCharacterToPool } = useStoryStore();
-	const [choices, setChoices] = useState<any[]>([]);
+	const {
+		roundNumber,
+		currentRoundChoices,
+		clientStates,
+		totalClientsAdvised,
+		initStoryState,
+		selectCandidate,
+		resetStoryState
+	} = useStoryStore();
+
+	const [showRoster, setShowRoster] = useState(false);
+	const [confirmReset, setConfirmReset] = useState(false);
 
 	useEffect(() => {
-		if (characterPool.length === 0) {
-			const initialChars = generateInitialCharacters();
-			initialChars.forEach(addCharacterToPool);
-			setChoices(initialChars);
-		} else {
-			const returningChar = characterPool[characterPool.length - 1];
-			const newChars = generateInitialCharacters().slice(0, 2);
+		initStoryState();
+	}, [initStoryState]);
 
-			const yearsSkipped = Math.floor(Math.random() * 4) + 2;
-			const deviatedChar = applyTimeSkipDeviation(returningChar, yearsSkipped);
+	const handleSelectCandidate = (candidateChoice: any) => {
+		const { character, stage, clientState } = candidateChoice;
 
-			setChoices([deviatedChar, ...newChars]);
-		}
-	}, [characterPool, addCharacterToPool]);
+		// Record the selection & update skip counts for the other offered candidates
+		selectCandidate(character.id);
 
-	const handleSelectCharacter = (character: any) => {
-		setActiveCharacter(character.id);
+		// Build the rich level data with stage finances, goals, life events, and dialogue
+		const levelData = buildStoryLevel(character, stage, clientState, roundNumber);
 
-		if (!characterPool.some((c) => c.id === character.id)) {
-			addCharacterToPool(character);
-		}
-
-		loadLevel({
-			levelId: `story_${character.id}_${roundNumber}`,
-			category: "story",
-			forecastMonths: 12,
-			client: {
-				name: character.name,
-				description: `Age: ${character.age} | Family: ${character.familyState} | Trait: ${character.traits.join(", ")}`,
-				prompt: character.prompt,
-				portraitId: character.portraitId
-			},
-			startingState: character.savedFinancialState,
-			allowedActions: {
-				canCreateAccounts: true,
-				canDeleteAccounts: true,
-				allowedAccountTypes: ["checking", "savings", "brokerage"],
-				allowedCardTypes: ["debit", "credit"]
-			},
-			winConditions: { requiredAccounts: [] }
-		});
-
+		// Load level into finance store and launch game
+		loadLevel(levelData);
 		setCurrentScreen("game");
 	};
 
 	return (
-		<div className="w-full h-full bg-gray-50 flex flex-col overflow-y-auto">
-			<header className="bg-white border-b py-8 px-12 shrink-0 relative">
-				<button onClick={() => setCurrentScreen("main_menu")} className="absolute top-8 right-12 text-sm font-bold text-gray-500 hover:text-gray-800">
-					← Main Menu
-				</button>
-				<h1 className="text-3xl font-bold text-purple-900 mb-2">Advisory Firm - Round {roundNumber}</h1>
-				<p className="text-gray-600">Select a client to advise. The relationships you build here will span years.</p>
+		<div className="w-full h-full bg-slate-50 flex flex-col overflow-y-auto">
+			{/* Top Advisory Firm Navigation & Header */}
+			<header className="bg-white border-b border-slate-200 py-6 px-8 sm:px-12 shrink-0 relative shadow-sm">
+				<div className="max-w-6xl mx-auto flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+					<div>
+						<div className="flex items-center gap-2 mb-1">
+							<span className="text-2xl">🏛️</span>
+							<h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
+								Beacon Wealth Advisory
+							</h1>
+							<span className="ml-2 text-xs font-bold px-2.5 py-1 rounded-full bg-purple-100 text-purple-800 uppercase tracking-wide">
+								Round {roundNumber}
+							</span>
+						</div>
+						<p className="text-slate-600 text-sm">
+							Review client intake inquiries. Every consultation you accept shapes a life; ignoring clients may cause them to seek advice elsewhere.
+						</p>
+					</div>
+
+					<div className="flex items-center gap-3 self-end sm:self-auto">
+						<button
+							onClick={() => setShowRoster(!showRoster)}
+							className="px-3 py-2 text-xs font-bold text-slate-600 bg-slate-100 hover:bg-slate-200 rounded-lg transition-colors flex items-center gap-1.5"
+						>
+							<span>👥</span>
+							{showRoster ? "Hide Roster" : "Client Roster"}
+						</button>
+
+						{confirmReset ? (
+							<div className="flex items-center gap-1.5 bg-red-50 border border-red-200 p-1 rounded-lg">
+								<span className="text-xs text-red-700 px-1 font-semibold">Reset Career?</span>
+								<button
+									onClick={() => {
+										resetStoryState();
+										setConfirmReset(false);
+									}}
+									className="px-2 py-1 text-xs font-bold bg-red-600 text-white rounded hover:bg-red-700 transition-colors"
+								>
+									Yes
+								</button>
+								<button
+									onClick={() => setConfirmReset(false)}
+									className="px-2 py-1 text-xs text-slate-600 hover:text-slate-800"
+								>
+									Cancel
+								</button>
+							</div>
+						) : (
+							<button
+								onClick={() => setConfirmReset(true)}
+								className="px-3 py-2 text-xs font-bold text-slate-500 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+							>
+								Restart Career
+							</button>
+						)}
+
+						<button
+							onClick={() => setCurrentScreen("main_menu")}
+							className="px-4 py-2 text-xs font-bold text-white bg-slate-800 hover:bg-slate-900 rounded-lg transition-colors shadow-sm"
+						>
+							← Main Menu
+						</button>
+					</div>
+				</div>
+
+				{/* Career Snapshot Counter */}
+				<div className="max-w-6xl mx-auto mt-4 pt-4 border-t border-slate-100 flex items-center gap-6 text-xs text-slate-500">
+					<div>
+						<span className="font-semibold text-slate-700">Total Consultations Completed: </span>
+						<span className="font-bold text-purple-700 text-sm">{totalClientsAdvised}</span>
+					</div>
+					<div>
+						<span className="font-semibold text-slate-700">Advisory Round: </span>
+						<span className="font-bold text-slate-900">{roundNumber}</span>
+					</div>
+					<div className="hidden sm:block text-slate-400">
+						• Clients return every few years as their lives evolve
+					</div>
+				</div>
 			</header>
 
-			<main className="flex-1 p-12 max-w-6xl mx-auto w-full">
-				<div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-					{choices.map((char) => (
-						<div
-							key={char.id}
-							className="bg-white p-6 rounded-xl border-2 border-purple-100 hover:border-purple-400 hover:shadow-lg cursor-pointer transition-all flex flex-col"
-							onClick={() => handleSelectCharacter(char)}
-						>
-							<div className="flex items-center gap-4 mb-4 border-b pb-4">
-								<div className="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center text-2xl">👤</div>
-								<div>
-									<h2 className="text-xl font-bold text-gray-900">
-										{char.name}, {char.age}
-									</h2>
-									<div className="flex gap-2 mt-1">
-										{char.traits.map((trait: string) => (
-											<span key={trait} className="bg-gray-100 text-gray-600 text-[10px] font-bold px-2 py-0.5 rounded uppercase">
-												{trait}
-											</span>
-										))}
-									</div>
-								</div>
-							</div>
-
-							<div className="bg-purple-50 p-3 rounded-lg border border-purple-100 italic text-sm text-purple-900 mb-6 flex-1 relative">
-								<span className="absolute -top-2 -left-1 text-2xl text-purple-300">"</span>
-								{char.prompt}
-							</div>
-
-							<button className="w-full py-2.5 bg-purple-600 text-white font-bold rounded hover:bg-purple-700 transition-colors text-sm">
-								Accept Client
+			{/* Main Content Area */}
+			<main className="flex-1 p-6 sm:p-10 max-w-6xl mx-auto w-full flex flex-col gap-8">
+				{/* Client Roster Overlay if toggled */}
+				{showRoster && (
+					<section className="bg-white border-2 border-slate-200 rounded-2xl p-6 shadow-sm">
+						<div className="flex justify-between items-center mb-4">
+							<h2 className="text-lg font-bold text-slate-900 flex items-center gap-2">
+								<span>📂</span> Master Client Directory ({CHARACTER_DEFINITIONS.length} Characters)
+							</h2>
+							<button
+								onClick={() => setShowRoster(false)}
+								className="text-xs font-semibold text-slate-500 hover:text-slate-800"
+							>
+								✕ Close
 							</button>
 						</div>
-					))}
-				</div>
+						<div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-3">
+							{CHARACTER_DEFINITIONS.map((char) => {
+								const s = clientStates[char.id];
+								const stageIdx = s ? s.currentStageIndex : 0;
+								const stage = char.stages[Math.min(stageIdx, char.stages.length - 1)];
+
+								return (
+									<div
+										key={char.id}
+										className={`p-3 rounded-xl border text-xs flex flex-col justify-between ${
+											s?.isLost
+												? "bg-slate-100 border-slate-200 opacity-60 text-slate-400"
+												: s?.timesHelped && s.timesHelped > 0
+												? "bg-emerald-50/60 border-emerald-200 text-emerald-950"
+												: "bg-white border-slate-200 text-slate-800"
+										}`}
+									>
+										<div>
+											<div className="flex items-center gap-2 mb-1.5">
+												<span className="text-xl">{char.avatarEmoji}</span>
+												<div>
+													<div className="font-bold">{char.name}</div>
+													<div className="text-[10px] text-slate-500">Age {stage?.age || 20}</div>
+												</div>
+											</div>
+											<div className="text-[11px] text-slate-600 font-medium mb-1 line-clamp-1">
+												{stage?.occupation || "Client"}
+											</div>
+										</div>
+
+										<div className="pt-2 border-t border-slate-200/50 flex justify-between items-center text-[10px]">
+											{s?.isLost ? (
+												<span className="text-red-500 font-bold">Left Firm</span>
+											) : s?.cooldownRoundsRemaining ? (
+												<span className="text-amber-700 font-semibold">Away ({s.cooldownRoundsRemaining}r)</span>
+											) : s?.timesHelped ? (
+												<span className="text-emerald-700 font-bold">{s.timesHelped}x Helped</span>
+											) : (
+												<span className="text-slate-500 font-medium">Prospective</span>
+											)}
+											<span className="text-slate-400">
+												Ch {Math.min((s?.currentStageIndex || 0) + 1, char.stages.length)}/{char.stages.length}
+											</span>
+										</div>
+									</div>
+								);
+							})}
+						</div>
+					</section>
+				)}
+
+				{/* Available Inquiries for This Round */}
+				<section>
+					<div className="flex items-center justify-between mb-4">
+						<div>
+							<h2 className="text-xl font-bold text-slate-900">Current Client Inquiries</h2>
+							<p className="text-xs text-slate-500">
+								Choose one client case to consult with this round. Unchosen clients may feel ignored.
+							</p>
+						</div>
+					</div>
+
+					<div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+						{currentRoundChoices.map((candidate) => {
+							const {
+								character,
+								stage,
+								snippet,
+								relationshipStatus,
+								relationshipNote,
+								primaryWorry,
+								monthlyIncome,
+								monthlyExpenses
+							} = candidate;
+
+							return (
+								<div
+									key={character.id}
+									className="bg-white rounded-2xl border-2 border-slate-200 hover:border-purple-500 hover:shadow-xl transition-all duration-200 flex flex-col overflow-hidden group cursor-pointer"
+									onClick={() => handleSelectCandidate(candidate)}
+								>
+									{/* Top Header Card */}
+									<div className="p-6 border-b border-slate-100 flex flex-col gap-3">
+										<div className="flex justify-between items-start">
+											<div className="flex items-center gap-3">
+												<div className="w-14 h-14 bg-purple-50 rounded-2xl flex items-center justify-center text-3xl shadow-inner border border-purple-100 group-hover:scale-105 transition-transform">
+													{character.avatarEmoji}
+												</div>
+												<div>
+													<h3 className="text-lg font-extrabold text-slate-900 group-hover:text-purple-700 transition-colors">
+														{character.name}
+													</h3>
+													<p className="text-xs text-slate-500 font-medium">
+														Age {stage.age} • {stage.occupation}
+													</p>
+												</div>
+											</div>
+										</div>
+
+										{/* Status Badges */}
+										<div className="flex flex-wrap items-center gap-1.5">
+											{relationshipStatus === "returning_helped" && (
+												<span className="bg-emerald-50 text-emerald-800 border border-emerald-200 text-[10px] font-bold px-2 py-0.5 rounded-full flex items-center gap-1">
+													<span>🤝</span> {relationshipNote}
+												</span>
+											)}
+											{relationshipStatus === "returning_skipped" && (
+												<span className="bg-amber-50 text-amber-800 border border-amber-200 text-[10px] font-bold px-2 py-0.5 rounded-full flex items-center gap-1">
+													<span>⏳</span> {relationshipNote}
+												</span>
+											)}
+											{relationshipStatus === "new" && (
+												<span className="bg-blue-50 text-blue-800 border border-blue-200 text-[10px] font-bold px-2 py-0.5 rounded-full flex items-center gap-1">
+													<span>🌟</span> New Inquiry
+												</span>
+											)}
+
+											<span className="bg-purple-50 text-purple-700 border border-purple-200 text-[10px] font-bold px-2 py-0.5 rounded-full">
+												Mood: {stage.dialogue.emotion}
+											</span>
+										</div>
+									</div>
+
+									{/* Life Event Callout if applicable */}
+									{stage.lifeEvent && (
+										<div className="mx-6 mt-4 p-3 bg-amber-50/70 border border-amber-200 rounded-xl text-xs">
+											<div className="font-bold text-amber-950 flex items-center gap-1 mb-1">
+												<span>⚡</span> {stage.lifeEvent.title}
+											</div>
+											<p className="text-[11px] text-amber-900/90 leading-relaxed">
+												{stage.lifeEvent.description}
+											</p>
+										</div>
+									)}
+
+									{/* Narrative First-Person Message */}
+									<div className="p-6 flex-1 flex flex-col justify-between">
+										<div>
+											<div className="text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-2">
+												Why they're reaching out:
+											</div>
+											<div className="bg-slate-50 p-4 rounded-xl border border-slate-100 text-xs text-slate-700 italic leading-relaxed relative">
+												<span className="text-xl text-purple-300 font-serif leading-none mr-1 select-none">“</span>
+												{snippet}
+												<span className="text-xl text-purple-300 font-serif leading-none ml-1 select-none">”</span>
+											</div>
+										</div>
+
+										{/* Financial Snapshot */}
+										<div className="mt-5 pt-4 border-t border-slate-100">
+											<div className="text-[10px] text-purple-700 font-bold mb-1.5 flex items-center gap-1">
+												<span>🎯</span> Case Focus: {primaryWorry}
+											</div>
+											<div className="grid grid-cols-2 gap-2 text-xs">
+												<div className="bg-slate-50 p-2.5 rounded-lg">
+													<div className="text-[10px] text-slate-500 font-medium">Est. Income</div>
+													<div className="font-bold text-emerald-700">${monthlyIncome.toFixed(0)}/mo</div>
+												</div>
+												<div className="bg-slate-50 p-2.5 rounded-lg">
+													<div className="text-[10px] text-slate-500 font-medium">Fixed/Core Outflows</div>
+													<div className="font-bold text-rose-600">${monthlyExpenses.toFixed(0)}/mo</div>
+												</div>
+											</div>
+										</div>
+									</div>
+
+									{/* Action Footer */}
+									<div className="p-6 pt-0">
+										<button
+											className="w-full py-3 bg-purple-600 hover:bg-purple-700 text-white font-bold rounded-xl transition-colors text-sm shadow-md shadow-purple-200 flex items-center justify-center gap-2 group-hover:bg-purple-700"
+										>
+											<span>Consult with {character.name.split(" ")[0]}</span>
+											<span>→</span>
+										</button>
+									</div>
+								</div>
+							);
+						})}
+					</div>
+				</section>
 			</main>
 		</div>
 	);

@@ -1,0 +1,92 @@
+{
+  "title": "The Minimum Trap",
+  "desc": "Observe how paying only the minimum causes debt to grow.",
+  "to-teach": "Pay more than the minimum payment.",
+  "subCategoryIndex": 1,
+  "forecastMonths": 6,
+  "hints": [
+    "The minimum payment of $50 barely covers 25% APR finance charges.",
+    "Increase the monthly transfer from Checking to the Card from $50 up to $250 to actively reduce principal."
+  ],
+  "client": {
+    "name": "Taylor",
+    "description": "Taylor has been paying the mandatory minimum payment for months, but the balance barely changes due to high interest.",
+    "prompt": "I pay the $50 minimum every single month, but my $2,000 balance isn't moving! What do I need to change?",
+    "portraitId": "taylor_01"
+  },
+  "startingState": {
+    "accounts": [
+      {
+        "id": "acc_01",
+        "name": "Checking Account",
+        "type": "checking",
+        "balance": 600,
+        "apy": 0
+      }
+    ],
+    "cards": [
+      {
+        "id": "card_01",
+        "name": "High APR Card",
+        "type": "credit",
+        "linkedAccountId": "",
+        "balance": 2000,
+        "limit": 3000,
+        "apr": 25
+      }
+    ],
+    "income": [
+      {
+        "id": "inc_01",
+        "name": "Paycheck",
+        "amount": 2400,
+        "taxRate": 0,
+        "frequency": "monthly",
+        "routings": [
+          {
+            "destinationId": "acc_01",
+            "amount": 100,
+            "type": "percentage"
+          }
+        ]
+      }
+    ],
+    "expenses": [
+      {
+        "id": "exp_01",
+        "name": "Living Costs",
+        "isFixed": true,
+        "requiresCard": false,
+        "defaultAmount": 1600
+      }
+    ],
+    "transferRules": [
+      {
+        "id": "rule_01",
+        "sourceId": "acc_01",
+        "destinationId": "exp_01",
+        "amount": 1600,
+        "type": "fixed"
+      },
+      {
+        "id": "rule_02",
+        "sourceId": "acc_01",
+        "destinationId": "card_01",
+        "amount": 50,
+        "type": "fixed"
+      }
+    ]
+  },
+  "allowedActions": {
+    "canCreateAccounts": false,
+    "canDeleteAccounts": false,
+    "allowedAccountTypes": [],
+    "allowedCardTypes": []
+  },
+  "winConditions": {
+    "requiredAccounts": [
+      "checking"
+    ],
+    "maxDebtBalance": 1000
+  }
+}

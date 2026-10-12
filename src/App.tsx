@@ -27,18 +27,34 @@ export default function App() {
 		expenses,
 		cards,
 		loans,
+		insurances,
 		retirements,
-		winConditions
+		inflationRate,
+		winConditions,
+		forecastMonths
 	} = useFinanceStore();
 
-	const { advanceRound, activeCharacterId, updateCharacterState } = useStoryStore();
+	const { advanceRound, activeCharacterId, completeClientSession } = useStoryStore();
 	const [isModalOpen, setIsModalOpen] = useState(false);
 	const [report, setReport] = useState<ValidationReport | null>(null);
 
 	const primaryGoal = goals.length > 0 ? goals[0].name : "No active goals";
 
 	const handleSubmitPlan = () => {
-		const results = evaluatePlan(accounts, incomes, transferRules, goals, expenses, cards, loans, retirements, winConditions);
+		const results = evaluatePlan(
+			accounts,
+			incomes,
+			transferRules,
+			goals,
+			expenses,
+			cards,
+			loans,
+			retirements,
+			winConditions,
+			insurances,
+			inflationRate,
+			forecastMonths
+		);
 		setReport(results);
 		setIsModalOpen(true);
 	};
@@ -47,16 +63,20 @@ export default function App() {
 
 	const handleContinue = () => {
 		if (category === "story" && activeCharacterId) {
-			updateCharacterState(activeCharacterId, {
-				accounts,
-				incomes,
-				transferRules,
-				goals,
-				expenses,
-				cards,
-				loans,
-				retirements
-			});
+			completeClientSession(
+				activeCharacterId,
+				{
+					accounts,
+					incomes,
+					transferRules,
+					goals,
+					expenses,
+					cards,
+					loans,
+					retirements
+				},
+				report?.score || 100
+			);
 			advanceRound();
 			setIsModalOpen(false);
 			setCurrentScreen("story");
@@ -81,15 +101,22 @@ export default function App() {
 
 			<header className="flex justify-between items-center p-4 bg-white border-b shadow-sm h-16 shrink-0 relative z-10">
 				<div>
-					<h1 className="text-xl font-bold">Client: {client ? client.name : "None"}</h1>
+					<h1 className="text-xl font-bold flex items-center gap-2">
+						{client?.avatarEmoji && <span>{client.avatarEmoji}</span>}
+						<span>Client: {client ? client.name : "None"}</span>
+					</h1>
 					<p className="text-sm text-gray-600">Goal: {primaryGoal}</p>
 				</div>
 				<div className="flex gap-4 items-center">
 					<button
-						onClick={() => setCurrentScreen(category === "endless" ? "main_menu" : "levels")}
+						onClick={() =>
+							setCurrentScreen(
+								category === "endless" ? "main_menu" : category === "story" ? "story" : "levels"
+							)
+						}
 						className="text-sm text-gray-500 hover:text-gray-800 font-medium"
 					>
-						← Back to {category === "endless" ? "Menu" : "Levels"}
+						← Back to {category === "endless" ? "Menu" : category === "story" ? "Story Menu" : "Levels"}
 					</button>
 
 					{category !== "endless" && (

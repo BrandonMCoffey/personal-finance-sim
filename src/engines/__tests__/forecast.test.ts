@@ -1,0 +1,245 @@
+import { describe, it, expect } from "vitest";
+import { generateForecast } from "../forecast";
+import type { Account, Income, TransferRule, Expense, Card, Loan, Insurance } from "../../store/financeStore";
+
+describe("forecast engine", () => {
+	it("does not prematurely wipe non-cash accounts on account-to-account transfer rules", () => {
+		const accounts: Account[] = [
+			{ id: "checking", name: "Checking", type: "checking", balance: 1000, apy: 0 },
+			{ id: "savings", name: "Savings", type: "savings", balance: 500, apy: 2.0 }
+		];
+		const rules: TransferRule[] = [
+			{ id: "r1", sourceId: "checking", destinationId: "savings", amount: 100, type: "fixed" }
+		];
+
+		const snapshots = generateForecast(accounts, [], rules, [], [], [], [], [], 1);
+		const month1 = snapshots[0];
+
+		// Checking started at 1000, transferred 100 -> should be 900, not 0!
+		expect(month1.accountBalances["checking"]).toBe(900);
+		// Savings started at 500, received 100 + interest
+		expect(month1.accountBalances["savings"]).toBeGreaterThanOrEqual(600);
+	});
+
+	it("sweeps physical cash into non-cash accounts at start", () => {
+		const accounts: Account[] = [
+			{ id: "cash_wallet", name: "Wallet Cash", type: "cash", balance: 300, apy: 0 },
+			{ id: "checking", name: "Checking", type: "checking", balance: 500, apy: 0 }
+		];
+		const rules: TransferRule[] = [
+			{ id: "r_dep", sourceId: "cash_wallet", destinationId: "checking", amount: 100, type: "percentage" }
+		];
+
+		const snapshots = generateForecast(accounts, [], rules, [], [], [], [], [], 1);
+		const month1 = snapshots[0];
+
+		expect(month1.accountBalances["cash_wallet"]).toBe(0);
+		expect(month1.accountBalances["checking"]).toBe(800);
+	});
+
+	it("caps debt balance at zero and stops draining source accounts once debt is paid off", () => {
+		const accounts: Account[] = [
+			{ id: "checking", name: "Checking", type: "checking", balance: 1000, apy: 0 }
+		];
+		const loans: Loan[] = [
+			{ id: "small_loan", name: "Small Loan", balance: 150, apr: 0, minimumPayment: 50 }
+		];
+		const rules: TransferRule[] = [
+			// User sends $100/mo to a $150 loan over 3 months ($300 total)
+			{ id: "r_pay", sourceId: "checking", destinationId: "small_loan", amount: 100, type: "fixed" }
+		];
+
+		const snapshots = generateForecast(accounts, [], rules, [], [], [], loans, [], 3);
+		const m1 = snapshots[0];
+		const m2 = snapshots[1];
+		const m3 = snapshots[2];
+
+		// Month 1: owes 150, pays 100 -> remaining 50. Checking: 1000 - 100 = 900
+		expect(m1.loanBalances["small_loan"]).toBe(50);
+		expect(m1.accountBalances["checking"]).toBe(900);
+
+		// Month 2: owes 50, rule asks for 100 -> only accepts 50! Remaining loan = 0. Checking: 900 - 50 = 850
+		expect(m2.loanBalances["small_loan"]).toBe(0);
+		expect(m2.accountBalances["checking"]).toBe(850);
+
+		// Month 3: loan is 0 -> accepts 0. Checking remains 850, loan remains 0 (not negative!)
+		expect(m3.loanBalances["small_loan"]).toBe(0);
+		expect(m3.accountBalances["checking"]).toBe(850);
+	});
+
+	it("calculates insurance percentage funding based on net take-home pay", () => {
+		const incomes: Income[] = [
+			{
+				id: "inc1",
+				name: "Salary",
+				amount: 4000,
+				taxRate: 20, // Net pay: 3200
+				frequency: "monthly",
+				routings: [
+					// 5% of net pay = $160
+					{ destinationId: "health_ins", amount: 5, type: "percentage" },
+					{ destinationId: "checking", amount: 95, type: "percentage" }
+				]
+			}
+		];
+		const accounts: Account[] = [
+			{ id: "checking", name: "Checking", type: "checking", balance: 0, apy: 0 }
+		];
+		const insurances: Insurance[] = [
+			{ id: "health_ins", name: "Health Insurance", premium: 150, deductible: 500 }
+		];
+
+		const snapshots = generateForecast(accounts, incomes, [], [], [], [], [], [], 1, insurances);
+		const m1 = snapshots[0];
+
+		// Premium is $150, 5% of $3200 net pay is $160 -> policy must be active!
+		expect(m1.insuranceCoverage["health_ins"]).toBe(true);
+	});
+
+	it("records exact debtPayments in snapshot", () => {
+		const accounts: Account[] = [
+			{ id: "checking", name: "Checking", type: "checking", balance: 500, apy: 0 }
+		];
+		const cards: Card[] = [
+			{ id: "card1", name: "Credit Card", type: "credit", linkedAccountId: "checking", balance: 400, apr: 15, minimumPayment: 25 }
+		];
+		const rules: TransferRule[] = [
+			{ id: "r1", sourceId: "checking", destinationId: "card1", amount: 100, type: "fixed" }
+		];
+
+		const snapshots = generateForecast(accounts, [], rules, [], [], cards, [], [], 1);
+		expect(snapshots[0].debtPayments["card1"]).toBe(100);
+	});
+
+	it("allows variable expenses to accept funding greater than base amount up to maxAmount", () => {
+		const accounts: Account[] = [
+			{ id: "checking", name: "Checking", type: "checking", balance: 1000, apy: 0 }
+		];
+		const expenses: Expense[] = [
+			// Base amount: 400, maxAmount: 600 (1.5x)
+			{ id: "groceries", name: "Groceries", amount: 400, isFixed: false, minValue: 200 }
+		];
+		// Rule transfers $550 (more than $400 base amount)
+		const rules: TransferRule[] = [
+			{ id: "r_groceries", sourceId: "checking", destinationId: "groceries", amount: 550, type: "fixed" }
+		];
+
+		const snapshots = generateForecast(accounts, [], rules, [], expenses, [], [], [], 1);
+		const m1 = snapshots[0];
+
+		// Should accept the full $550 because it is below the 1.5x maxAmount ($600)
+		expect(m1.expenseProgress["groceries"]).toBe(550);
+		// Checking account should be deducted by the full $550
+		expect(m1.accountBalances["checking"]).toBe(450);
+	});
+
+	it("allows adding more or less money to an expense, capping at maxAmount (1.5 * defaultAmount)", () => {
+		const accounts: Account[] = [
+			{ id: "checking", name: "Checking", type: "checking", balance: 2500, apy: 0 }
+		];
+		const expenses: Expense[] = [
+			// defaultAmount of $1200 -> maxAmount defaults to $1800
+			{ id: "rent", name: "Rent", amount: 1200, defaultAmount: 1200, isFixed: true }
+		];
+		// 1. Can add more money ($1500, between default $1200 and max $1800)
+		const rules1: TransferRule[] = [
+			{ id: "r_rent", sourceId: "checking", destinationId: "rent", amount: 1500, type: "fixed" }
+		];
+		const snapshots1 = generateForecast(accounts, [], rules1, [], expenses, [], [], [], 1);
+		expect(snapshots1[0].expenseProgress["rent"]).toBe(1500);
+		expect(snapshots1[0].accountBalances["checking"]).toBe(1000);
+
+		// 2. Beyond maxAmount ($2000 > $1800) -> capped at maxAmount ($1800)
+		const rules2: TransferRule[] = [
+			{ id: "r_rent", sourceId: "checking", destinationId: "rent", amount: 2000, type: "fixed" }
+		];
+		const snapshots2 = generateForecast(accounts, [], rules2, [], expenses, [], [], [], 1);
+		expect(snapshots2[0].expenseProgress["rent"]).toBe(1800);
+		expect(snapshots2[0].accountBalances["checking"]).toBe(700);
+	});
+
+	it("routes 100% when route.isAuto is true and income has a single output", () => {
+		const accounts: Account[] = [
+			{ id: "checking", name: "Checking", type: "checking", balance: 0, apy: 0 }
+		];
+		const incomes: Income[] = [
+			{
+				id: "salary",
+				name: "Salary",
+				amount: 3000,
+				taxRate: 0,
+				frequency: "monthly",
+				routings: [
+					{ destinationId: "checking", amount: 100, type: "percentage", isAuto: true }
+				]
+			}
+		];
+		const expenses: Expense[] = [
+			{ id: "groceries", name: "Groceries", amount: 400, isFixed: false }
+		];
+		const rules: TransferRule[] = [
+			{ id: "r_groceries", sourceId: "checking", destinationId: "groceries", amount: 550, type: "fixed" }
+		];
+
+		const snapshots = generateForecast(accounts, incomes, rules, [], expenses, [], [], [], 1);
+		const m1 = snapshots[0];
+
+		// Checking received 100% ($3000) from auto income routing, paid $550 for groceries -> ending at $2450
+		expect(m1.expenseProgress["groceries"]).toBe(550);
+		expect(m1.accountBalances["checking"]).toBe(2450);
+	});
+
+	it("routes exact calculated required amount when route.isAuto is true with multiple outputs", () => {
+		const accounts: Account[] = [
+			{ id: "checking", name: "Checking", type: "checking", balance: 0, apy: 0 },
+			{ id: "savings", name: "Savings", type: "savings", balance: 0, apy: 0 }
+		];
+		const incomes: Income[] = [
+			{
+				id: "salary",
+				name: "Salary",
+				amount: 3000,
+				taxRate: 0,
+				frequency: "monthly",
+				routings: [
+					// Auto route to checking with required sum of $550
+					{ destinationId: "checking", amount: 550, type: "fixed", isAuto: true },
+					// Remaining routes to savings
+					{ destinationId: "savings", amount: 100, type: "percentage" }
+				]
+			}
+		];
+		const expenses: Expense[] = [
+			{ id: "groceries", name: "Groceries", amount: 400, isFixed: false }
+		];
+		const rules: TransferRule[] = [
+			{ id: "r_groceries", sourceId: "checking", destinationId: "groceries", amount: 550, type: "fixed" }
+		];
+
+		const snapshots = generateForecast(accounts, incomes, rules, [], expenses, [], [], [], 1);
+		const m1 = snapshots[0];
+
+		// Checking received exactly $550 from auto income routing, paid $550 for groceries, ending at $0
+		expect(m1.expenseProgress["groceries"]).toBe(550);
+		expect(m1.accountBalances["checking"]).toBe(0);
+		// Savings received the remaining $2450 ($3000 - $550)
+		expect(m1.accountBalances["savings"]).toBe(2450);
+	});
+
+	it("transfers 100% when balance node has a single auto transfer rule", () => {
+		const accounts: Account[] = [
+			{ id: "source_acc", name: "Source Account", type: "checking", balance: 1000, apy: 0 },
+			{ id: "dest_acc", name: "Dest Checking", type: "checking", balance: 0, apy: 0 }
+		];
+		const rules: TransferRule[] = [
+			{ id: "r_auto", sourceId: "source_acc", destinationId: "dest_acc", amount: 100, type: "percentage", isAuto: true }
+		];
+
+		const snapshots = generateForecast(accounts, [], rules, [], [], [], [], [], 1);
+		const m1 = snapshots[0];
+
+		// Source account transfers 100% ($1000) to dest checking
+		expect(m1.accountBalances["source_acc"]).toBe(0);
+		expect(m1.accountBalances["dest_acc"]).toBe(1000);
+	});
+});

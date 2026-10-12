@@ -1,0 +1,100 @@
+{
+  "title": "Needs First",
+  "desc": "Allocate 50% of your income strictly to essential needs.",
+  "to-teach": "Allocate exactly fifty percent to needs.",
+  "subCategoryIndex": 3,
+  "forecastMonths": 3,
+  "hints": [
+    "Your net monthly income is $3,000.",
+    "Limit your total essential needs (Rent and Utilities) to exactly $1,500 (50%)."
+  ],
+  "client": {
+    "name": "Jordan",
+    "description": "Jordan wants to structure their monthly cash flow around the 50/30/20 rule, starting by anchoring essential needs.",
+    "prompt": "I make $3,000 net, but my housing and basic bills are out of control. How much should I be allocating to essential needs?",
+    "portraitId": "jordan_01"
+  },
+  "startingState": {
+    "accounts": [
+      {
+        "id": "acc_01",
+        "name": "Main Checking",
+        "type": "checking",
+        "balance": 500,
+        "apy": 0
+      }
+    ],
+    "income": [
+      {
+        "id": "inc_01",
+        "name": "Net Salary",
+        "amount": 3000,
+        "taxRate": 0,
+        "frequency": "monthly",
+        "routings": [
+          {
+            "destinationId": "acc_01",
+            "amount": 100,
+            "type": "percentage"
+          }
+        ]
+      }
+    ],
+    "expenses": [
+      {
+        "id": "exp_01",
+        "name": "Rent",
+        "isFixed": true,
+        "defaultAmount": 1100
+      },
+      {
+        "id": "exp_02",
+        "name": "Groceries & Utilities",
+        "isFixed": false,
+        "minValue": 400,
+        "defaultAmount": 700
+      },
+      {
+        "id": "exp_03",
+        "name": "Discretionary Wants",
+        "isFixed": false,
+        "minValue": 500,
+        "defaultAmount": 1200
+      }
+    ],
+    "transferRules": [
+      {
+        "id": "rule_01",
+        "sourceId": "acc_01",
+        "destinationId": "exp_01",
+        "amount": 1100,
+        "type": "fixed"
+      },
+      {
+        "id": "rule_02",
+        "sourceId": "acc_01",
+        "destinationId": "exp_02",
+        "amount": 700,
+        "type": "fixed"
+      },
+      {
+        "id": "rule_03",
+        "sourceId": "acc_01",
+        "destinationId": "exp_03",
+        "amount": 1200,
+        "type": "fixed"
+      }
+    ]
+  },
+  "allowedActions": {
+    "canCreateAccounts": false,
+    "canDeleteAccounts": false,
+    "allowedAccountTypes": [],
+    "allowedCardTypes": []
+  },
+  "winConditions": {
+    "requiredAccounts": [
+      "checking"
+    ]
+  }
+}

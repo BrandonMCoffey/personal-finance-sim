@@ -1,0 +1,96 @@
+{
+  "title": "The Auto Loan",
+  "desc": "Ensure your mandatory car loan minimum payment is routed correctly.",
+  "to-teach": "Fulfill mandatory minimum installment loan payments.",
+  "subCategoryIndex": 4,
+  "forecastMonths": 6,
+  "hints": [
+    "Your Car Loan has a mandatory minimum payment of $320.",
+    "Create a transfer rule from Checking to the Car Loan for at least $320 to avoid loan default."
+  ],
+  "client": {
+    "name": "Marcus",
+    "description": "Marcus bought a car to commute to work but forgot to establish an automatic payment rule for the installment loan.",
+    "prompt": "I bought a used car for my job, but my monthly payment of $320 isn't hooked up to my checking account!",
+    "portraitId": "marcus_01"
+  },
+  "startingState": {
+    "accounts": [
+      {
+        "id": "acc_01",
+        "name": "Main Checking",
+        "type": "checking",
+        "balance": 450,
+        "apy": 0
+      }
+    ],
+    "loans": [
+      {
+        "id": "loan_01",
+        "name": "Auto Loan",
+        "balance": 11000,
+        "apr": 6.8,
+        "minimumPayment": 320
+      }
+    ],
+    "income": [
+      {
+        "id": "inc_01",
+        "name": "Monthly Salary",
+        "amount": 2800,
+        "taxRate": 0,
+        "frequency": "monthly",
+        "routings": [
+          {
+            "destinationId": "acc_01",
+            "amount": 100,
+            "type": "percentage"
+          }
+        ]
+      }
+    ],
+    "expenses": [
+      {
+        "id": "exp_01",
+        "name": "Apartment Rent",
+        "isFixed": true,
+        "defaultAmount": 1400
+      },
+      {
+        "id": "exp_02",
+        "name": "Fuel & Groceries",
+        "isFixed": false,
+        "minValue": 350,
+        "defaultAmount": 500
+      }
+    ],
+    "transferRules": [
+      {
+        "id": "rule_01",
+        "sourceId": "acc_01",
+        "destinationId": "exp_01",
+        "amount": 1400,
+        "type": "fixed"
+      },
+      {
+        "id": "rule_02",
+        "sourceId": "acc_01",
+        "destinationId": "exp_02",
+        "amount": 500,
+        "type": "fixed"
+      }
+    ]
+  },
+  "allowedActions": {
+    "canCreateAccounts": false,
+    "canDeleteAccounts": false,
+    "allowedAccountTypes": [],
+    "allowedCardTypes": []
+  },
+  "winConditions": {
+    "requiredAccounts": [
+      "checking"
+    ],
+    "maxDebtBalance": 9500
+  }
+}

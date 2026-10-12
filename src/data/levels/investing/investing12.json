@@ -1,0 +1,88 @@
+{
+  "title": "Real Returns",
+  "desc": "Achieve a target balance despite a high macroeconomic inflation rate.",
+  "to-teach": "Grow wealth faster than inflation rises.",
+  "subCategoryIndex": 3,
+  "forecastMonths": 12,
+  "hints": [
+    "With inflation running at 6%, standard cash balances cannot keep pace.",
+    "Create a brokerage account and transfer both the $5,000 lump sum and monthly surplus into it to exceed the target."
+  ],
+  "client": {
+    "name": "David",
+    "description": "David needs his portfolio to reach a net worth goal in real terms, requiring yields higher than the prevailing 6% inflation benchmark.",
+    "prompt": "I need my investments to generate real returns above a 6% inflation benchmark. Can you allocate my capital to beat it?",
+    "portraitId": "david_01"
+  },
+  "startingState": {
+    "inflationRate": 6,
+    "accounts": [
+      {
+        "id": "acc_01",
+        "name": "Liquid Checking",
+        "type": "checking",
+        "balance": 6000,
+        "apy": 0
+      }
+    ],
+    "income": [
+      {
+        "id": "inc_01",
+        "name": "Salary",
+        "amount": 4200,
+        "taxRate": 15,
+        "frequency": "monthly",
+        "routings": [
+          {
+            "destinationId": "acc_01",
+            "amount": 100,
+            "type": "percentage"
+          }
+        ]
+      }
+    ],
+    "expenses": [
+      {
+        "id": "exp_01",
+        "name": "Fixed Outflows",
+        "isFixed": true,
+        "defaultAmount": 2600
+      }
+    ],
+    "goals": [
+      {
+        "id": "goal_01",
+        "name": "Inflation-Protected Growth",
+        "targetAmount": 12000,
+        "targetMonths": 12
+      }
+    ],
+    "transferRules": [
+      {
+        "id": "rule_01",
+        "sourceId": "acc_01",
+        "destinationId": "exp_01",
+        "amount": 2600,
+        "type": "fixed"
+      }
+    ]
+  },
+  "allowedActions": {
+    "canCreateAccounts": true,
+    "canDeleteAccounts": false,
+    "maxNewAccounts": 1,
+    "allowedAccountTypes": [
+      "brokerage"
+    ],
+    "allowedCardTypes": []
+  },
+  "winConditions": {
+    "requiredAccounts": [
+      "brokerage"
+    ],
+    "goalsFundedWithinMonths": {
+      "goalId": "goal_01",
+      "months": 12
+    }
+  }
+}
