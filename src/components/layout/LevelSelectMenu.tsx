@@ -118,7 +118,7 @@ export function LevelSelectMenu() {
 					</nav>
 					<div className="mt-12 pt-6 border-t border-gray-200 flex flex-col gap-3">
 						<button onClick={unlockAllLevels} className="px-4 py-2 text-xs text-gray-600 hover:bg-gray-100 rounded border border-gray-300">
-							Dev: Unlock All Modules
+							Unlock All Modules
 						</button>
 						<button onClick={clearProgress} className="px-4 py-2 text-xs text-red-600 hover:bg-red-50 rounded border border-red-200">
 							Clear Save Data

@@ -11,7 +11,7 @@ export const CATEGORIES: CategoryDef[] = [
 		title: "Earning & Income",
 		icon: "💵",
 		subCategories: [
-			"Gross vs. Net Pay",
+			"Account Basics",
 			"Tracking Cash Flow",
 			"Fixed vs. Variable Expenses",
 			"The 50/30/20 Rule",
@@ -20,7 +20,7 @@ export const CATEGORIES: CategoryDef[] = [
 	},
 	{
 		id: "saving",
-		title: "Saving & Goal Setting",
+		title: "Saving & Goals",
 		icon: "🏦",
 		subCategories: [
 			"Emergency Funds",
@@ -31,7 +31,7 @@ export const CATEGORIES: CategoryDef[] = [
 	},
 	{
 		id: "debt",
-		title: "Credit & Debt Management",
+		title: "Credit & Debt",
 		icon: "💳",
 		subCategories: [
 			"Understanding Credit Cards",
@@ -43,7 +43,7 @@ export const CATEGORIES: CategoryDef[] = [
 	},
 	{
 		id: "investing",
-		title: "Investing & Wealth Building",
+		title: "Investing & Wealth",
 		icon: "📈",
 		subCategories: [
 			"The Employer Match",
@@ -55,7 +55,7 @@ export const CATEGORIES: CategoryDef[] = [
 	},
 	{
 		id: "protecting",
-		title: "Protecting & Life Events",
+		title: "Life Events",
 		icon: "🏠",
 		subCategories: [
 			"Insurance Basics",
